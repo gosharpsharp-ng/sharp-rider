@@ -1,0 +1,363 @@
+import 'package:go_logistics_driver/utils/exports.dart';
+
+class OrderSummaryDetailItem extends StatelessWidget {
+  final String title;
+  final String value;
+  final String titleIconAsset;
+  final bool isVertical;
+  const OrderSummaryDetailItem(
+      {super.key,
+      this.title = "",
+      this.value = "",
+      this.isVertical = true,
+      this.titleIconAsset = ""});
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      width: double.infinity,
+      margin: EdgeInsets.symmetric(horizontal: 0.w, vertical: 3.h),
+      padding: EdgeInsets.symmetric(horizontal: 8.w, vertical: 10.h),
+      decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(4.r),
+          color: AppColors.whiteColor),
+      child: isVertical
+          ? Column(
+              mainAxisAlignment: MainAxisAlignment.start,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
+                  children: [
+                    Visibility(
+                      visible: titleIconAsset.length > 1,
+                      child: Container(
+                        margin: EdgeInsets.only(right: 5.sp),
+                        child: SvgPicture.asset(titleIconAsset,height: 15.sp,width: 15.sp,),
+                      ),
+                    ),
+                    customText(title,
+                        color: AppColors.obscureTextColor,
+                        fontSize: 15.sp,
+                        fontWeight: FontWeight.normal),
+                  ],
+                ),
+                SizedBox(
+                  height: 8.h,
+                ),
+                customText(
+                  value,
+                  color: AppColors.blackColor,
+                  fontSize: 15.sp,
+                  fontWeight: FontWeight.w500,
+                  overflow: TextOverflow.visible,
+                ),
+              ],
+            )
+          : Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
+                  children: [
+                    Visibility(
+                      visible: titleIconAsset.length > 1,
+                      child: Container(
+                        margin: EdgeInsets.only(right: 5.sp),
+                        child: SvgPicture.asset(titleIconAsset,height: 15.sp,width: 15.sp,),
+                      ),
+                    ),
+                    customText("$title:",
+                        color: AppColors.obscureTextColor,
+                        fontSize: 15.sp,
+                        fontWeight: FontWeight.normal),
+                  ],
+                ),
+                customText(
+                  value,
+                  color: AppColors.blackColor,
+                  fontSize: 15.sp,
+                  fontWeight: FontWeight.w500,
+                  overflow: TextOverflow.visible,
+                ),
+              ],
+            ),
+    );
+  }
+}
+
+class CopyAbleAndClickAbleOrderSummaryDetailItem extends StatelessWidget {
+  final String title;
+  final String clickableTitle;
+  final Function onClick;
+  final Function onCopy;
+  final String value;
+  final String titleIconAsset;
+  const CopyAbleAndClickAbleOrderSummaryDetailItem(
+      {super.key,
+      this.title = "",
+      required this.onClick,
+      required this.onCopy,
+      this.value = "",
+      this.titleIconAsset = "",
+      this.clickableTitle = "View invoice"});
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+        width: double.infinity,
+        margin: EdgeInsets.symmetric(horizontal: 0.w, vertical: 3.h),
+        padding: EdgeInsets.symmetric(horizontal: 8.w, vertical: 10.h),
+        decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(4.r),
+            color: AppColors.whiteColor),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.start,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Row(
+                  children: [
+                    Visibility(
+                      visible: titleIconAsset.length > 1,
+                      child: Container(
+                        margin: EdgeInsets.only(right: 5.sp),
+                        child: SvgPicture.asset(titleIconAsset,height: 15.sp,width: 15.sp,),
+                      ),
+                    ),
+                    customText(title,
+                        color: AppColors.obscureTextColor,
+                        fontSize: 15.sp,
+                        fontWeight: FontWeight.normal),
+                  ],
+                ),
+                InkWell(
+                  onTap: () {
+                    onClick();
+                  },
+                  child: Row(
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                      customText(capitalizeText(clickableTitle),
+                          color: AppColors.primaryColor,
+                          fontSize: 15.sp,
+                          fontWeight: FontWeight.w500),
+                      SizedBox(
+                        width: 8.sp,
+                      ),
+                      SvgPicture.asset(
+                        SvgAssets.rightChevronIcon,
+                        color: AppColors.primaryColor,
+                        height: 12.sp,
+                        width: 12.sp,
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+            SizedBox(
+              height: 12.h,
+            ),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                customText(
+                  value,
+                  color: AppColors.blackColor,
+                  fontSize: 15.sp,
+                  fontWeight: FontWeight.w500,
+                  overflow: TextOverflow.visible,
+                ),
+                InkWell(
+                    onTap: () {
+                      onCopy();
+                    },
+                    child: SvgPicture.asset(
+                      SvgAssets.copyIcon,
+                      color: AppColors.primaryColor,
+                    )),
+              ],
+            ),
+          ],
+        ));
+  }
+}
+
+class ClickAbleOrderSummaryDetailItem extends StatelessWidget {
+  final String title;
+  final String clickableTitle;
+  final Function onClick;
+  final String value;
+  const ClickAbleOrderSummaryDetailItem(
+      {super.key,
+      this.title = "",
+      required this.onClick,
+      this.value = "",
+      this.clickableTitle = "View invoice"});
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+        width: double.infinity,
+        margin: EdgeInsets.symmetric(horizontal: 0.w, vertical: 3.h),
+        padding: EdgeInsets.symmetric(horizontal: 8.w, vertical: 10.h),
+        decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(4.r),
+            color: AppColors.whiteColor),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.start,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                customText(title,
+                    color: AppColors.obscureTextColor,
+                    fontSize: 15.sp,
+                    fontWeight: FontWeight.normal),
+                InkWell(
+                  onTap: () {
+                    onClick();
+                  },
+                  child: Row(
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                      customText(capitalizeText(clickableTitle),
+                          color: AppColors.primaryColor,
+                          fontSize: 15.sp,
+                          fontWeight: FontWeight.w500),
+                      SizedBox(
+                        width: 8.sp,
+                      ),
+                      SvgPicture.asset(
+                        SvgAssets.rightChevronIcon,
+                        color: AppColors.primaryColor,
+                        height: 12.sp,
+                        width: 12.sp,
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+            SizedBox(
+              height: 12.h,
+            ),
+            customText(
+              value,
+              color: AppColors.blackColor,
+              fontSize: 15.sp,
+              fontWeight: FontWeight.w500,
+              overflow: TextOverflow.visible,
+            ),
+          ],
+        ));
+  }
+}
+
+class CopyAbleOrderSummaryDetailItem extends StatelessWidget {
+  final String title;
+  final Function onCopy;
+  final String value;
+  const CopyAbleOrderSummaryDetailItem(
+      {super.key, this.title = "", required this.onCopy, this.value = ""});
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+        width: double.infinity,
+        margin: EdgeInsets.symmetric(horizontal: 0.w, vertical: 3.h),
+        padding: EdgeInsets.symmetric(horizontal: 8.w, vertical: 10.h),
+        decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(4.r),
+            color: AppColors.whiteColor),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.start,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            customText(title,
+                color: AppColors.obscureTextColor,
+                fontSize: 15.sp,
+                fontWeight: FontWeight.normal),
+            SizedBox(
+              height: 8.h,
+            ),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                customText(
+                  value,
+                  color: AppColors.blackColor,
+                  fontSize: 15.sp,
+                  fontWeight: FontWeight.w500,
+                  overflow: TextOverflow.visible,
+                ),
+                InkWell(
+                    onTap: () {
+                      onCopy();
+                    },
+                    child: SvgPicture.asset(
+                      SvgAssets.copyIcon,
+                      color: AppColors.primaryColor,
+                    )),
+              ],
+            ),
+          ],
+        ));
+  }
+}
+
+class OrderSummaryStatusDetailItem extends StatelessWidget {
+  final String title;
+  final String value;
+  const OrderSummaryStatusDetailItem(
+      {super.key, this.title = "", this.value = ""});
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+        width: double.infinity,
+        margin: EdgeInsets.symmetric(horizontal: 0.w, vertical: 3.h),
+        padding: EdgeInsets.symmetric(horizontal: 8.w, vertical: 10.h),
+        decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(4.r),
+            color: AppColors.whiteColor),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            customText(title,
+                color: AppColors.obscureTextColor,
+                fontSize: 15.sp,
+                fontWeight: FontWeight.normal),
+            SizedBox(
+              height: 8.h,
+            ),
+            Container(
+                decoration: BoxDecoration(
+                    color: value.toLowerCase() == 'delivered'
+                        ? AppColors.primaryColor.withOpacity(0.3)
+                        : value.toLowerCase() == 'in transit'
+                            ? AppColors.deepAmberColor.withOpacity(0.3)
+                            : AppColors.redColor.withOpacity(0.3),
+                    borderRadius: BorderRadius.circular(
+                      8.r,
+                    )),
+                padding: EdgeInsets.symmetric(vertical: 5.h, horizontal: 8.w),
+                child: customText(
+                  value,
+                  color: value.toLowerCase() == 'delivered'
+                      ? AppColors.primaryColor
+                      : value.toLowerCase() == 'in transit'
+                          ? AppColors.deepAmberColor
+                          : AppColors.redColor,
+                  fontSize: 15.sp,
+                  fontWeight: FontWeight.w500,
+                  overflow: TextOverflow.visible,
+                )),
+          ],
+        ));
+  }
+}
