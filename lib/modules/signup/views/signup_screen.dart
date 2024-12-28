@@ -1,5 +1,7 @@
 import 'package:go_logistics_driver/utils/exports.dart';
 
+import 'package:intl_phone_field/phone_number.dart';
+
 class SignUpScreen extends GetView<SignUpController> {
   const SignUpScreen({super.key});
 
@@ -59,6 +61,7 @@ class SignUpScreen extends GetView<SignUpController> {
                           title: "First name",
                           label: "John",
                           showLabel: true,
+                          isRequired: true,
                           hasTitle: true,
                           controller: signUpController.firstNameController,
                         ),
@@ -66,6 +69,7 @@ class SignUpScreen extends GetView<SignUpController> {
                           title: "Last name",
                           label: "Doe",
                           showLabel: true,
+                          isRequired: true,
                           hasTitle: true,
                           controller: signUpController.lastNameController,
                         ),
@@ -73,14 +77,49 @@ class SignUpScreen extends GetView<SignUpController> {
                           title: "Email",
                           label: "meter.me@gmail.com",
                           showLabel: true,
+                          isRequired: true,
+                          useCustomValidator: true,
                           hasTitle: true,
                           controller: signUpController.emailController,
+                          validator: (value) {
+                            if (value == null || value.isEmpty) {
+                              return 'Please enter an email';
+                            } else if (!validateEmail(value)) {
+                              return 'Please enter a valid email';
+                            }
+                            return null;
+                          },
                         ),
-                        CustomRoundedInputField(
+                        CustomRoundedPhoneInputField(
                           title: "Phone number",
-                          label: "07056543254",
-                          showLabel: true,
-                          // isPhone: true,
+                          label: "+2347061032122",
+                          onChanged: (PhoneNumber phone) {
+                            if (phone.number.startsWith('0')) {
+                              final updatedNumber =
+                              phone.number.replaceFirst('0', '');
+
+                              PhoneNumber num = PhoneNumber(
+                                  countryISOCode: phone.countryISOCode,
+                                  countryCode: phone.countryCode,
+                                  number: updatedNumber);
+                              signUpController.setPhoneNumber(num);
+                            }
+                          },
+                          keyboardType: TextInputType.phone,
+                          validator: (phone) {
+                            if (phone == null ||
+                                phone.completeNumber.isEmpty) {
+                              return "Phone number is required";
+                            }
+                            // Regex: `+` followed by 1 to 3 digits (country code), then 10 digits (phone number)
+                            final regex = RegExp(r'^\+234[1-9]\d{9}$');
+                            if (!regex.hasMatch(phone.completeNumber)) {
+                              return "Phone number must start with +234 and be 10 digits long";
+                            }
+
+                            return null; // Valid phone number
+                          },
+                          isPhone: true,
                           hasTitle: true,
                           controller: signUpController.phoneNumberController,
                         ),
@@ -91,6 +130,8 @@ class SignUpScreen extends GetView<SignUpController> {
                           title: "Password",
                           label: "Create your 8-digit password",
                           showLabel: true,
+                          isRequired: true,
+                          useCustomValidator: true,
                           obscureText:
                           signUpController.signUpPasswordVisibility,
                           hasTitle: true,
@@ -118,6 +159,8 @@ class SignUpScreen extends GetView<SignUpController> {
                           title: "Confirm Password",
                           label: "Retype your 8-digit password",
                           showLabel: true,
+                          isRequired: true,
+                          useCustomValidator: true,
                           obscureText:
                           signUpController.signUpConfirmPasswordVisibility,
                           hasTitle: true,
@@ -138,7 +181,8 @@ class SignUpScreen extends GetView<SignUpController> {
                           validator: (value) {
                             if (value == null || value.isEmpty) {
                               return 'Please enter your password';
-                            }else if(value != signUpController.passwordController.text){
+                            } else if (value !=
+                                signUpController.passwordController.text) {
                               return 'Password mismatch';
                             }
                             return null;

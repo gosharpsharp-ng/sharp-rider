@@ -1,6 +1,7 @@
+import 'dart:io';
+
 import 'package:dio/dio.dart' as dio_pack;
 import 'package:dio/dio.dart';
-import 'package:go_logistics_driver/services/models/api_response.dart';
 import 'package:go_logistics_driver/utils/exports.dart';
 
 class CoreService extends GetConnect {
@@ -8,7 +9,7 @@ class CoreService extends GetConnect {
 
   CoreService() {
     // _dio.options.baseUrl = dotenv.env['BASE_URL']!;
-    _dio.options.baseUrl = "https://logistics.gosharpsharp.com";
+    _dio.options.baseUrl = "https://logistics.gosharpsharp.com/api/v1";
     setConfig();
   }
   final getStorage = GetStorage();
@@ -44,14 +45,14 @@ class CoreService extends GetConnect {
       }
     } on DioException catch (e) {
       if (e.response != null) {
-        return APIResponse.fromMap(e.response?.data['detail']);
+        return APIResponse.fromMap(e.response?.data);
       } else {
         return APIResponse(
-            success: false, data: "Error", message: "Something went wrong ");
+            status: "error", data: "Error", message: "Something went wrong ");
       }
     }
     return APIResponse(
-        success: false, data: "Error", message: "Something went wrong");
+        status: "error", data: "Error", message: "Something went wrong");
   }
 
   // general post
@@ -61,7 +62,6 @@ class CoreService extends GetConnect {
   ) async {
     try {
       final res = await _dio.post(url, data: payload);
-
       if (res.statusCode == 200 || res.statusCode == 201) {
         return APIResponse.fromMap(res.data);
       }
@@ -72,14 +72,14 @@ class CoreService extends GetConnect {
         print(e.response!.data.toString());
         print(
             "*****************************************************************************************888");
-        return APIResponse.fromMap(e.response?.data['detail']);
+        return APIResponse.fromMap(e.response?.data);
       } else {
         return APIResponse(
-            success: false, data: "Error", message: "Something went wrong ");
+            status: "error", data: "Error", message: "Something went wrong ");
       }
     }
     return APIResponse(
-        success: false, data: "Error", message: "Something went wrong");
+        status: "error", data: "Error", message: "Something went wrong");
   }
 
   // general upload
@@ -97,14 +97,14 @@ class CoreService extends GetConnect {
       }
     } on DioException catch (e) {
       if (e.response != null) {
-        return APIResponse.fromMap(e.response?.data['detail']);
+        return APIResponse.fromMap(e.response?.data);
       } else {
         return APIResponse(
-            success: false, data: "Error", message: "Something went wrong");
+            status: "error", data: "Error", message: "Something went wrong");
       }
     }
     return APIResponse(
-        success: false, data: "Error", message: "Something went wrong");
+        status: "error", data: "Error", message: "Something went wrong");
   }
 
   // general get
@@ -116,14 +116,20 @@ class CoreService extends GetConnect {
       }
     } on DioException catch (e) {
       if (e.response != null) {
-        return APIResponse.fromMap(e.response?.data['detail']);
+        print(
+            "*****************************************************************************************888");
+        print("URL: $url");
+        print(e.response!.data.toString());
+        print(
+            "*****************************************************************************************888");
+        return APIResponse.fromMap(e.response?.data);
       } else {
         return APIResponse(
-            success: false, data: "Error", message: "Something went wrong");
+            status: "error", data: "Error", message: "Something went wrong");
       }
     }
     return APIResponse(
-        success: false, data: "Error", message: "Something went wrong");
+        status: "error", data: "Error", message: "Something went wrong");
   }
 
   // general get by params
@@ -136,14 +142,14 @@ class CoreService extends GetConnect {
       }
     } on DioException catch (e) {
       if (e.response != null) {
-        return APIResponse.fromMap(e.response?.data['detail']);
+        return APIResponse.fromMap(e.response?.data);
       } else {
         return APIResponse(
-            success: false, data: "Error", message: "Something went wrong");
+            status: "error", data: "Error", message: "Something went wrong");
       }
     }
     return APIResponse(
-        success: false, data: "Error", message: "Something went wrong");
+        status: "error", data: "Error", message: "Something went wrong");
   }
 
   // general put
@@ -155,33 +161,60 @@ class CoreService extends GetConnect {
       }
     } on DioException catch (e) {
       if (e.response != null) {
-        return APIResponse.fromMap(e.response?.data['detail']);
+        return APIResponse.fromMap(e.response?.data);
       } else {
         return APIResponse(
-            success: false, data: "Error", message: "Something went wrong");
+            status: "error", data: "Error", message: "Something went wrong");
       }
     }
     return APIResponse(
-        success: false, data: "Error", message: "Something went wrong");
+        status: "error", data: "Error", message: "Something went wrong");
   }
 
-  // general put
-  Future<APIResponse> simpleUpdate(String url) async {
+  // form put
+  Future<APIResponse> formUpdate(String url, Map<String, dynamic> data) async {
     try {
-      final res = await _dio.put(url);
+      // Build the FormData payload dynamically
+      final Map<String, dynamic> formDataMap = {};
+
+      for (var entry in data.entries) {
+        final key = entry.key;
+        final value = entry.value;
+
+        if (value != null) {
+          // If the value is a file path, convert it to MultipartFile
+          if (key == 'avatar' && value is File) {
+            formDataMap[key] =
+                await dio_pack.MultipartFile.fromFile(value.path);
+          } else {
+            formDataMap[key] = value;
+          }
+        }
+      }
+
+      dio_pack.FormData payload = dio_pack.FormData.fromMap(formDataMap);
+      // Perform the PUT request
+      final res = await _dio.put(url, data: payload);
       if (res.statusCode == 200 || res.statusCode == 201) {
         return APIResponse.fromMap(res.data);
       }
     } on DioException catch (e) {
       if (e.response != null) {
-        return APIResponse.fromMap(e.response?.data['detail']);
+        return APIResponse.fromMap(e.response?.data);
       } else {
         return APIResponse(
-            success: false, data: "Error", message: "Something went wrong");
+          status: "error",
+          data: "Error",
+          message: "Something went wrong",
+        );
       }
     }
+
     return APIResponse(
-        success: false, data: "Error", message: "Something went wrong");
+      status: "error",
+      data: "Error",
+      message: "Something went wrong",
+    );
   }
 
   // general delete
@@ -193,13 +226,13 @@ class CoreService extends GetConnect {
       }
     } on DioException catch (e) {
       if (e.response != null) {
-        return APIResponse.fromMap(e.response?.data['detail']);
+        return APIResponse.fromMap(e.response?.data);
       } else {
         return APIResponse(
-            success: false, data: "Error", message: "Something went wrong");
+            status: "error", data: "Error", message: "Something went wrong");
       }
     }
     return APIResponse(
-        success: false, data: "Error", message: "Something went wrong");
+        status: "error", data: "Error", message: "Something went wrong");
   }
 }

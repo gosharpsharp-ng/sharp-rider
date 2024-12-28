@@ -1,7 +1,8 @@
-import 'dart:async';
 
 
 import 'package:go_logistics_driver/utils/exports.dart';
+
+import 'package:intl_phone_field/phone_number.dart';
 
 class SignUpController extends GetxController {
   late Timer _otpResendTimer;
@@ -57,16 +58,16 @@ class SignUpController extends GetxController {
 
   TextEditingController otpController = TextEditingController();
   verifyOtp() async {
-    if (signUpFormKey.currentState!.validate()) {
+    if (signOTPFormKey.currentState!.validate()) {
       setLoadingState(true);
       dynamic data = {
-        'otp': firstNameController.text,
-        'password': passwordController.text,
+        'otp': otpController.text,
+        'phone': "+234${phoneNumberController.text}",
       };
       APIResponse response = await authService.verifyPhoneOtp(data);
-      showToast(message: response.message, isError: !response.success);
+      showToast(message: response.message, isError: response.status!="success");
       setLoadingState(false);
-      if (response.success) {
+      if (response.status=="success") {
         Get.offAndToNamed(Routes.SIGN_IN);
       }
     }
@@ -78,13 +79,17 @@ class SignUpController extends GetxController {
       'login': phoneNumberController.text,
     };
     APIResponse response = await authService.sendOtp(data);
-    showToast(message: response.message, isError: !response.success);
+    showToast(message: response.message, isError: response.status!="success");
     setIsResendingOTPState(false);
-    if(response.success){
+    if(response.status=="success"){
       _startOtpResendTimer();
     }
   }
-
+  PhoneNumber? filledPhoneNumber;
+  setPhoneNumber(PhoneNumber num) {
+    phoneNumberController.text = filledPhoneNumber!.completeNumber;
+    update();
+  }
   TextEditingController firstNameController = TextEditingController();
   TextEditingController lastNameController = TextEditingController();
   TextEditingController genderController = TextEditingController();
@@ -99,14 +104,14 @@ class SignUpController extends GetxController {
         'fname': firstNameController.text,
         'lname': lastNameController.text,
         'email': emailController.text,
-        'phone': phoneNumberController.text,
+        'phone':  "+234${phoneNumberController.text}",
         'as_rider': false,
         'password': passwordController.text,
       };
       APIResponse response = await authService.signup(data);
-      showToast(message: response.message, isError: !response.success);
+      showToast(message: response.message, isError: response.status!="success");
       setLoadingState(false);
-      if (response.success) {
+      if (response.status=="success") {
         _startOtpResendTimer();
         Get.toNamed(Routes.SIGNUP_OTP_SCREEN);
       }

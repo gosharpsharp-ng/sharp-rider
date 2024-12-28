@@ -112,6 +112,38 @@ class DottedDivider extends StatelessWidget {
   }
 }
 
+double stripCurrencyFormat(String formattedAmount) {
+  if (formattedAmount.isEmpty) {
+    return 1.0;
+  }
+  String cleanedString =
+      formattedAmount.replaceAll('₦', '').replaceAll(RegExp(r'[^0-9.]'), '');
+
+  return double.parse(cleanedString);
+}
+
+String formatTextFieldAmountToCurrency(String value) {
+  // Remove any non-numeric characters except the decimal point
+  String newValue = value.replaceAll(RegExp(r'[^0-9.]'), '');
+
+  // Return empty if the input is empty or consists of zeros only
+  if (newValue.isEmpty || newValue == '0') {
+    return '';
+  }
+
+  // If the value has a decimal point, ensure it's parsed as a double
+  double parsedValue = double.parse(newValue);
+
+  // Format as currency in NGN locale
+  String formattedValue = NumberFormat.currency(
+    locale: 'en_NG',
+    symbol: '₦',
+    decimalDigits: 2, // Use 2 decimal places for consistency
+  ).format(parsedValue);
+
+  return formattedValue;
+}
+
 detailHorizontalItem({required String title, required String detail}) {
   return Container(
     margin: EdgeInsets.symmetric(vertical: 5.sp),
@@ -619,7 +651,6 @@ String capitalizeText(String text) {
   return text[0].toUpperCase() + text.substring(1);
 }
 
-
 bool validateEmail(String email) {
   String pattern = r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$';
   RegExp regex = RegExp(pattern);
@@ -627,7 +658,8 @@ bool validateEmail(String email) {
 }
 
 bool validatePhoneNumber(String phoneNumber) {
-  String pattern = r'^0\d{10}$'; // Starts with 0 followed by exactly 10 digits
+  String pattern =
+      r'^[1-9]\d{9}$'; // Starts with a digit 1-9 followed by exactly 9 digits
   RegExp regex = RegExp(pattern);
   return regex.hasMatch(phoneNumber);
 }
@@ -644,5 +676,33 @@ String getFormattedResendOTPTime(int remainingTime) {
     }
   } else {
     return '$seconds s';
+  }
+}
+
+String formatDate(String inputDate) {
+  try {
+    // Parse the input date string to a DateTime object
+    DateTime parsedDate = DateTime.parse(inputDate);
+
+    // Format the date to the desired format
+    String formattedDate = DateFormat('EEE d MMMM, yyyy').format(parsedDate);
+
+    return formattedDate;
+  } catch (e) {
+    // Handle any parsing or formatting errors
+    return 'Invalid date';
+  }
+}
+
+String formatTime(String inputDate) {
+  try {
+    // Parse the input date string to a DateTime object
+    DateTime parsedDate = DateTime.parse(inputDate);
+
+    // Format the time to 12-hour format
+    return DateFormat('hh:mm a').format(parsedDate);
+  } catch (e) {
+    // Handle any parsing or formatting errors
+    return 'Invalid time';
   }
 }

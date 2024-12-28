@@ -128,6 +128,20 @@ class AppPages {
       binding: SettingsBindings(),
     ),
     GetPage(
+      name: _Paths.CURRENT_PASSWORD_ENTRY_SCREEN,
+      page: () => const CurrentPasswordEntryScreen(),
+      binding: SettingsBindings(),
+    ), GetPage(
+      name: _Paths.NEW_PASSWORD_ENTRY_SCREEN,
+      page: () => const NewPasswordEntryScreen(),
+      binding: SettingsBindings(),
+    ),
+    GetPage(
+      name: _Paths.FAQS_SCREEN,
+      page: () => const FaqScreen(),
+      binding: SettingsBindings(),
+    ),
+    GetPage(
       name: _Paths.TRANSACTIONS_SCREEN,
       page: () => const TransactionsScreen(),
       binding: WalletBindings(),

@@ -1,4 +1,5 @@
 import 'package:go_logistics_driver/utils/exports.dart';
+import 'package:intl_phone_field/phone_number.dart';
 
 class SignInController extends GetxController {
   final authService = serviceLocator<AuthenticationService>();
@@ -22,25 +23,38 @@ class SignInController extends GetxController {
 
   toggleSignInWithEmail() {
     signInWithEmail = !signInWithEmail;
+    loginController.clear();
     update();
   }
 
   TextEditingController loginController = TextEditingController();
+  PhoneNumber? filledPhoneNumber;
+  setPhoneNumber(PhoneNumber num) {
+    loginController.text = filledPhoneNumber!.completeNumber;
+    update();
+  }
+
   TextEditingController passwordController = TextEditingController();
   signIn() async {
     if (signInFormKey.currentState!.validate()) {
       setLoadingState(true);
       dynamic data = {
-        'login': loginController.text,
+        'login': signInWithEmail
+            ? loginController.text
+            : "+234${loginController.text}",
         'password': passwordController.text,
       };
       APIResponse response = await authService.login(data);
-      showToast(message: response.message, isError: !response.success);
+      showToast(
+          message: response.message, isError: response.status != "success");
       setLoadingState(false);
-      if (response.success) {
+      if (response.status == "success") {
         final getStorage = GetStorage();
         getStorage.write("token", response.data['access_token']);
-        // Get.toNamed(Routes.SIGNUP_OTP_SCREEN);
+        Get.put(WalletController());
+        Get.put(SettingsController());
+        Get.put(OrdersController());
+        Get.toNamed(Routes.APP_NAVIGATION);
       }
     }
   }

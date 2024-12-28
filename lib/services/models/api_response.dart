@@ -1,18 +1,18 @@
 import 'dart:convert';
 
 class APIResponse {
-  bool success;
+  String status;
   String message;
   dynamic data;
   APIResponse({
-    required this.success,
+    required this.status,
     required this.message,
     required this.data,
   });
 
   Map<String, dynamic> toMap() {
     return {
-      'success': success,
+      'success': status,
       'message': message,
       'data': data,
     };
@@ -20,7 +20,7 @@ class APIResponse {
 
   factory APIResponse.fromMap(Map<String, dynamic> map) {
     return APIResponse(
-      success: map['success'] ?? false,
+      status: map['status'] ??"" ,
       message: map['message']??"",
       data: map['data'] ?? "",
     );

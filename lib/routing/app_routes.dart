@@ -31,22 +31,29 @@ abstract class Routes {
   static const ORDER_INVOICE_DETAILS = _Paths.ORDER_INVOICE_DETAILS;
   static const ORDER_SEARCH_SCREEN = _Paths.ORDER_SEARCH_SCREEN;
   static const ORDER_TRACKING_SCREEN = _Paths.ORDER_TRACKING_SCREEN;
-  static const ORDER_PRE_ACCEPTANCE_DETAILS = _Paths.ORDER_PRE_ACCEPTANCE_DETAILS;
+  static const ORDER_PRE_ACCEPTANCE_DETAILS =
+      _Paths.ORDER_PRE_ACCEPTANCE_DETAILS;
   static const ORDER_ITEM_INPUT_SCREEN = _Paths.ORDER_ITEM_INPUT_SCREEN;
   static const ORDER_PAYMENT_OPTIONS_SCREEN =
       _Paths.ORDER_PAYMENT_OPTIONS_SCREEN;
   static const ORDER_SUMMARY_SCREEN = _Paths.ORDER_SUMMARY_SCREEN;
-  static const ORDER_PACKAGE_INFORMATION_UPLOAD_SCREEN = _Paths.ORDER_PACKAGE_INFORMATION_UPLOAD_SCREEN;
+  static const ORDER_PACKAGE_INFORMATION_UPLOAD_SCREEN =
+      _Paths.ORDER_PACKAGE_INFORMATION_UPLOAD_SCREEN;
   static const NOTIFICATIONS_HOME = _Paths.NOTIFICATIONS_HOME;
   static const NOTIFICATIONS_DETAILS = _Paths.NOTIFICATIONS_DETAILS;
   static const RATINGS_AND_REVIEWS_HOME = _Paths.RATINGS_AND_REVIEWS_HOME;
   static const SETTINGS_HOME_SCREEN = _Paths.SETTINGS_HOME_SCREEN;
   static const PROFILE_SETTINGS_SCREEN = _Paths.PROFILE_SETTINGS_SCREEN;
   static const EDIT_PROFILE_SCREEN = _Paths.EDIT_PROFILE_SCREEN;
+  static const CURRENT_PASSWORD_ENTRY_SCREEN =
+      _Paths.CURRENT_PASSWORD_ENTRY_SCREEN;
+  static const NEW_PASSWORD_ENTRY_SCREEN = _Paths.NEW_PASSWORD_ENTRY_SCREEN;
+  static const FAQS_SCREEN = _Paths.FAQS_SCREEN;
   static const WALLETS_HOME_SCREEN = _Paths.WALLETS_HOME_SCREEN;
   static const TRANSACTIONS_SCREEN = _Paths.TRANSACTIONS_SCREEN;
   static const TRANSACTION_DETAILS_SCREEN = _Paths.TRANSACTION_DETAILS_SCREEN;
-  static const ADD_WITHDRAWAL_ACCOUNT_SCREEN = _Paths.ADD_WITHDRAWAL_ACCOUNT_SCREEN;
+  static const ADD_WITHDRAWAL_ACCOUNT_SCREEN =
+      _Paths.ADD_WITHDRAWAL_ACCOUNT_SCREEN;
   static const WITHDRAWAL_AMOUNT_SCREEN = _Paths.WITHDRAWAL_AMOUNT_SCREEN;
 }
 
@@ -76,7 +83,8 @@ abstract class _Paths {
   static const ORDERS_HOME = '/orders_home';
   static const ORDER_DETAILS = '/order_details';
   static const ORDER_PRE_ACCEPTANCE_DETAILS = '/order_pre_acceptance_details';
-  static const ORDER_PACKAGE_INFORMATION_UPLOAD_SCREEN = '/order_package_information_upload_screen';
+  static const ORDER_PACKAGE_INFORMATION_UPLOAD_SCREEN =
+      '/order_package_information_upload_screen';
   static const ORDER_TRACKING_SCREEN = '/order_tracking_screen';
   static const ORDER_SEARCH_SCREEN = '/order_search_screen';
   static const ORDER_INVOICE_DETAILS = '/order_invoice_details';
@@ -90,6 +98,9 @@ abstract class _Paths {
   static const SETTINGS_HOME_SCREEN = '/settings_home_screen';
   static const PROFILE_SETTINGS_SCREEN = '/profile_settings_screen';
   static const EDIT_PROFILE_SCREEN = '/edit_profile_screen';
+  static const CURRENT_PASSWORD_ENTRY_SCREEN = '/current_password_entry_screen';
+  static const NEW_PASSWORD_ENTRY_SCREEN = '/new_password_entry_screen';
+  static const FAQS_SCREEN = '/faqs_screen';
 
   static const WALLETS_HOME_SCREEN = '/wallets_home_screen';
   static const TRANSACTIONS_SCREEN = '/transactions_screen';

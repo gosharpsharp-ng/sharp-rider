@@ -2,64 +2,105 @@ import 'package:go_logistics_driver/utils/exports.dart';
 
 class ResetPasswordOtpScreen extends StatelessWidget {
   ResetPasswordOtpScreen({super.key});
-  TextEditingController pinController = TextEditingController();
+
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: AppColors.backgroundColor,
-      appBar: defaultAppBar(
-          title: "Verify OTP", bgColor: AppColors.backgroundColor),
-      body: SafeArea(
-        child: SingleChildScrollView(
-          padding: EdgeInsets.symmetric(horizontal: 14.sp, vertical: 20.sp),
-          child: TitleSectionBox(
-            title: "Enter the 4 digit OTP code sent to your email",
-            backgroundColor: AppColors.whiteColor,
-            children: [
-              SizedBox(
-                height: 25.sp,
-              ),
-              CustomPinInput(maxLength: 4, controller: pinController),
-              SizedBox(
-                height: 30.sp,
-              ),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  InkWell(
-                    onTap: () {},
-                    child: customText("Didn’t get the code? Resend",
-                        fontWeight: FontWeight.bold,
-                        textAlign: TextAlign.start,
-                        fontSize: 15.sp,
-                        color: AppColors.blackColor),
+    return GetBuilder<PasswordResetController>(
+        builder: (passwordResetController) {
+          return Form(
+            key: passwordResetController.restPasswordOtpFormKey,
+            child: Scaffold(
+              backgroundColor: AppColors.backgroundColor,
+              appBar: defaultAppBar(
+                  title: "Verify OTP", bgColor: AppColors.backgroundColor),
+              body: SafeArea(
+                child: SingleChildScrollView(
+                  padding: EdgeInsets.symmetric(horizontal: 14.sp, vertical: 20.sp),
+                  child: TitleSectionBox(
+                    title:
+                    "Enter the 4 digit OTP code sent to your ${passwordResetController.useEmail ? ' Email' : 'Phone'}",
+                    backgroundColor: AppColors.whiteColor,
+                    children: [
+                      SizedBox(
+                        height: 25.sp,
+                      ),
+                      CustomPinInput(
+                        maxLength: 4,
+                        controller: passwordResetController.otpController,
+                        onDone: (value) {
+                          passwordResetController.validDateOtpField();
+                        },
+                        validator: (val) {
+                          if (val!.isEmpty) {
+                            return "OTP is required";
+                          } else if (val.length < 4) {
+                            return "OTP is not complete";
+                          } else {
+                            return null;
+                          }
+                        },
+                      ),
+                      SizedBox(
+                        height: 30.sp,
+                      ),
+
+                      InkWell(
+                        onTap: () {
+                          (passwordResetController.isResendingOtp ||
+                              passwordResetController.resendOTPAfter > 1)
+                              ? null
+                              : passwordResetController.resendPasswordResetOTP();
+                        },
+                        child: customText(
+                          passwordResetController.isResendingOtp
+                              ? 'Loading...'
+                              : (passwordResetController.resendOTPAfter > 1)
+                              ? "Resend OTP in ${passwordResetController.remainingTime}"
+                              : "Resend OTP",
+                          color: AppColors.primaryColor,
+                          fontSize: 14.sp,
+                          fontWeight: FontWeight.w700,
+                        ),
+                      ),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          InkWell(
+                            onTap: () {},
+                            child: customText("Didn’t get the code? Resend",
+                                fontWeight: FontWeight.bold,
+                                textAlign: TextAlign.start,
+                                fontSize: 15.sp,
+                                color: AppColors.blackColor),
+                          ),
+                          customText("Expires in 01:30",
+                              fontWeight: FontWeight.bold,
+                              textAlign: TextAlign.start,
+                              fontSize: 15.sp,
+                              color: AppColors.blackColor),
+                        ],
+                      ),
+                      SizedBox(
+                        height: 50.sp,
+                      ),
+                      CustomButton(
+                        onPressed: () {
+                          passwordResetController.validDateOtpField();
+                        },
+                        backgroundColor: AppColors.primaryColor,
+                        title: "Continue",
+                        fontColor: AppColors.whiteColor,
+                        width: double.infinity,
+                      ),
+                      SizedBox(
+                        height: 30.sp,
+                      ),
+                    ],
                   ),
-                  customText("Expires in 01:30",
-                      fontWeight: FontWeight.bold,
-                      textAlign: TextAlign.start,
-                      fontSize: 15.sp,
-                      color: AppColors.blackColor),
-                ],
+                ),
               ),
-              SizedBox(
-                height: 50.sp,
-              ),
-              CustomButton(
-                onPressed: () {
-                  Get.to(NewPasswordScreen());
-                },
-                backgroundColor: AppColors.primaryColor,
-                title: "Verify",
-                fontColor: AppColors.whiteColor,
-                width: double.infinity,
-              ),
-              SizedBox(
-                height: 30.sp,
-              ),
-            ],
-          ),
-        ),
-      ),
-    );
+            ),
+          );
+        });
   }
 }

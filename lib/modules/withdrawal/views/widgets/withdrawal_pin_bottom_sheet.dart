@@ -1,4 +1,3 @@
-
 import 'package:go_logistics_driver/utils/exports.dart';
 
 class WithdrawalPinBottomSheet extends StatelessWidget {
@@ -31,16 +30,29 @@ class WithdrawalPinBottomSheet extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               Expanded(
-                flex: 3,
-                  child:
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          CustomPinInput(maxLength: 4, controller: pinController,onDone: (val){
-                            showAnyBottomSheet(child: WithdrawalSuccessBottomSheet());
-                          },),
-                        ],
-                      )),
+                  flex: 3,
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      CustomPinInput(
+                        maxLength: 4,
+                        controller: pinController,
+                        validator: (val) {
+                          if (val!.isEmpty) {
+                            return "OTP is required";
+                          } else if (val.length < 4) {
+                            return "OTP is not complete";
+                          } else {
+                            return null;
+                          }
+                        },
+                        onDone: (val) {
+                          showAnyBottomSheet(
+                              child: WithdrawalSuccessBottomSheet());
+                        },
+                      ),
+                    ],
+                  )),
               InkWell(
                 onTap: () {},
                 child: const Icon(
@@ -54,7 +66,7 @@ class WithdrawalPinBottomSheet extends StatelessWidget {
             height: 20.h,
           ),
           InkWell(
-            onTap: (){},
+            onTap: () {},
             child: customText("Forgot PIN?",
                 overflow: TextOverflow.visible,
                 textAlign: TextAlign.center,

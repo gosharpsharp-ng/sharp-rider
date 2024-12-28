@@ -1,5 +1,3 @@
-
-
 import 'package:go_logistics_driver/utils/exports.dart';
 
 class SettingsHomeScreen extends StatelessWidget {
@@ -7,68 +5,146 @@ class SettingsHomeScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: defaultAppBar(
-        implyLeading: false,
-        bgColor: AppColors.backgroundColor,
-        title: "Settings",
-        centerTitle: false,
-      ),
-      body: Container(
-        height: 1.sh,
-        width: 1.sw,
-        color: AppColors.backgroundColor,
-        child: SingleChildScrollView(
-          child: Column(
-            children: [
-              SectionBox(
-                crossAxisAlignment: CrossAxisAlignment.center,
-                backgroundColor: AppColors.whiteColor,
-                children: [
-                  CircleAvatar(
-                    backgroundImage: const AssetImage(PngAssets.avatarIcon),radius: 40.r,
+    return GetBuilder<SettingsController>(builder: (settingsController) {
+      return Scaffold(
+        appBar: defaultAppBar(
+          implyLeading: false,
+          bgColor: AppColors.backgroundColor,
+          title: "Settings",
+          centerTitle: false,
+        ),
+        body: Container(
+          height: 1.sh,
+          width: 1.sw,
+          color: AppColors.backgroundColor,
+          child: SingleChildScrollView(
+            child: Column(
+              children: [
+                SectionBox(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  backgroundColor: AppColors.whiteColor,
+                  children: [
+                    Visibility(
+                      visible: settingsController.userProfile?.avatar != null,
+                      replacement: Visibility(
+                        visible: settingsController.userProfilePicture != null,
+                        replacement: CircleAvatar(
+                          radius: 55.r,
+                          backgroundColor: AppColors.backgroundColor,
+                          child: customText(
+                            "${settingsController.userProfile?.fname.substring(0, 1) ?? ""}${settingsController.userProfile?.lname.substring(0, 1) ?? ""}",
+                            fontSize: 24.sp,
+                          ),
+                        ),
+                        child: settingsController.userProfilePicture != null
+                            ? CircleAvatar(
+                                backgroundImage: FileImage(
+                                    settingsController.userProfilePicture!),
+                                radius: 55.r,
+                              )
+                            : CircleAvatar(
+                                backgroundImage:
+                                    const AssetImage(PngAssets.avatarIcon),
+                                radius: 55.r,
+                              ),
+                      ),
+                      child: CircleAvatar(
+                        backgroundImage: NetworkImage(
+                            settingsController.userProfile!.avatar ?? ''),
+                        radius: 55.r,
+                      ),
+                    ),
+                    SizedBox(
+                      height: 5.h,
+                    ),
+                    customText(
+                      "${settingsController.userProfile?.fname ?? ""} ${settingsController.userProfile?.lname ?? ""}",
+                      color: AppColors.blackColor,
+                      fontSize: 25.sp,
+                      fontWeight: FontWeight.w600,
+                      overflow: TextOverflow.visible,
+                    ),
+                    SizedBox(
+                      height: 5.h,
+                    ),
+                    customText(
+                      settingsController.userProfile?.email ?? "",
+                      color: AppColors.obscureTextColor,
+                      fontSize: 15.sp,
+                      fontWeight: FontWeight.w500,
+                      overflow: TextOverflow.visible,
+                    ),
+                  ],
+                ),
+                SectionBox(children: [
+                  SettingsItem(
+                    onPressed: () {
+                      Get.toNamed(Routes.PROFILE_SETTINGS_SCREEN);
+                    },
+                    title: "Edit Profile",
+                    icon: SvgAssets.profileIcon,
                   ),
-                  SizedBox(height: 5.h,),
-                  customText(
-                    "Ayodeji Sebanjo",
-                    color: AppColors.blackColor,
-                    fontSize: 25.sp,
-                    fontWeight: FontWeight.w600,
-                    overflow: TextOverflow.visible,
+                  SettingsItem(
+                    onPressed: () {
+                      Get.toNamed(Routes.NOTIFICATIONS_HOME);
+                    },
+                    title: "Notification",
+                    icon: SvgAssets.notificationIcon,
                   ),
-                  SizedBox(height: 5.h,),
-                  customText(
-                    "ayoniyi28@gmail.com",
-                    color: AppColors.obscureTextColor,
-                    fontSize: 15.sp,
-                    fontWeight: FontWeight.w500,
-                    overflow: TextOverflow.visible,
+                  SettingsItem(
+                    onPressed: () {
+                      Get.toNamed(Routes.CURRENT_PASSWORD_ENTRY_SCREEN);
+                    },
+                    title: "Change Password",
+                    icon: SvgAssets.passwordChangeIcon,
                   ),
-                ],
-              ),
-              SectionBox(children: [
-                SettingsItem(onPressed: (){
-                  Get.to(const ProfileSettingsScreen());
-                }, title: "Edit Profile",icon: SvgAssets.profileIcon,),
-                SettingsItem(onPressed: (){  Get.to(const NotificationsHomeScreen());}, title: "Notification",icon: SvgAssets.notificationIcon,),
-                SettingsItem(onPressed: (){
-                  Get.to(const CurrentPasswordEntryScreen());
-                }, title: "Change Password",icon: SvgAssets.passwordChangeIcon,),
-                SettingsItem(onPressed: (){
-                  Get.to( FaqScreen());
-                }, title: "FAQS",icon: SvgAssets.faqsIcon,),
-                SettingsItem(onPressed: (){}, title: "Help and Support",icon: SvgAssets.supportIcon,),
-                SettingsItem(onPressed: (){}, title: "Privacy Policy",icon: SvgAssets.profileIcon,),
-                SettingsItem(onPressed: (){}, title: "Language",icon: SvgAssets.languageIcon,),
-                SettingsItem(onPressed: (){}, title: "Security",icon: SvgAssets.securityIcon,),
-                SettingsItem(onPressed: (){
-                  Get.to(const SignInScreen());
-                }, title: "Logout",icon: SvgAssets.logoutIcon,isLogout: true,isLast: true,),
-              ]),
-            ],
+                  SettingsItem(
+                    onPressed: () {
+                      Get.toNamed(Routes.FAQS_SCREEN);
+                    },
+                    title: "FAQS",
+                    icon: SvgAssets.faqsIcon,
+                  ),
+                  SettingsItem(
+                    onPressed: () {},
+                    title: "Help and Support",
+                    icon: SvgAssets.supportIcon,
+                  ),
+                  SettingsItem(
+                    onPressed: () {
+                      Get.toNamed(Routes.WALLETS_HOME_SCREEN);
+                    },
+                    title: "GoWallet",
+                    icon: SvgAssets.walletIcon,
+                  ),
+                  SettingsItem(
+                    onPressed: () {},
+                    title: "Privacy Policy",
+                    icon: SvgAssets.profileIcon,
+                  ),
+                  SettingsItem(
+                    onPressed: () {},
+                    title: "Language",
+                    icon: SvgAssets.languageIcon,
+                  ),
+                  SettingsItem(
+                    onPressed: () {},
+                    title: "Security",
+                    icon: SvgAssets.securityIcon,
+                  ),
+                  SettingsItem(
+                    onPressed: () {},
+                    title: "Logout",
+                    icon: SvgAssets.logoutIcon,
+                    isLogout: true,
+                    isLast: true,
+                  ),
+                ]),
+              ],
+            ),
           ),
         ),
-      ),
-    );
+      );
+    });
   }
 }

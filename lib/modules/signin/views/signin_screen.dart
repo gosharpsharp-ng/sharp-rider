@@ -1,5 +1,7 @@
 import 'package:go_logistics_driver/utils/exports.dart';
 
+import 'package:intl_phone_field/phone_number.dart';
+
 class SignInScreen extends StatelessWidget {
   const SignInScreen({super.key});
 
@@ -50,46 +52,60 @@ class SignInScreen extends StatelessWidget {
                         SizedBox(
                           height: 15.sp,
                         ),
-                        CustomRoundedInputField(
-                          title: signInController.signInWithEmail
-                              ? "Email"
-                              : "Phone",
-                          label: signInController.signInWithEmail
-                              ? "meterme@gmail.com"
-                              : "07061425562",
+                        signInController.signInWithEmail
+                            ? CustomRoundedInputField(
+                          title: "Email",
+                          label: "meterme@gmail.com",
                           showLabel: true,
+                          isRequired: true,
+                          isPhone: signInController.signInWithEmail
+                              ? false
+                              : true,
+                          useCustomValidator: true,
                           hasTitle: true,
-                          keyboardType: signInController.signInWithEmail
-                              ? TextInputType.emailAddress
-                              : TextInputType.phone,
+                          keyboardType: TextInputType.emailAddress,
                           controller: signInController.loginController,
-                          suffixWidget: IconButton(
-                            onPressed: () {},
-                            icon: Icon(
-                              signInController.signInWithEmail
-                                  ? Icons.email_outlined
-                                  : Icons.phone,
-                              size: 15.sp,
-                              color: AppColors.primaryColor,
-                            ),
-                          ),
                           validator: (value) {
-                            if (signInController.signInWithEmail) {
-                              if (value == null || value.isEmpty) {
-                                return 'Please enter an email';
-                              } else if (!validateEmail(value)) {
-                                return 'Please enter a valid email';
-                              }
-                              return null;
-                            } else {
-                              if (value == null || value.isEmpty) {
-                                return 'Please enter a phone number';
-                              } else if (!validatePhoneNumber(value)) {
-                                return 'Phone number must start with 0 and have 11 digits';
-                              }
-                              return null;
+                            if (value == null || value.isEmpty) {
+                              return 'Please enter an email';
+                            } else if (!validateEmail(value)) {
+                              return 'Please enter a valid email';
+                            }
+                            return null;
+                          },
+                        )
+                            : CustomRoundedPhoneInputField(
+                          title: "Phone number",
+                          label: "+2347061032122",
+                          onChanged: (PhoneNumber phone) {
+                            if (phone.number.startsWith('0')) {
+                              final updatedNumber =
+                              phone.number.replaceFirst('0', '');
+
+                              PhoneNumber num = PhoneNumber(
+                                  countryISOCode: phone.countryISOCode,
+                                  countryCode: phone.countryCode,
+                                  number: updatedNumber);
+                              signInController.setPhoneNumber(num);
                             }
                           },
+                          keyboardType: TextInputType.phone,
+                          validator: (phone) {
+                            if (phone == null ||
+                                phone.completeNumber.isEmpty) {
+                              return "Phone number is required";
+                            }
+                            // Regex: `+` followed by 1 to 3 digits (country code), then 10 digits (phone number)
+                            final regex = RegExp(r'^\+234[1-9]\d{9}$');
+                            if (!regex.hasMatch(phone.completeNumber)) {
+                              return "Phone number must start with +234 and be 10 digits long";
+                            }
+
+                            return null; // Valid phone number
+                          },
+                          isPhone: true,
+                          hasTitle: true,
+                          controller: signInController.loginController,
                         ),
                         SizedBox(
                           height: 10.sp,
@@ -98,8 +114,10 @@ class SignInScreen extends StatelessWidget {
                           title: "Password",
                           label: "Enter your password",
                           showLabel: true,
+                          isRequired: true,
+                          useCustomValidator: true,
                           obscureText:
-                          signInController.signInPasswordVisibility,
+                          !signInController.signInPasswordVisibility,
                           hasTitle: true,
                           controller: signInController.passwordController,
                           validator: (value) {
@@ -113,7 +131,7 @@ class SignInScreen extends StatelessWidget {
                               signInController.togglePasswordVisibility();
                             },
                             icon: Icon(
-                              signInController.signInPasswordVisibility
+                              !signInController.signInPasswordVisibility
                                   ? Icons.visibility_outlined
                                   : Icons.visibility_off_outlined,
                               size: 20.sp,
@@ -141,7 +159,9 @@ class SignInScreen extends StatelessWidget {
                           height: 15.h,
                         ),
                         CustomButton(
-                          onPressed: () {},
+                          onPressed: () {
+                            signInController.signIn();
+                          },
                           isBusy: signInController.isLoading,
                           title: "Log in",
                           width: 1.sw,
@@ -162,7 +182,6 @@ class SignInScreen extends StatelessWidget {
                             ),
                             InkWell(
                               onTap: () {
-                                Get.to(SignUpScreen());
                                 Get.toNamed(Routes.SIGNUP_SCREEN);
                               },
                               child: customText("Create an account",
