@@ -15,8 +15,8 @@ class WalletsService extends CoreService {
     return await fetch("/me/wallet");
   }
 
-  Future<APIResponse> fundWallet(dynamic data) async {
-    return await send("/me/wallet/fund", data);
+  Future<APIResponse> withdrawFromWallet(dynamic data) async {
+    return await send("/me/wallet/withdraw", data);
   }
 
   Future<APIResponse> getBankList() async {

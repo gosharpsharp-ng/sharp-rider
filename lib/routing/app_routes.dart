@@ -45,13 +45,16 @@ abstract class Routes {
   static const SETTINGS_HOME_SCREEN = _Paths.SETTINGS_HOME_SCREEN;
   static const PROFILE_SETTINGS_SCREEN = _Paths.PROFILE_SETTINGS_SCREEN;
   static const EDIT_PROFILE_SCREEN = _Paths.EDIT_PROFILE_SCREEN;
-  static const CURRENT_PASSWORD_ENTRY_SCREEN =
-      _Paths.CURRENT_PASSWORD_ENTRY_SCREEN;
-  static const NEW_PASSWORD_ENTRY_SCREEN = _Paths.NEW_PASSWORD_ENTRY_SCREEN;
+  static const CHANGE_PASSWORD_SCREEN = _Paths.CHANGE_PASSWORD_SCREEN;
+  static const ADD_VEHICLE_SCREEN = _Paths.ADD_VEHICLE_SCREEN;
+  static const UPDATE_VEHICLE_SCREEN = _Paths.UPDATE_VEHICLE_SCREEN;
+  static const ADD_LICENSE_SCREEN =_Paths.ADD_LICENSE_SCREEN;
+  static const UPDATE_LICENSE_SCREEN = _Paths.UPDATE_LICENSE_SCREEN;
   static const FAQS_SCREEN = _Paths.FAQS_SCREEN;
   static const WALLETS_HOME_SCREEN = _Paths.WALLETS_HOME_SCREEN;
   static const TRANSACTIONS_SCREEN = _Paths.TRANSACTIONS_SCREEN;
   static const TRANSACTION_DETAILS_SCREEN = _Paths.TRANSACTION_DETAILS_SCREEN;
+  static const VEHICLE_AND_LICENSE_DETAILS_SCREEN = _Paths.VEHICLE_AND_LICENSE_DETAILS_SCREEN;
   static const ADD_WITHDRAWAL_ACCOUNT_SCREEN =
       _Paths.ADD_WITHDRAWAL_ACCOUNT_SCREEN;
   static const WITHDRAWAL_AMOUNT_SCREEN = _Paths.WITHDRAWAL_AMOUNT_SCREEN;
@@ -98,8 +101,12 @@ abstract class _Paths {
   static const SETTINGS_HOME_SCREEN = '/settings_home_screen';
   static const PROFILE_SETTINGS_SCREEN = '/profile_settings_screen';
   static const EDIT_PROFILE_SCREEN = '/edit_profile_screen';
-  static const CURRENT_PASSWORD_ENTRY_SCREEN = '/current_password_entry_screen';
-  static const NEW_PASSWORD_ENTRY_SCREEN = '/new_password_entry_screen';
+  static const CHANGE_PASSWORD_SCREEN = '/change_password_screen';
+  static const ADD_VEHICLE_SCREEN = '/add_vehicle_screen';
+  static const UPDATE_VEHICLE_SCREEN = '/update_vehicle_screen';
+  static const ADD_LICENSE_SCREEN = '/add_license_screen';
+  static const UPDATE_LICENSE_SCREEN = '/update_license_screen';
+  static const VEHICLE_AND_LICENSE_DETAILS_SCREEN = '/vehicle_and_license_details_screen';
   static const FAQS_SCREEN = '/faqs_screen';
 
   static const WALLETS_HOME_SCREEN = '/wallets_home_screen';

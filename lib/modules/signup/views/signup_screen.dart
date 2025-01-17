@@ -92,29 +92,41 @@ class SignUpScreen extends GetView<SignUpController> {
                         ),
                         CustomRoundedPhoneInputField(
                           title: "Phone number",
-                          label: "+2347061032122",
+                          label: "7061032122",
                           onChanged: (PhoneNumber phone) {
-                            if (phone.number.startsWith('0')) {
+                            if (phone.number.isNotEmpty &&
+                                phone.number.startsWith('0')) {
                               final updatedNumber =
-                              phone.number.replaceFirst('0', '');
-
-                              PhoneNumber num = PhoneNumber(
-                                  countryISOCode: phone.countryISOCode,
-                                  countryCode: phone.countryCode,
-                                  number: updatedNumber);
-                              signUpController.setPhoneNumber(num);
+                                  phone.number.replaceFirst(RegExp(r'^0'), '');
+                              signUpController.phoneNumberController.value =
+                                  TextEditingValue(
+                                text: updatedNumber,
+                                selection: TextSelection.collapsed(
+                                    offset: updatedNumber.length),
+                              );
+                              signUpController.setPhoneNumber(PhoneNumber(
+                                countryISOCode: phone.countryISOCode,
+                                countryCode: phone.countryCode,
+                                number: updatedNumber,
+                              ));
+                              signUpController.setFilledPhoneNumber(PhoneNumber(
+                                countryISOCode: phone.countryISOCode,
+                                countryCode: phone.countryCode,
+                                number: updatedNumber,
+                              ));
+                            }else{
+                              signUpController.setFilledPhoneNumber(phone);
                             }
                           },
                           keyboardType: TextInputType.phone,
                           validator: (phone) {
-                            if (phone == null ||
-                                phone.completeNumber.isEmpty) {
+                            if (phone == null || phone.completeNumber.isEmpty) {
                               return "Phone number is required";
                             }
                             // Regex: `+` followed by 1 to 3 digits (country code), then 10 digits (phone number)
                             final regex = RegExp(r'^\+234[1-9]\d{9}$');
                             if (!regex.hasMatch(phone.completeNumber)) {
-                              return "Phone number must start with +234 and be 10 digits long";
+                              return "Phone number must be 10 digits long";
                             }
 
                             return null; // Valid phone number
@@ -123,25 +135,22 @@ class SignUpScreen extends GetView<SignUpController> {
                           hasTitle: true,
                           controller: signUpController.phoneNumberController,
                         ),
-                        SizedBox(
-                          height: 10.sp,
-                        ),
                         CustomRoundedInputField(
                           title: "Password",
                           label: "Create your 8-digit password",
                           showLabel: true,
                           isRequired: true,
                           useCustomValidator: true,
-                          obscureText:
-                          signUpController.signUpPasswordVisibility,
                           hasTitle: true,
+                          obscureText:
+                          !signUpController.signUpPasswordVisibility,
                           controller: signUpController.passwordController,
                           suffixWidget: IconButton(
                             onPressed: () {
                               signUpController.togglePasswordVisibility();
                             },
                             icon: Icon(
-                              signUpController.signUpPasswordVisibility
+                              !signUpController.signUpPasswordVisibility
                                   ? Icons.visibility_outlined
                                   : Icons.visibility_off_outlined,
                               size: 20.sp,
@@ -151,6 +160,8 @@ class SignUpScreen extends GetView<SignUpController> {
                           validator: (value) {
                             if (value == null || value.isEmpty) {
                               return 'Please enter your password';
+                            } else if (value.length < 8) {
+                              return 'Password must contain at least 8 characters';
                             }
                             return null;
                           },
@@ -162,7 +173,7 @@ class SignUpScreen extends GetView<SignUpController> {
                           isRequired: true,
                           useCustomValidator: true,
                           obscureText:
-                          signUpController.signUpConfirmPasswordVisibility,
+                              !signUpController.signUpConfirmPasswordVisibility,
                           hasTitle: true,
                           controller: signUpController.cPasswordController,
                           suffixWidget: IconButton(
@@ -171,7 +182,7 @@ class SignUpScreen extends GetView<SignUpController> {
                                   .toggleConfirmPasswordVisibility();
                             },
                             icon: Icon(
-                              signUpController.signUpConfirmPasswordVisibility
+                              !signUpController.signUpConfirmPasswordVisibility
                                   ? Icons.visibility_outlined
                                   : Icons.visibility_off_outlined,
                               size: 20.sp,
@@ -184,6 +195,8 @@ class SignUpScreen extends GetView<SignUpController> {
                             } else if (value !=
                                 signUpController.passwordController.text) {
                               return 'Password mismatch';
+                            } else if (value.length < 8) {
+                              return 'Password must contain at least 8 characters';
                             }
                             return null;
                           },

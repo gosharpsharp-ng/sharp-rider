@@ -50,7 +50,7 @@ class SettingsHomeScreen extends StatelessWidget {
                       ),
                       child: CircleAvatar(
                         backgroundImage: NetworkImage(
-                            settingsController.userProfile!.avatar ?? ''),
+                            settingsController.userProfile?.avatar ?? ''),
                         radius: 55.r,
                       ),
                     ),
@@ -79,12 +79,35 @@ class SettingsHomeScreen extends StatelessWidget {
                 SectionBox(children: [
                   SettingsItem(
                     onPressed: () {
-                      Get.toNamed(Routes.PROFILE_SETTINGS_SCREEN);
+                      settingsController.setProfileFields();
+                      settingsController.toggleProfileEditState(false);
+                      Get.toNamed(Routes.EDIT_PROFILE_SCREEN);
                     },
                     title: "Edit Profile",
                     icon: SvgAssets.profileIcon,
                   ),
-                  SettingsItem(
+                  settingsController.vehicleModel==null?SettingsItem(
+                    onPressed: () {
+                      Get.toNamed(Routes.ADD_VEHICLE_SCREEN);
+                    },
+                    isShouting: true,
+                    title: "Add Vehicle",
+                    icon: SvgAssets.deliveryIcon,
+                  ):SettingsItem(
+                    onPressed: () {
+                      Get.toNamed(Routes.VEHICLE_AND_LICENSE_DETAILS_SCREEN);
+                    },
+                    title: "Vehicle details",
+                    icon: SvgAssets.deliveryIcon,
+                  ),  settingsController.vehicleLicense==null?SettingsItem(
+                    onPressed: () {
+                      Get.toNamed(Routes.ADD_LICENSE_SCREEN);
+                    },
+                    isShouting: true,
+                    title: "Add License",
+                    icon: SvgAssets.licenseIcon,
+                  ):const SizedBox.shrink(),
+                 SettingsItem(
                     onPressed: () {
                       Get.toNamed(Routes.NOTIFICATIONS_HOME);
                     },
@@ -93,7 +116,7 @@ class SettingsHomeScreen extends StatelessWidget {
                   ),
                   SettingsItem(
                     onPressed: () {
-                      Get.toNamed(Routes.CURRENT_PASSWORD_ENTRY_SCREEN);
+                      Get.toNamed(Routes.CHANGE_PASSWORD_SCREEN);
                     },
                     title: "Change Password",
                     icon: SvgAssets.passwordChangeIcon,
@@ -112,9 +135,9 @@ class SettingsHomeScreen extends StatelessWidget {
                   ),
                   SettingsItem(
                     onPressed: () {
-                      Get.toNamed(Routes.WALLETS_HOME_SCREEN);
+                      Get.toNamed(Routes.ADD_WITHDRAWAL_ACCOUNT_SCREEN);
                     },
-                    title: "GoWallet",
+                    title: "Update Bank Account",
                     icon: SvgAssets.walletIcon,
                   ),
                   SettingsItem(
@@ -122,21 +145,25 @@ class SettingsHomeScreen extends StatelessWidget {
                     title: "Privacy Policy",
                     icon: SvgAssets.profileIcon,
                   ),
+                  // SettingsItem(
+                  //   onPressed: () {},
+                  //   title: "Language",
+                  //   icon: SvgAssets.languageIcon,
+                  // ),
+                  // SettingsItem(
+                  //   onPressed: () {},
+                  //   title: "Security",
+                  //   icon: SvgAssets.securityIcon,
+                  // ),
                   SettingsItem(
-                    onPressed: () {},
-                    title: "Language",
-                    icon: SvgAssets.languageIcon,
-                  ),
-                  SettingsItem(
-                    onPressed: () {},
-                    title: "Security",
-                    icon: SvgAssets.securityIcon,
-                  ),
-                  SettingsItem(
-                    onPressed: () {},
+                    onPressed: () {
+                      GetStorage getStorage = GetStorage();
+                      getStorage.remove('token');
+                      Get.offAllNamed(Routes.SIGN_IN);
+                    },
                     title: "Logout",
                     icon: SvgAssets.logoutIcon,
-                    isLogout: true,
+                    isShouting: true,
                     isLast: true,
                   ),
                 ]),

@@ -1,6 +1,8 @@
+import 'dart:convert';
 import 'dart:io';
-
+import 'package:url_launcher/url_launcher.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:go_logistics_driver/models/direction_details_Info.dart';
 import 'package:image_cropper/image_cropper.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
@@ -281,7 +283,60 @@ class EditIcon extends StatelessWidget {
     );
   }
 }
+class SaveIcon extends StatelessWidget {
+  final Function onPressed;
+  final bool isLoading;
+  final String title;
+  const SaveIcon(
+      {super.key,
+        required this.onPressed,
+        this.isLoading = false,
+        this.title = "Save"});
 
+  @override
+  Widget build(BuildContext context) {
+    return InkWell(
+      splashColor: AppColors.transparent,
+      onTap: () {
+        isLoading ? null : onPressed();
+      },
+      child: Container(
+        decoration: BoxDecoration(
+            color: AppColors.primaryColor.withOpacity(0.2),
+            borderRadius: BorderRadius.circular(20.r)),
+        padding: EdgeInsets.symmetric(horizontal: 8.sp, vertical: 4.sp),
+        margin: EdgeInsets.symmetric(vertical: 5.sp),
+        child: isLoading
+            ? SizedBox(
+          height: 12.sp,
+          width: 12.sp,
+          child: CircularProgressIndicator(
+            color: AppColors.primaryColor,
+            strokeWidth: 1.0.sp,
+          ),
+        )
+            : Row(
+          mainAxisAlignment: MainAxisAlignment.spaceAround,
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            customText(title,
+                fontSize: 12.sp,
+                fontWeight: FontWeight.w500,
+                color: AppColors.primaryColor),
+            SizedBox(
+              width: 8.sp,
+            ),
+            SvgPicture.asset(
+              SvgAssets.saveIcon,
+              color: AppColors.primaryColor,
+              height: 14.sp,
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
 showToast({String message = "", bool isError = false}) {
   Get.snackbar(
     "",
@@ -302,7 +357,10 @@ showToast({String message = "", bool isError = false}) {
       // padding: EdgeInsets.only(left: 8.0.sp),
       margin: EdgeInsets.symmetric(horizontal: 5.0.sp),
       child: SvgPicture.asset(
-          isError ? SvgAssets.errorIcon : SvgAssets.successIcon),
+        isError ? SvgAssets.errorIcon : SvgAssets.successIcon,
+        height: 15.sp,
+        width: 15.sp,
+      ),
     ),
     borderRadius: 10.r,
     margin: EdgeInsets.only(left: 12.sp, top: 14.sp),
@@ -685,7 +743,7 @@ String formatDate(String inputDate) {
     DateTime parsedDate = DateTime.parse(inputDate);
 
     // Format the date to the desired format
-    String formattedDate = DateFormat('EEE d MMMM, yyyy').format(parsedDate);
+    String formattedDate = DateFormat('EEE d MMM, yyyy').format(parsedDate);
 
     return formattedDate;
   } catch (e) {
@@ -704,5 +762,118 @@ String formatTime(String inputDate) {
   } catch (e) {
     // Handle any parsing or formatting errors
     return 'Invalid time';
+  }
+}
+
+Future<DirectionDetailsInfo> obtainOriginToDestinationDirectionDetails(
+    LatLng originPosition, LatLng destinationPosition) async {
+  // Construct OSRM API URL
+  String osrmUrl =
+      "https://router.project-osrm.org/route/v1/driving/${originPosition.longitude},${originPosition.latitude};${destinationPosition.longitude},${destinationPosition.latitude}?overview=full&geometries=polyline";
+
+  try {
+    // Make the HTTP request
+    var osrmResponse = await Dio().get(osrmUrl);
+
+    if (osrmResponse.statusCode == 200) {
+      var data = osrmResponse.data;
+      if (data['routes'] != null && data['routes'].isNotEmpty) {
+        // Extract route details
+        var route = data['routes'][0];
+        var distance = route['distance']; // Distance in meters
+        var duration = route['duration']; // Duration in seconds
+        var geometry = route['geometry']; // Polyline points
+        // Convert to DirectionDetailsInfo
+        return DirectionDetailsInfo(
+          distance_value: distance.toInt(),
+          duration_value: duration.toInt(),
+          distance_text: "${(distance / 1000).toStringAsFixed(2)} km",
+          duration_text: "${(duration / 60).toStringAsFixed(0)} mins",
+          e_points: geometry,
+        );
+      }
+    }
+  } catch (e) {
+    print("Error fetching directions: $e");
+  }
+  return DirectionDetailsInfo();
+}
+
+void openGoogleMaps(String destination) async {
+  final Uri url = Uri.parse(
+      'https://www.google.com/maps/dir/?api=1&destination=$destination');
+  if (await canLaunchUrl(url)) {
+    await launchUrl(url);
+  } else {
+    throw 'Could not launch $url';
+  }
+}
+
+
+Color getStatusColor(String? status) {
+  switch (status?.toLowerCase()) {
+    case "pending":
+      return AppColors.lightRedColor;
+    case "confirmed":
+      return AppColors.lightAmberColor;
+    case "paid":
+      return AppColors.lightGreenColor;
+    case "assigned":
+      return AppColors.lightBlueColor;
+    case "enroute":
+      return AppColors.lightPurpleColor;
+    case "collected":
+      return AppColors.lightTealColor;
+    case "transit":
+      return AppColors.lightOrangeColor;
+    case "delivered":
+      return AppColors.lightGreenColor;
+    default:
+      return AppColors.lightGreyColor;
+  }
+}
+
+Color getStatusTextColor(String? status) {
+  switch (status?.toLowerCase()) {
+    case "pending":
+      return AppColors.redColor;
+    case "confirmed":
+      return AppColors.amberColor;
+    case "paid":
+      return AppColors.greenColor;
+    case "assigned":
+      return AppColors.blueColor;
+    case "enroute":
+      return AppColors.purpleColor;
+    case "collected":
+      return AppColors.tealColor;
+    case "transit":
+      return AppColors.orangeColor;
+    case "delivered":
+      return AppColors.greenColor;
+    default:
+      return AppColors.greyColor;
+  }
+}
+
+MemoryImage base64ToMemoryImage(String base64String) {
+  String cleanBase64 = base64String.contains(',')
+      ? base64String.split(',').last
+      : base64String;
+  Uint8List bytes = base64Decode(cleanBase64);
+  return MemoryImage(bytes);
+}
+double getDeliveryProgress(String status) {
+  switch (status.capitalizeFirst) {
+    case 'Pending':
+      return 0.0;
+    case 'Confirmed':
+      return 0.33;
+    case 'Picked':
+      return 0.67;
+    case 'Delivered':
+      return 1.0;
+    default:
+      return 0.0; // Default case if status is unknown
   }
 }

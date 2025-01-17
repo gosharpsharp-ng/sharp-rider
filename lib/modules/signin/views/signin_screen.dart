@@ -13,7 +13,7 @@ class SignInScreen extends StatelessWidget {
         child: Scaffold(
           appBar: defaultAppBar(
             bgColor: AppColors.backgroundColor,
-            title: "Login",
+            title: "",
           ),
           backgroundColor: AppColors.backgroundColor,
           body: Container(
@@ -25,7 +25,68 @@ class SignInScreen extends StatelessWidget {
                 children: [
                   Container(
                     padding: EdgeInsets.symmetric(
-                        horizontal: 10.sp, vertical: 20.sp),
+                        horizontal: 10.sp, vertical: 0.sp),
+                    margin: EdgeInsets.only(left: 10.sp, right: 10.sp),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        customText("Login",
+                            color: AppColors.blackColor,
+                            fontSize: 23.sp,
+                            fontWeight: FontWeight.w600),
+                        SizedBox(
+                          height: 5.sp,
+                        ),
+                        customText(
+                            "Welcome back",
+                            color: AppColors.blackColor,
+                            fontSize: 16.sp,
+                            fontWeight: FontWeight.normal),
+                        SizedBox(
+                          height: 5.sp,
+                        ),
+                        SizedBox(
+                          height: 20.sp,
+                        ),
+                        SizedBox(
+                          width: 1.sw,
+                          child: Row(
+                            children: [
+                              Expanded(
+                                child: LoginTypeSelector(
+                                  title: "Login with Email",
+                                  onSelected: () {
+                                    if (!signInController.signInWithEmail) {
+                                      signInController.toggleSignInWithEmail();
+                                    }
+                                  },
+                                  isSelected: signInController.signInWithEmail,
+                                ),
+                              ),
+                              Expanded(
+                                child: LoginTypeSelector(
+                                  title: "Login with Phone",
+                                  onSelected: () {
+                                    if (signInController.signInWithEmail) {
+                                      signInController.toggleSignInWithEmail();
+                                    }
+                                  },
+                                  isSelected: !signInController.signInWithEmail,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                        SizedBox(
+                          height: 25.sp,
+                        ),
+                      ],
+                    ),
+
+                  ),
+                  Container(
+                    padding: EdgeInsets.symmetric(
+                        horizontal: 10.sp, vertical: 10.sp),
                     margin: EdgeInsets.only(left: 10.sp, right: 10.sp),
                     decoration: BoxDecoration(
                         borderRadius: BorderRadius.circular(12.r),
@@ -35,32 +96,22 @@ class SignInScreen extends StatelessWidget {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       mainAxisAlignment: MainAxisAlignment.start,
                       children: [
-                        SizedBox(
-                          height: 5.sp,
-                        ),
-                        InkWell(
-                          onTap: () {
-                            signInController.toggleSignInWithEmail();
-                          },
-                          child: customText(
-                            "Sign in with ${signInController.signInWithEmail ? 'Phone' : 'Email'} instead",
-                            fontSize: 14.sp,
-                            color: Colors.blue,
-                            fontWeight: FontWeight.w600,
-                          ),
-                        ),
-                        SizedBox(
-                          height: 15.sp,
-                        ),
+                        // SizedBox(
+                        //   height: 5.sp,
+                        // ),
+                        // customText(
+                        //   "Welcome back to the app",
+                        //   color: AppColors.obscureTextColor,
+                        //   fontWeight: FontWeight.w500,
+                        //   fontSize: 16.sp,
+                        // ),
+
                         signInController.signInWithEmail
                             ? CustomRoundedInputField(
                           title: "Email",
                           label: "meterme@gmail.com",
                           showLabel: true,
                           isRequired: true,
-                          isPhone: signInController.signInWithEmail
-                              ? false
-                              : true,
                           useCustomValidator: true,
                           hasTitle: true,
                           keyboardType: TextInputType.emailAddress,
@@ -76,17 +127,32 @@ class SignInScreen extends StatelessWidget {
                         )
                             : CustomRoundedPhoneInputField(
                           title: "Phone number",
-                          label: "+2347061032122",
+                          label: "7061032122",
                           onChanged: (PhoneNumber phone) {
-                            if (phone.number.startsWith('0')) {
-                              final updatedNumber =
-                              phone.number.replaceFirst('0', '');
-
-                              PhoneNumber num = PhoneNumber(
-                                  countryISOCode: phone.countryISOCode,
-                                  countryCode: phone.countryCode,
-                                  number: updatedNumber);
-                              signInController.setPhoneNumber(num);
+                            if (phone.number.isNotEmpty &&
+                                phone.number.startsWith('0')) {
+                              final updatedNumber = phone.number
+                                  .replaceFirst(RegExp(r'^0'), '');
+                              signInController.loginController.value =
+                                  TextEditingValue(
+                                    text: updatedNumber,
+                                    selection: TextSelection.collapsed(
+                                        offset: updatedNumber.length),
+                                  );
+                              signInController.setPhoneNumber(PhoneNumber(
+                                countryISOCode: phone.countryISOCode,
+                                countryCode: phone.countryCode,
+                                number: updatedNumber,
+                              ));
+                              signInController
+                                  .setFilledPhoneNumber(PhoneNumber(
+                                countryISOCode: phone.countryISOCode,
+                                countryCode: phone.countryCode,
+                                number: updatedNumber,
+                              ));
+                            } else {
+                              signInController
+                                  .setFilledPhoneNumber(phone);
                             }
                           },
                           keyboardType: TextInputType.phone,
@@ -98,7 +164,7 @@ class SignInScreen extends StatelessWidget {
                             // Regex: `+` followed by 1 to 3 digits (country code), then 10 digits (phone number)
                             final regex = RegExp(r'^\+234[1-9]\d{9}$');
                             if (!regex.hasMatch(phone.completeNumber)) {
-                              return "Phone number must start with +234 and be 10 digits long";
+                              return "Phone number must be 10 digits long";
                             }
 
                             return null; // Valid phone number
@@ -201,5 +267,47 @@ class SignInScreen extends StatelessWidget {
         ),
       );
     });
+  }
+}
+
+class LoginTypeSelector extends StatelessWidget {
+  final String title;
+  final Function onSelected;
+  final bool isSelected;
+  const LoginTypeSelector(
+      {super.key,
+        required this.title,
+        this.isSelected = false,
+        required this.onSelected});
+
+  @override
+  Widget build(BuildContext context) {
+    return InkWell(
+      highlightColor: AppColors.transparent,
+      onTap: () {
+        onSelected();
+      },
+      child: Container(
+        padding: EdgeInsets.symmetric(vertical: 5.sp),
+        decoration: BoxDecoration(
+          border: Border(
+            bottom: BorderSide(
+                color: isSelected
+                    ? AppColors.primaryColor
+                    : AppColors.obscureTextColor,
+                width: isSelected ? 2.sp : 1.sp),
+          ),
+        ),
+        width: double.infinity,
+        child: Center(
+          child: customText(title,
+              fontWeight: FontWeight.w500,
+              fontSize: 15.sp,
+              color: isSelected
+                  ? AppColors.primaryColor
+                  : AppColors.obscureTextColor),
+        ),
+      ),
+    );
   }
 }

@@ -4,12 +4,12 @@ class SettingsItem extends StatelessWidget {
   final String icon;
   final String title;
   final bool isLast;
-  final bool isLogout;
+  final bool isShouting;
   final Function onPressed;
   SettingsItem(
       {super.key,
         this.title = "Edit Profile",
-        this.isLogout=false,
+        this.isShouting=false,
         this.isLast=false,
         this.icon = SvgAssets.editIcon,
         required this.onPressed});
@@ -40,7 +40,7 @@ class SettingsItem extends StatelessWidget {
           children: [
             SvgPicture.asset(
               icon,
-              color: isLogout?AppColors.redColor:AppColors.blackColor,
+              color: isShouting?AppColors.redColor:AppColors.blackColor,
               height: 22.sp,
               width: 22.sp,
             ),
@@ -52,7 +52,7 @@ class SettingsItem extends StatelessWidget {
                 title,
                 fontWeight: FontWeight.normal,
                 fontSize: 16.sp,
-                color: isLogout?AppColors.redColor:AppColors.blackColor,
+                color: isShouting?AppColors.redColor:AppColors.blackColor,
               ),
             ),
             const Icon(

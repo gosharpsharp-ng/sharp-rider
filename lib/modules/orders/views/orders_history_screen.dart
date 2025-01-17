@@ -28,8 +28,10 @@ class OrdersHistoryScreen extends StatelessWidget {
                   isSearch: true,
                   color: AppColors.obscureTextColor,
                   hasTitle: true,
+                  readOnly: true,
                   onPressed: () {
-                    Get.to(OrdersSearchScreen());
+                    ordersController.resetDeliveriesSearchFields();
+                    showAnyBottomSheet(child: SearchDeliveriesScreen());
                   },
                   prefixWidget: Container(
                       padding: EdgeInsets.all(12.sp),
@@ -39,7 +41,8 @@ class OrdersHistoryScreen extends StatelessWidget {
                   suffixWidget: IconButton(
                     icon: const Icon(Icons.filter_list_alt),
                     onPressed: () {
-                      Get.to(OrdersSearchScreen());
+                      ordersController.resetDeliveriesSearchFields();
+                      showAnyBottomSheet(child: SearchDeliveriesScreen());
                     },
                   ),
                   // controller: signInProvider.emailController,
@@ -47,42 +50,60 @@ class OrdersHistoryScreen extends StatelessWidget {
                 SizedBox(
                   height: 15.h,
                 ),
-                SizedBox(
-                  width: 1.sw,
-                  child: SingleChildScrollView(
-                    child: Row(
-                      children: [
-                        OrderTabChip(
-                          onSelected: () {},
-                          title: "All",
-                          isSelected: true,
-                        ),
-                        OrderTabChip(
-                          onSelected: () {},
-                          title: "Pending",
-                          isSelected: false,
-                        ),
-                        OrderTabChip(
-                          onSelected: () {},
-                          title: "In transit",
-                          isSelected: false,
-                        ),
-                        OrderTabChip(
-                          onSelected: () {},
-                          title: "Delivered",
-                          isSelected: false,
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
+                // SizedBox(
+                //   width: 1.sw,
+                //   child: SingleChildScrollView(
+                //     child: Row(
+                //       children: [
+                //         OrderTabChip(
+                //           onSelected: () {},
+                //           title: "All",
+                //           isSelected: true,
+                //         ),
+                //         OrderTabChip(
+                //           onSelected: () {},
+                //           title: "Pending",
+                //           isSelected: false,
+                //         ),
+                //         OrderTabChip(
+                //           onSelected: () {},
+                //           title: "In transit",
+                //           isSelected: false,
+                //         ),
+                //         OrderTabChip(
+                //           onSelected: () {},
+                //           title: "Delivered",
+                //           isSelected: false,
+                //         ),
+                //       ],
+                //     ),
+                //   ),
+                // ),
                 SizedBox(
                   height: 15.h,
                 ),
-                ...List.generate(
-                  14,
-                  (i) => OrderItemWidget(
-                    status: i % 2 == 0 ? "Delivered" : "Pending",
+                ordersController.allShipments.isEmpty
+                    ? Container(
+                  width: 1.sw,
+                  height: 1.sh * 0.6,
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      customText(
+                        ordersController.fetchingShipments
+                            ? "Loading..."
+                            : "No shipments yet",
+                      ),
+                    ],
+                  ),
+                )
+                    : Column(
+                  children: List.generate(
+                    ordersController.allShipments.length,
+                        (i) => OrderItemWidget(
+                      onSelected: () {},
+                      shipment: ordersController.allShipments[i],
+                    ),
                   ),
                 ),
                 SizedBox(

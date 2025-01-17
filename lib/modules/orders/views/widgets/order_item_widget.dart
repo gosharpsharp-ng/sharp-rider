@@ -1,9 +1,9 @@
-import 'package:go_logistics_driver/modules/orders/views/details_and_tracking/order_pre_acceptance_details_screen.dart';
-import 'package:go_logistics_driver/utils/exports.dart';
 
+import 'package:go_logistics_driver/utils/exports.dart';
 class OrderItemWidget extends StatelessWidget {
-  const OrderItemWidget({super.key, this.status="Pending"});
-  final String status;
+  const OrderItemWidget({super.key, required this.onSelected, required this.shipment});
+  final Function onSelected;
+  final ShipmentModel shipment;
 
   @override
   Widget build(BuildContext context) {
@@ -11,11 +11,7 @@ class OrderItemWidget extends StatelessWidget {
       splashColor: AppColors.transparent,
       highlightColor: AppColors.transparent,
       onTap: () {
-        if(status== "Pending"){
-          Get.to(const OrderPreAcceptanceDetailsScreen());
-        }else{
-          Get.to(const OrderDetailsScreen());
-        }
+        onSelected();
       },
       child: Container(
         decoration: BoxDecoration(
@@ -29,36 +25,27 @@ class OrderItemWidget extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Container(
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(12.r),
-                    color:  status== "Pending"?AppColors.pendingBgColor:AppColors.successBgColor,
-                  ),
-                  padding: EdgeInsets.symmetric(horizontal: 10.sp, vertical: 3.sp),
-                  child: customText(
-                    status,
-                    fontWeight: FontWeight.w500,
-                    color:  status== "Pending"?AppColors.pendingTexColor:AppColors.successTexColor,
-                    fontSize: 12.sp,
-                    overflow: TextOverflow.visible,
-                  ),
-                ),
-                customText("Thu. Nov 28, 2024 12:33 pm",
-                    fontSize: 12.sp,
-                    color: AppColors.obscureTextColor,
-                    overflow: TextOverflow.visible),
-              ],
+            Container(
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(12.r),
+                color: getStatusColor(shipment.status),
+              ),
+              padding: EdgeInsets.symmetric(horizontal: 10.sp, vertical: 3.sp),
+              child: customText(
+                shipment.status!.capitalizeFirst ?? "",
+                fontWeight: FontWeight.normal,
+                color: getStatusTextColor(shipment.status),
+                fontSize: 12.sp,
+                overflow: TextOverflow.visible,
+              ),
             ),
             SizedBox(
               height: 5.sp,
             ),
             customText(
-              "Rice bag from Rayfield to Uni-jos",
+              shipment.items[0].name,
               fontWeight: FontWeight.w500,
-              fontSize: 16.sp,
+              fontSize: 20.sp,
               overflow: TextOverflow.visible,
             ),
             SizedBox(
@@ -87,7 +74,6 @@ class OrderItemWidget extends StatelessWidget {
                             // lineLength: 150,
                           ),
                         ),
-
                         SvgPicture.asset(
                           SvgAssets.locationIcon,
                         ),
@@ -106,9 +92,9 @@ class OrderItemWidget extends StatelessWidget {
                             children: [
                               Container(
                                 child: customText(
-                                  "PRTV round-about, Rayfield, Jos",
+                                  shipment.originLocation.name,
                                   fontWeight: FontWeight.normal,
-                                  fontSize: 14.sp,
+                                  fontSize: 12.sp,
                                   overflow: TextOverflow.visible,
                                 ),
                               ),
@@ -122,9 +108,9 @@ class OrderItemWidget extends StatelessWidget {
                             children: [
                               Container(
                                 child: customText(
-                                  "University of Jos, Main Campus",
+                                  shipment.destinationLocation.name,
                                   fontWeight: FontWeight.normal,
-                                  fontSize: 14.sp,
+                                  fontSize: 12.sp,
                                   overflow: TextOverflow.visible,
                                 ),
                               ),
@@ -142,136 +128,16 @@ class OrderItemWidget extends StatelessWidget {
                       ),
                     ],
                   ),
-                  // Column(
-                  //   crossAxisAlignment: CrossAxisAlignment.start,
-                  //   children: [
-                  //     Row(
-                  //       mainAxisAlignment: MainAxisAlignment.start,
-                  //       children: [
-                  //         SvgPicture.asset(
-                  //           SvgAssets.parcelIcon,
-                  //         ),
-                  //         SizedBox(
-                  //           width: 5.sp,
-                  //         ),
-                  //         Expanded(
-                  //             child: customText("Pick up location address",
-                  //                 fontWeight: FontWeight.w600,
-                  //                 fontSize: 13.sp,
-                  //                 overflow: TextOverflow.visible)),
-                  //       ],
-                  //     ),
-                  //     SizedBox(
-                  //       height: 3.sp,
-                  //     ),
-                  //     Row(
-                  //       children: [
-                  //         SizedBox(
-                  //           width: 5.sp,
-                  //         ),
-                  //         CircleAvatar(
-                  //           radius: 2.r,
-                  //           backgroundColor: AppColors.primaryColor,
-                  //         ),
-                  //         SizedBox(
-                  //           width: 3.sp,
-                  //         ),
-                  //         Expanded(
-                  //             child: customText("Thu. Nov 28, 2024 12:33 pm",
-                  //                 fontSize: 11.sp,
-                  //                 color: AppColors.obscureTextColor,
-                  //                 overflow: TextOverflow.visible)),
-                  //       ],
-                  //     ),
-                  //     Container(
-                  //       margin: EdgeInsets.only(left: 8.sp),
-                  //       child: DottedDivider(
-                  //         length: 15.sp,
-                  //         dotSize: 2.sp,
-                  //         spacing: 2.sp,
-                  //         color: AppColors.obscureTextColor,
-                  //       ),
-                  //     ),
-                  //     Row(
-                  //       mainAxisAlignment: MainAxisAlignment.start,
-                  //       children: [
-                  //         SvgPicture.asset(
-                  //           SvgAssets.locationIcon,
-                  //         ),
-                  //         SizedBox(
-                  //           width: 5.sp,
-                  //         ),
-                  //         Expanded(
-                  //           child: customText(
-                  //             "Drop off location address",
-                  //             fontWeight: FontWeight.w600,
-                  //             fontSize: 13.sp,
-                  //             overflow: TextOverflow.visible,
-                  //           ),
-                  //         ),
-                  //       ],
-                  //     ),
-                  //     SizedBox(
-                  //       height: 5.sp,
-                  //     ),
-                  //     Row(
-                  //       children: [
-                  //         SizedBox(
-                  //           width: 5.sp,
-                  //         ),
-                  //         CircleAvatar(
-                  //           radius: 2.r,
-                  //           backgroundColor: AppColors.primaryColor,
-                  //         ),
-                  //         SizedBox(
-                  //           width: 3.sp,
-                  //         ),
-                  //         Expanded(
-                  //           child: customText(
-                  //             "Thu. Nov 28, 2024 12:33 pm",
-                  //             color: AppColors.obscureTextColor,
-                  //             fontSize: 11.sp,
-                  //             overflow: TextOverflow.visible,
-                  //           ),
-                  //         ),
-                  //       ],
-                  //     ),
-                  //     SizedBox(
-                  //       height: 11.sp,
-                  //     ),
-                  //     // Row(
-                  //     //   mainAxisAlignment: MainAxisAlignment.start,
-                  //     //   children: [
-                  //     //     SvgPicture.asset(
-                  //     //       SvgAssets.time,
-                  //     //     ),
-                  //     //     SizedBox(
-                  //     //       width: 5.sp,
-                  //     //     ),
-                  //     //     // customText("Tuesday, 28th August, 2024",
-                  //     //     //     fontSize: 12.sp),
-                  //     //
-                  //     //     customText(formatRideDate(rideRequest.rideDetails.rideDate), fontSize: 12.sp),
-                  //     //     SizedBox(
-                  //     //       width: 8.sp,
-                  //     //     ),
-                  //     //     SvgPicture.asset(
-                  //     //       SvgAssets.time,
-                  //     //     ),
-                  //     //     SizedBox(
-                  //     //       width: 2.sp,
-                  //     //     ),
-                  //     //     customText(
-                  //     //       formatRideTime(rideRequest.rideDetails.rideDate),
-                  //     //       fontSize: 12.sp,
-                  //     //     ),
-                  //     //   ],
-                  //     // ),
-                  //   ],
-                  // ),
                 ],
               ),
             ),
+            SizedBox(
+              height: 8.sp,
+            ),
+            customText("${formatDate( shipment.originLocation.createdAt)} ${formatTime( shipment.originLocation.createdAt)}",
+                fontSize: 12.sp,
+                color: AppColors.obscureTextColor,
+                overflow: TextOverflow.visible),
             SizedBox(
               height: 8.sp,
             ),

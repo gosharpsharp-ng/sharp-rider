@@ -25,10 +25,30 @@ class CoreService extends GetConnect {
           if (token != null) {
             options.headers['Authorization'] = "Bearer $token";
           }
-          return handler.next(options); //continue
+          return handler.next(options);
+          //continue
+        },
+        onResponse: (response, handler) {
+          // Handle the response globally if needed
+          return handler.next(response);
+        },
+        onError: (DioException error, handler) {
+          // Check for 401 Unauthorized
+          if (error.response?.statusCode == 401) {
+            handleUnauthorizedAccess();
+          }
+          return handler.next(error); // Continue handling the error
         },
       ),
     );
+  }
+
+  void handleUnauthorizedAccess() {
+    getStorage.remove('token'); // Clear token
+    showToast(
+        isError: true,
+        message: "Your session has expired. Please log in again.");
+    Get.offAllNamed(Routes.SIGN_IN);
   }
 
   // login post
@@ -111,6 +131,7 @@ class CoreService extends GetConnect {
   Future<APIResponse> fetch(String url) async {
     try {
       final res = await _dio.get(url);
+
       if (res.statusCode == 200 || res.statusCode == 201) {
         return APIResponse.fromMap(res.data);
       }
@@ -119,7 +140,7 @@ class CoreService extends GetConnect {
         print(
             "*****************************************************************************************888");
         print("URL: $url");
-        print(e.response!.data.toString());
+        print(e.response.toString());
         print(
             "*****************************************************************************************888");
         return APIResponse.fromMap(e.response?.data);
@@ -194,12 +215,17 @@ class CoreService extends GetConnect {
 
       dio_pack.FormData payload = dio_pack.FormData.fromMap(formDataMap);
       // Perform the PUT request
-      final res = await _dio.put(url, data: payload);
+      final res = await _dio.post(url, data: payload);
       if (res.statusCode == 200 || res.statusCode == 201) {
         return APIResponse.fromMap(res.data);
       }
     } on DioException catch (e) {
       if (e.response != null) {
+        print(
+            "*********************************************************************************************************");
+        print(e.response.toString());
+        print(
+            "*********************************************************************************************************");
         return APIResponse.fromMap(e.response?.data);
       } else {
         return APIResponse(

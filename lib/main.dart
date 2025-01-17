@@ -7,6 +7,7 @@ void main() async {
   SystemChrome.setPreferredOrientations([
     DeviceOrientation.portraitUp,
   ]);
+  setupServiceLocator();
   runApp(const GoSharpDriver());
 }
 
@@ -16,15 +17,13 @@ class GoSharpDriver extends StatelessWidget {
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
-
     ScreenUtil.init(context);
 
     return GetMaterialApp(
       debugShowCheckedModeBanner: false,
-      title: 'GoSharp Driver',
-    initialRoute: AppPages.INITIAL,
+      title: 'GoSharpSharp Driver',
+      initialRoute: AppPages.INITIAL,
       getPages: AppPages.routes,
     );
   }
 }
-

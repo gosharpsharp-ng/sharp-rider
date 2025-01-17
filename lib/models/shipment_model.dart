@@ -15,6 +15,7 @@ class ShipmentModel {
   @JsonKey(name: 'destination_location')
   final ShipmentLocation destinationLocation;
   final Receiver receiver;
+  final Sender? sender;
   final List<Item> items;
   final String distance;
   @JsonKey(name: 'courier_type_prices')
@@ -23,7 +24,7 @@ class ShipmentModel {
   final String createdAt;
   @JsonKey(name: 'updated_at')
   final String updatedAt;
-  @JsonKey(name: 'timestamp',defaultValue: "")
+  @JsonKey(name: 'timestamp', defaultValue: "")
   final String? timestamp;
 
   ShipmentModel({
@@ -34,6 +35,7 @@ class ShipmentModel {
     required this.originLocation,
     required this.destinationLocation,
     required this.receiver,
+    required this.sender,
     required this.items,
     required this.distance,
     required this.courierTypePrices,
@@ -42,7 +44,8 @@ class ShipmentModel {
     required this.timestamp,
   });
 
-  factory ShipmentModel.fromJson(Map<String, dynamic> json) => _$ShipmentModelFromJson(json);
+  factory ShipmentModel.fromJson(Map<String, dynamic> json) =>
+      _$ShipmentModelFromJson(json);
   Map<String, dynamic> toJson() => _$ShipmentModelToJson(this);
 }
 
@@ -72,7 +75,8 @@ class ShipmentLocation {
     required this.updatedAt,
   });
 
-  factory ShipmentLocation.fromJson(Map<String, dynamic> json) => _$ShipmentLocationFromJson(json);
+  factory ShipmentLocation.fromJson(Map<String, dynamic> json) =>
+      _$ShipmentLocationFromJson(json);
   Map<String, dynamic> toJson() => _$ShipmentLocationToJson(this);
 }
 
@@ -82,7 +86,7 @@ class Receiver {
   final String name;
   final String address;
   final String phone;
-  final String email;
+  final String? email;
   @JsonKey(name: 'shipment_id')
   final int shipmentId;
   @JsonKey(name: 'created_at')
@@ -101,17 +105,67 @@ class Receiver {
     required this.updatedAt,
   });
 
-  factory Receiver.fromJson(Map<String, dynamic> json) => _$ReceiverFromJson(json);
+  factory Receiver.fromJson(Map<String, dynamic> json) =>
+      _$ReceiverFromJson(json);
   Map<String, dynamic> toJson() => _$ReceiverToJson(this);
+}
+
+@JsonSerializable()
+class Sender {
+  final int id;
+  final String? avatar;
+  @JsonKey(name: 'fname')
+  final String? firstName;
+  @JsonKey(name: 'lname')
+  final String? lastName;
+  final String phone;
+  final String? dob;
+  final String email;
+  final String role;
+  final String status;
+  @JsonKey(name: 'referral_code')
+  final String referralCode;
+  @JsonKey(name: 'referred_by')
+  final String? referredBy;
+  @JsonKey(name: 'last_login_at')
+  final String? lastLoginAt;
+  @JsonKey(name: 'failed_login_attempts')
+  final int failedLoginAttempts;
+  @JsonKey(name: 'created_at')
+  final String createdAt;
+  @JsonKey(name: 'updated_at')
+  final String updatedAt;
+
+  Sender({
+    required this.id,
+    required this.avatar,
+    required this.firstName,
+    required this.lastName,
+    required this.phone,
+    this.dob,
+    required this.email,
+    required this.role,
+    required this.status,
+    required this.referralCode,
+    this.referredBy,
+    this.lastLoginAt,
+    required this.failedLoginAttempts,
+    required this.createdAt,
+    required this.updatedAt,
+  });
+
+  factory Sender.fromJson(Map<String, dynamic> json) => _$SenderFromJson(json);
+  Map<String, dynamic> toJson() => _$SenderToJson(this);
 }
 
 @JsonSerializable()
 class Item {
   final int id;
   final String name;
-  @JsonKey(name: 'description',defaultValue: "")
+  @JsonKey(name: 'description', defaultValue: "")
   final String? description;
   final String category;
+  final String image;
   final String weight;
   final int quantity;
   @JsonKey(name: 'shipment_id')
@@ -127,6 +181,7 @@ class Item {
     required this.description,
     required this.category,
     required this.weight,
+    required this.image,
     required this.quantity,
     required this.shipmentId,
     required this.createdAt,
@@ -139,15 +194,19 @@ class Item {
 
 @JsonSerializable()
 class CourierTypePrice {
+  @JsonKey(name: 'courier_type_id')
+  final dynamic courierTypeId;
   @JsonKey(name: 'courier_type')
   final String courierType;
   final double price;
 
   CourierTypePrice({
+    required this.courierTypeId,
     required this.courierType,
     required this.price,
   });
 
-  factory CourierTypePrice.fromJson(Map<String, dynamic> json) => _$CourierTypePriceFromJson(json);
+  factory CourierTypePrice.fromJson(Map<String, dynamic> json) =>
+      _$CourierTypePriceFromJson(json);
   Map<String, dynamic> toJson() => _$CourierTypePriceToJson(this);
 }

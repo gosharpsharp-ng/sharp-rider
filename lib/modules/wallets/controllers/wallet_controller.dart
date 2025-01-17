@@ -1,9 +1,6 @@
-
-
-
 import 'package:go_logistics_driver/utils/exports.dart';
 
-class WalletController extends GetxController{
+class WalletController extends GetxController {
   final walletService = serviceLocator<WalletsService>();
   bool _isLoading = false;
   get isLoading => _isLoading;
@@ -18,7 +15,7 @@ class WalletController extends GetxController{
     APIResponse response = await walletService.getAllTransactions();
     setLoadingState(false);
     if (response.status == "success") {
-      transactions = (response.data['data'] as List)
+      transactions = (response.data as List)
           .map((tr) => Transaction.fromJson(tr))
           .toList();
       update();
@@ -64,23 +61,21 @@ class WalletController extends GetxController{
     }
   }
 
-
-
-  final fundWalletFormKey = GlobalKey<FormState>();
+  final withdrawFromWalletFormKey = GlobalKey<FormState>();
   TextEditingController amountEntryController = TextEditingController();
-  fundWallet() async {
-    if (fundWalletFormKey.currentState!.validate()) {
+  withdrawFromWallet() async {
+    if (withdrawFromWalletFormKey.currentState!.validate()) {
       setLoadingState(true);
       dynamic data = {
         'amount': stripCurrencyFormat(amountEntryController.text),
       };
 
-      APIResponse response = await walletService.fundWallet(data);
+      APIResponse response = await walletService.withdrawFromWallet(data);
 
       setLoadingState(false);
       if (response.status == "success") {
-
         amountEntryController.clear();
+        getWalletBalance();
         update();
       } else {
         showToast(
@@ -89,63 +84,137 @@ class WalletController extends GetxController{
     }
   }
 
-  List<BankModel> banks = [];
+  bool walletBalanceVisibility = false;
+  GetStorage getStorage = GetStorage();
+  toggleWalletBalanceVisibility() {
+    walletBalanceVisibility = !walletBalanceVisibility;
+    getStorage.write("walletBalanceVisibility", walletBalanceVisibility);
+    update();
+  }
+
+  List<BankModel> originalBanks = [];
+  List<BankModel> filteredBanks = [];
+  TextEditingController banksFilterController = TextEditingController();
+  filterBanks(String query) {
+    if (originalBanks.isNotEmpty && query.isNotEmpty) {
+      filteredBanks = originalBanks
+          .where((element) =>
+              (element.name.toLowerCase().contains(query.toLowerCase()) ||
+                  element.name.toLowerCase().contains(query.toLowerCase()) ||
+                  element.name.toLowerCase().contains(query.toLowerCase())))
+          .toList();
+    } else {
+      filteredBanks = originalBanks;
+    }
+    update();
+  }
+
+  bool isLoadingBanks = false;
   getBankList() async {
-    setLoadingState(true);
+    isLoadingBanks = true;
+    update();
     APIResponse response = await walletService.getBankList();
     showToast(message: response.message, isError: response.status != "success");
-    setLoadingState(false);
+    isLoadingBanks = false;
+    update();
     if (response.status == "success") {
-      banks =
+      originalBanks =
           (response.data as List).map((bk) => BankModel.fromJson(bk)).toList();
+      filteredBanks = originalBanks;
+      update();
     }
   }
 
-  clearFundingFields() {
+  clearWithdrawalFields() {
     amountEntryController.clear();
     update();
   }
 
-  final payoutAccountFormKey = GlobalKey<FormState>();
-  TextEditingController accountNumberController = TextEditingController();
-  TextEditingController bankCodeController = TextEditingController();
-  verifyPayoutBank() async {
-    if (payoutAccountFormKey.currentState!.validate()) {
-      setLoadingState(true);
-      dynamic data = {
-        'account_number': accountNumberController.text,
-        'bank_code': bankCodeController.text,
-      };
-      APIResponse response = await walletService.verifyPayoutBank(data);
-      showToast(
-          message: response.message, isError: response.status != "success");
-      setLoadingState(false);
-      if (response.status == "success") {}
+  BankModel? selectedBank;
+  setSelectedBank(BankModel bank) async {
+    selectedBank = bank;
+    bankNameController.setText(bank.name);
+    update();
+    if (accountNumberController.text.length == 10) {
+      await verifyPayoutBank();
     }
   }
 
+  final payoutAccountFormKey = GlobalKey<FormState>();
+  TextEditingController accountNumberController = TextEditingController();
+  TextEditingController bankNameController = TextEditingController();
+  bool verifyingAccountNumber = false;
+  verifyPayoutBank() async {
+    if (selectedBank != null) {
+      verifyingAccountNumber = true;
+      update();
+      dynamic data = {
+        'account_number': accountNumberController.text,
+        'bank_code': selectedBank!.code,
+      };
+      print(data.toString());
+      APIResponse response = await walletService.verifyPayoutBank(data);
+      verifyingAccountNumber = false;
+      update();
+      if (response.status == "success") {
+        resolvedBankAccountName.text = response.data['account_name'];
+        update();
+      } else {
+        showToast(
+            message: response.message, isError: response.status != "success");
+      }
+    }
+  }
+
+  TextEditingController resolvedBankAccountName = TextEditingController();
+  clearImputedBankFields() {
+    resolvedBankAccountName.clear();
+    bankNameController.clear();
+    accountNumberController.clear();
+    selectedBank = null;
+    update();
+  }
+
   TextEditingController otpController = TextEditingController();
+  bool updatingBankAccount = false;
   updatePayoutAccount() async {
     if (payoutAccountFormKey.currentState!.validate()) {
-      setLoadingState(true);
+      updatingBankAccount = true;
+      update();
       dynamic data = {
         'bank_account_number': accountNumberController.text,
-        'bank_code': bankCodeController.text,
+        'bank_code': selectedBank!.code,
         "otp": "1234",
       };
       APIResponse response = await walletService.updatePayoutAccount(data);
+      updatingBankAccount = false;
+      update();
       showToast(
           message: response.message, isError: response.status != "success");
       setLoadingState(false);
-      if (response.status == "success") {}
+      if (response.status == "success") {
+        clearImputedBankFields();
+      }
     }
   }
 
   @override
-  void onInit() {
-    super.onInit();
-    // Load wallet balance and transactions when the controller is initialized
+  void onReady() {
+    super.onReady();
+    if (getStorage.read("walletBalanceVisibility") == null) {
+      getStorage.write("walletBalanceVisibility", false);
+      walletBalanceVisibility = getStorage.read("walletBalanceVisibility");
+    }
+    update();
     getWalletBalance();
     getAllTransactions();
   }
+
+  // @override
+  // void onInit() {
+  //   super.onInit();
+  //   // Load wallet balance and transactions when the controller is initialized
+  //   getWalletBalance();
+  //   getAllTransactions();
+  // }
 }

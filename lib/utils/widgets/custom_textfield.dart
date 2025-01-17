@@ -1219,8 +1219,11 @@ class _CustomRoundedPhoneInputFieldState
             },
             child: IntlPhoneField(
               readOnly: widget.readOnly,
-              // textAlign: widget.isCurrency?TextAlign.center:TextAlign.left,
+              showCountryFlag:true,
+              disableLengthCheck:true,
+              textAlign: TextAlign.left,
               cursorColor: widget.cursorColor,
+              showDropdownIcon: false,
               obscureText: widget.obscureText,
               keyboardType: widget.keyboardType,
               inputFormatters: widget.formatter,
@@ -1231,7 +1234,6 @@ class _CustomRoundedPhoneInputFieldState
               ],
               initialCountryCode:
                   countries.firstWhere((Country c) => c.name == "Nigeria").code,
-              showCountryFlag: true,
               validator: !widget.isRequired ? null : widget.validator,
               focusNode: widget.focusNode,
               controller: widget.controller,
@@ -1365,9 +1367,9 @@ class _CustomRoundedPhoneInputFieldState
               ),
             ),
           ),
-          // SizedBox(
-          //   height: 10.sp,
-          // ),
+          SizedBox(
+            height: 10.sp,
+          ),
         ],
       ),
     );

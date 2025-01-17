@@ -4,6 +4,7 @@ export 'package:go_logistics_driver/utils/widgets/custom_text.dart';
 export 'package:flutter_svg/flutter_svg.dart';
 export 'package:flutter/services.dart';
 export 'package:flutter_screenutil/flutter_screenutil.dart';
+export 'package:flutter_ringtone_player/flutter_ringtone_player.dart';
 export 'package:get/get.dart';
 export 'package:google_fonts/google_fonts.dart';
 
@@ -52,29 +53,28 @@ export 'package:go_logistics_driver/modules/wallets/views/transaction_details_sc
 export 'package:go_logistics_driver/modules/wallets/views/widgets/transaction_item.dart';
 
 export 'package:go_logistics_driver/modules/settings/views/settings_home_screen.dart';
-
-export 'package:go_logistics_driver/modules/settings/views/profile_settings_screen.dart';
 export 'package:go_logistics_driver/modules/settings/views/widgets/settings_item.dart';
+export 'package:go_logistics_driver/modules/settings/views/vehicle/add_license_screen.dart';
+export 'package:go_logistics_driver/modules/settings/views/vehicle/add_vehicle_screen.dart';
 export 'package:flutter_rating_bar/flutter_rating_bar.dart';
 export 'package:go_logistics_driver/modules/settings/views/widgets/profile_update_success_bottom_sheet.dart';
 
 export 'package:go_logistics_driver/modules/settings/views/edit_profile_screen.dart';
 
 export 'package:go_logistics_driver/modules/notifications/views/notifications_home_screen.dart';
-export 'package:go_logistics_driver/modules/withdrawal/views/widgets/withdrawal_pin_bottom_sheet.dart';
+export 'package:go_logistics_driver/modules/wallets/views/widgets/withdrawal_pin_bottom_sheet.dart';
 
 export 'package:go_logistics_driver/modules/app_navigation/controllers/app_navigation_controller.dart';
 export 'package:go_logistics_driver/modules/orders/views/details_and_tracking/order_details_screen.dart';
 
 export 'package:go_logistics_driver/utils/widgets/custom_pin_input.dart';
-export 'package:go_logistics_driver/modules/withdrawal/views/widgets/withdrawal_success_bottom_sheet.dart';
+export 'package:go_logistics_driver/modules/wallets/views/widgets/withdrawal_success_bottom_sheet.dart';
 
 export 'package:go_logistics_driver/modules/dashboard/views/widgets/quick_dashboard_link_item.dart';
 export 'package:go_logistics_driver/modules/wallets/views/transactions_screen.dart';
-export 'package:go_logistics_driver/modules/withdrawal/views/withdrawal_amount_screen.dart';
+export 'package:go_logistics_driver/modules/wallets/views/withdrawal_amount_screen.dart';
 
-export 'package:go_logistics_driver/modules/settings/views/change_password/new_password_entry_screen.dart';
-export 'package:go_logistics_driver/modules/settings/views/change_password/current_password_entry_screen.dart';
+export 'package:go_logistics_driver/modules/settings/views/change_password/change_password_screen.dart';
 export 'package:go_logistics_driver/modules/settings/views/faq_screen.dart';
 
 export 'package:go_logistics_driver/modules/settings/views/widgets/faq_item.dart';
@@ -130,13 +130,12 @@ export 'package:go_logistics_driver/modules/splash/bindings/splash_bindings.dart
 export 'package:go_logistics_driver/modules/wallets/bindings/wallet_bindings.dart';
 
 export 'package:go_logistics_driver/modules/wallets/controllers/wallet_controller.dart';
-
-export 'package:go_logistics_driver/modules/withdrawal/controllers/withdrawal_controller.dart';
+export 'package:go_logistics_driver/models/notification_model.dart';
 
 export 'dart:async';
-
-export 'package:go_logistics_driver/modules/withdrawal/bindings/withdrawal_bindings.dart';
-export 'package:go_logistics_driver/modules/withdrawal/views/add_withdrawal_account_screen.dart';
+export 'package:go_logistics_driver/services/shipment/shipment_service.dart';
+export 'package:go_logistics_driver/models/shipment_model.dart';
+export 'package:go_logistics_driver/modules/wallets/views/add_withdrawal_account_screen.dart';
 
 export 'package:image_picker/image_picker.dart';
 export 'package:go_logistics_driver/models/user_profile_model.dart';
@@ -147,3 +146,13 @@ export 'package:go_logistics_driver/models/transaction_model.dart';
 
 export 'package:go_logistics_driver/models/bank_model.dart';
 export 'package:go_logistics_driver/models/wallet_balance_data_model.dart';
+
+export 'package:go_logistics_driver/services/location/location_service.dart';
+export 'package:go_logistics_driver/services/websocket/websocket_service.dart';
+
+export 'package:go_logistics_driver/models/courier_type_model.dart';
+export 'package:go_logistics_driver/models/license_model.dart';
+export 'package:go_logistics_driver/models/vehicle_model.dart';
+export 'package:go_logistics_driver/services/websocket_service_manager.dart';
+export 'package:go_logistics_driver/modules/settings/views/widgets/vehicle_details_item_widget.dart';
+export 'package:go_logistics_driver/modules/settings/views/vehicle/vehicle_details_screen.dart';

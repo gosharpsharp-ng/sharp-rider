@@ -1,19 +1,12 @@
 import 'package:go_logistics_driver/utils/exports.dart';
-
 class NotificationItem extends StatelessWidget {
-  final String title;
-  final String details;
-  final String time;
-  final bool isRead;
-  final bool isLast;
+  final NotificationModel notification;
   final Function onTap;
+  final bool isLast;
   const NotificationItem({
     super.key,
     required this.onTap,
-    this.title = "Order status changes.",
-    this.details = "Your booking was accepted",
-    this.time = "9:30am",
-    this.isRead = false,
+    required this.notification,
     this.isLast = false,
   });
 
@@ -50,12 +43,12 @@ class NotificationItem extends StatelessWidget {
                 child: Stack(
                   children: [
                     Visibility(
-                      visible: !isRead,
+                      visible:notification.status=="unread",
                       child: Positioned(
                           top: 0,
                           right: 0,
                           child: Container(
-                            decoration: BoxDecoration(
+                            decoration: const BoxDecoration(
                                 color: Colors.green, shape: BoxShape.circle),
                             height: 5.sp,
                             width: 5.sp,
@@ -77,13 +70,13 @@ class NotificationItem extends StatelessWidget {
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        customText(title,
+                        customText(notification.title,
                             color: AppColors.primaryColor,
                             fontWeight: FontWeight.w500,
                             fontSize: 15.sp,
                             overflow: TextOverflow.visible),
                         customText(
-                          time,
+                          "${formatDate(notification.createdAt)} ${formatTime(notification.createdAt)}",
                           color: AppColors.obscureTextColor,
                           fontWeight: FontWeight.w500,
                           fontSize: 12.sp,
@@ -96,7 +89,7 @@ class NotificationItem extends StatelessWidget {
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        customText(details,
+                        customText(notification.message,
                             color: AppColors.blackColor,
                             fontWeight: FontWeight.normal,
                             fontSize: 15.sp,

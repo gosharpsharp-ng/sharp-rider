@@ -27,4 +27,27 @@ class AppColors{
   static const Color foundationColor=Color(0XFF67530C);
   static const Color foundationBgColor=Color(0XFFFFFEEB0);
   static const Color transparent=Colors.transparent;
+
+
+  static const lightYellowColor =
+  Color(0xFFFFF7E5); //    // For text on Confirmed
+
+  static const lightGreenColor = Color(0xFFE5F5E5); // For Paid & Delivered
+  static const greenColor = Color(0xFF4CAF50); // For text on Paid & Delivered
+  // For text on Assigned
+
+  static const lightPurpleColor = Color(0xFFEDE5FF); // For Enroute
+  static const purpleColor = Color(0xFF9C27B0); // For text on Enroute
+
+  static const lightTealColor = Color(0xFFE5FFFF); // For Collected
+  static const tealColor = Color(0xFF009688); // For text on Collected
+
+  static const lightOrangeColor = Color(0xFFFFF3E5); // For Transit
+  static const orangeColor = Color(0xFFFF9800); // For text on Transit
+
+  static const lightGreyColor = Color(0xFFF5F5F5); // Default Background
+  static const greyColor = Color(0xFF9E9E9E);
+  static const lightAmberColor = Color(0xFFFFECB3); // For Confirmed
+  static const amberColor = Color(0xFFFFC107);
+
 }

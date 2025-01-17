@@ -28,9 +28,15 @@ class SignInController extends GetxController {
   }
 
   TextEditingController loginController = TextEditingController();
-  PhoneNumber? filledPhoneNumber;
+
   setPhoneNumber(PhoneNumber num) {
-    loginController.text = filledPhoneNumber!.completeNumber;
+    loginController.text = num.number;
+    update();
+  }
+
+  PhoneNumber? filledPhoneNumber;
+  setFilledPhoneNumber(PhoneNumber num) {
+    filledPhoneNumber = num;
     update();
   }
 
@@ -41,7 +47,7 @@ class SignInController extends GetxController {
       dynamic data = {
         'login': signInWithEmail
             ? loginController.text
-            : "+234${loginController.text}",
+            : filledPhoneNumber?.completeNumber ?? '',
         'password': passwordController.text,
       };
       APIResponse response = await authService.login(data);
@@ -49,9 +55,14 @@ class SignInController extends GetxController {
           message: response.message, isError: response.status != "success");
       setLoadingState(false);
       if (response.status == "success") {
+        loginController.clear();
+        passwordController.clear();
+        filledPhoneNumber=null;
+        update();
         final getStorage = GetStorage();
         getStorage.write("token", response.data['access_token']);
         Get.put(WalletController());
+        Get.put(DashboardController());
         Get.put(SettingsController());
         Get.put(OrdersController());
         Get.toNamed(Routes.APP_NAVIGATION);

@@ -1,72 +1,90 @@
-
 import 'package:go_logistics_driver/utils/exports.dart';
 
-class OrdersSearchScreen extends StatelessWidget {
-  const OrdersSearchScreen({super.key});
+class SearchDeliveriesScreen extends StatelessWidget {
+  const SearchDeliveriesScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
-    return GetBuilder<OrdersController>(
-        builder: (ordersController){
-        return Scaffold(
-          appBar: defaultAppBar(
-            bgColor: AppColors.backgroundColor,
-            title: "Orders",
-            implyLeading: false,
-          ),
-          backgroundColor: AppColors.backgroundColor,
-          body: Container(
-            padding: EdgeInsets.symmetric(horizontal: 15.sp, vertical: 5.h),
-            height: 1.sh,
-            width: 1.sw,
-            color: AppColors.backgroundColor,
-            child: SingleChildScrollView(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  SizedBox(
-                    height: 5.h,
+    return GetBuilder<OrdersController>(builder: (ordersController) {
+      return Form(
+        key: ordersController.deliveriesSearchFormKey,
+        child: Container(
+          padding: EdgeInsets.symmetric(horizontal: 15.sp, vertical: 5.h),
+          height: 1.sh,
+          width: 1.sw,
+          color: AppColors.backgroundColor,
+          child: SingleChildScrollView(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                SizedBox(
+                  height: 5.h,
+                ),
+                CustomOutlinedRoundedInputField(
+                  label: "Enter tracking number e.g: Xd391B",
+                  isSearch: true,
+                  color: AppColors.obscureTextColor,
+                  hasTitle: true,
+                  prefixWidget: Container(
+                      padding: EdgeInsets.all(12.sp),
+                      child: SvgPicture.asset(
+                        SvgAssets.searchIcon,
+                      )),
+                  suffixWidget: CustomGreenTextButton(
+                    title: "Go",
+                    isLoading: ordersController.searchingShipments,
+                    onPressed: () {
+                      ordersController.searchShipments();
+                    },
                   ),
-                  CustomOutlinedRoundedInputField(
-                    label: "Enter tracking number e.g: Xd391B",
-                    isSearch: true,
-                    color: AppColors.obscureTextColor,
-                    hasTitle: true,
-                    prefixWidget: Container(
-                        padding: EdgeInsets.all(12.sp),
-                        child: SvgPicture.asset(
-                          SvgAssets.searchIcon,
-                        )),
-                    suffixWidget: IconButton(
-                      icon: const Icon(Icons.filter_list_alt),
-                      onPressed: () {
-                        showAnyBottomSheet(child: const SearchFilterBottomSheet(),isControlled: true);
+                  // controller: signInProvider.emailController,
+                ),
+                SizedBox(
+                  height: 15.h,
+                ),
+                const SectionHeader(
+                  title: "Results",
+                ),
+                SizedBox(
+                  height: 10.h,
+                ),
+                ordersController.shipmentSearchResults.isEmpty
+                    ? Container(
+                  width: 1.sw,
+                  height: 1.sh * 0.6,
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      customText(
+                        ordersController.searchingShipments
+                            ? "Loading..."
+                            : "Enter your search query above",
+                      ),
+                    ],
+                  ),
+                )
+                    : Column(
+                  children: List.generate(
+                    ordersController.shipmentSearchResults.length,
+                        (i) => OrderItemWidget(
+                      onSelected: () {
+                        ordersController.setSelectedShipment(
+                            ordersController.shipmentSearchResults[i]);
+                        Get.toNamed(
+                            Routes.ORDER_DETAILS);
                       },
+                      shipment: ordersController.shipmentSearchResults[i],
                     ),
-                    // controller: signInProvider.emailController,
                   ),
-                  SizedBox(
-                    height: 15.h,
-                  ),
-                  const SectionHeader(
-                    title: "Search results",
-                  ),
-                  SizedBox(
-                    height: 10.h,
-                  ),
-                  ...List.generate(
-                    14,
-                        (i) =>  OrderItemWidget(status: i%2==0?"Delivered":"Pending",),
-                  ),
-                  SizedBox(
-                    height: 3.h,
-                  ),
-                ],
-              ),
+                ),
+                SizedBox(
+                  height: 3.h,
+                ),
+              ],
             ),
           ),
-        );
-      }
-    );
+        ),
+      );
+    });
   }
 }

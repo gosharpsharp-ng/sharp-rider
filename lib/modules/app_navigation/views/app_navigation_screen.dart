@@ -5,58 +5,55 @@ class AppNavigationScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     setSystemOverlayStyle(navigationColor: AppColors.whiteColor);
     return GetBuilder<AppNavigationController>(
-      builder: (homeController) => Scaffold(
-        body: homeController.screens[homeController.currentScreenIndex],
-        bottomNavigationBar: BottomAppBar(
-          surfaceTintColor: AppColors.backgroundColor,
-          padding: const EdgeInsets.all(0.0),
-          color: AppColors.backgroundColor,
-          elevation: 6,
-          shape: const CircularNotchedRectangle(),
-          // notchMargin: 12.sp,
-          child: Container(
-            padding: EdgeInsets.symmetric(horizontal: 8.sp, vertical: 8.sp),
-            decoration: BoxDecoration(
-              color: AppColors.backgroundColor,
-              border: Border(top:BorderSide(
-                color: AppColors.obscureTextColor,
-                width: 0.2.sp,
-              ))
-
-            ),
-            height: 60.sp,
-            child: const Row(
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-              children: [
-                Expanded(
-                  child: BottomNavItem(
-                    index: 0,
-                    title: "Home",
-                    activeIcon: SvgAssets.homeIcon,
+      builder: (homeController) => WillPopScope(
+        onWillPop: () async {
+          return false;
+        },
+        child: Scaffold(
+          body: homeController.screens[homeController.currentScreenIndex],
+          bottomNavigationBar: BottomAppBar(
+            surfaceTintColor: AppColors.backgroundColor,
+            padding: const EdgeInsets.all(0.0),
+            color: AppColors.backgroundColor,
+            elevation: 6,
+            shape: const CircularNotchedRectangle(),
+            // notchMargin: 12.sp,
+            child: Container(
+              padding: EdgeInsets.symmetric(horizontal: 8.sp, vertical: 8.sp),
+              decoration: BoxDecoration(
+                  color: AppColors.backgroundColor,
+                  border: Border(
+                      top: BorderSide(
+                    color: AppColors.obscureTextColor,
+                    width: 0.2.sp,
+                  ))),
+              height: 60.sp,
+              child: const Row(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                children: [
+                  Expanded(
+                    child: BottomNavItem(
+                      index: 0,
+                      title: "Home",
+                      activeIcon: SvgAssets.homeIcon,
+                    ),
                   ),
-                ),
-                Expanded(
-                  child: BottomNavItem(
-                    index: 1,
-                    title: "Rides",
-                    activeIcon: SvgAssets.ridesIcon,
+                  Expanded(
+                    child: BottomNavItem(
+                      index: 1,
+                      title: "Deliveries",
+                      activeIcon: SvgAssets.deliveryIcon,
+                    ),
                   ),
-                ),
-                // Expanded(
-                //   child: BottomNavItem(
-                //     index: 2,
-                //     title: "Go Wallet",
-                //     activeIcon: SvgAssets.walletIcon,
-                //   ),
-                // ),
-                Expanded(
-                  child: BottomNavItem(
-                    index: 2,
-                    title: "Profile",
-                    activeIcon: SvgAssets.settingsIcon,
+                  Expanded(
+                    child: BottomNavItem(
+                      index: 2,
+                      title: "Profile",
+                      activeIcon: SvgAssets.settingsIcon,
+                    ),
                   ),
-                ),
-              ],
+                ],
+              ),
             ),
           ),
         ),

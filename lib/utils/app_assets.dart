@@ -8,10 +8,14 @@ class PngAssets {
 
 class SvgAssets {
   static const String settingsIcon = 'assets/svgs/settings.svg';
+  static const String licenseIcon = 'assets/svgs/license.svg';
   static const String homeIcon = 'assets/svgs/home.svg';
   static const String ordersIcon = 'assets/svgs/orders.svg';
+  static const String saveIcon = 'assets/svgs/save.svg';
   static const String flutterWaveIcon = 'assets/svgs/flutterwave.svg';
   static const String paystackIcon = 'assets/svgs/paystack.svg';
+  static const String bikeIcon = 'assets/svgs/bike.svg';
+  static const String deliveryIcon = 'assets/svgs/delivery.svg';
   static const String walletIcon = 'assets/svgs/wallet.svg';
   static const String ridesIcon = 'assets/svgs/rides.svg';
   static const String cameraIcon = 'assets/svgs/camera.svg';

@@ -21,11 +21,7 @@ class OrderTrackingMiniInfoItem extends StatelessWidget {
         isStatus
             ? Container(
                 decoration: BoxDecoration(
-                  color: value.toLowerCase() == 'delivered'
-                      ? AppColors.primaryColor.withOpacity(0.4)
-                      : value.toLowerCase() == 'in transit'
-                          ? AppColors.deepAmberColor.withOpacity(0.4)
-                          : AppColors.redColor.withOpacity(0.4),
+                  color:getStatusColor(value),
                   borderRadius: BorderRadius.circular(
                     8.r,
                   ),
@@ -33,11 +29,7 @@ class OrderTrackingMiniInfoItem extends StatelessWidget {
                 padding: EdgeInsets.symmetric(vertical: 5.h, horizontal: 8.w),
                 child: customText(
                   value,
-                  color: value.toLowerCase() == 'delivered'
-                      ? AppColors.primaryColor
-                      : value.toLowerCase() == 'in transit'
-                          ? AppColors.deepAmberColor
-                          : AppColors.redColor,
+                  color: getStatusTextColor(value),
                   fontSize: 15.sp,
                   fontWeight: FontWeight.w500,
                   overflow: TextOverflow.visible,

@@ -6,7 +6,7 @@ class AppPages {
   AppPages._();
 
   // ignore: constant_identifier_names
-  static const INITIAL = Routes.ONBOARDING;
+  static const INITIAL = Routes.SPLASH;
 
   static final routes = [
     GetPage(
@@ -98,7 +98,7 @@ class AppPages {
     ),
     GetPage(
       name: _Paths.ORDER_SEARCH_SCREEN,
-      page: () => const OrdersSearchScreen(),
+      page: () => const SearchDeliveriesScreen(),
       binding: OrdersBindings(),
     ),
     GetPage(
@@ -118,22 +118,27 @@ class AppPages {
       binding: SettingsBindings(),
     ),
     GetPage(
-      name: _Paths.PROFILE_SETTINGS_SCREEN,
-      page: () => const ProfileSettingsScreen(),
-      binding: SettingsBindings(),
-    ),
-    GetPage(
       name: _Paths.EDIT_PROFILE_SCREEN,
       page: () => const EditProfileScreen(),
       binding: SettingsBindings(),
     ),
     GetPage(
-      name: _Paths.CURRENT_PASSWORD_ENTRY_SCREEN,
-      page: () => const CurrentPasswordEntryScreen(),
+      name: _Paths.ADD_VEHICLE_SCREEN,
+      page: () => const AddVehicleScreen(),
+      binding: SettingsBindings(),
+    ),
+    GetPage(
+      name: _Paths.ADD_LICENSE_SCREEN,
+      page: () => const AddLicenseScreen(),
       binding: SettingsBindings(),
     ), GetPage(
-      name: _Paths.NEW_PASSWORD_ENTRY_SCREEN,
-      page: () => const NewPasswordEntryScreen(),
+      name: _Paths.VEHICLE_AND_LICENSE_DETAILS_SCREEN,
+      page: () => const VehicleAndLicenseDetailsScreen(),
+      binding: SettingsBindings(),
+    ),
+    GetPage(
+      name: _Paths.CHANGE_PASSWORD_SCREEN,
+      page: () => const ChangePasswordScreen(),
       binding: SettingsBindings(),
     ),
     GetPage(
@@ -151,15 +156,15 @@ class AppPages {
       page: () => const TransactionDetailsScreen(),
       binding: WalletBindings(),
     ),
- GetPage(
+    GetPage(
       name: _Paths.ADD_WITHDRAWAL_ACCOUNT_SCREEN,
       page: () => const AddWithdrawalAccountScreen(),
-      binding: WithdrawalBindings(),
+      binding: WalletBindings(),
     ),
- GetPage(
+    GetPage(
       name: _Paths.WITHDRAWAL_AMOUNT_SCREEN,
       page: () => const WithdrawalAmountScreen(),
-      binding: WithdrawalBindings(),
+      binding: WalletBindings(),
     ),
 
     // GetPage(

@@ -324,8 +324,8 @@ class OrderSummaryStatusDetailItem extends StatelessWidget {
         decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(4.r),
             color: AppColors.whiteColor),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.start,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             customText(title,
@@ -337,22 +337,14 @@ class OrderSummaryStatusDetailItem extends StatelessWidget {
             ),
             Container(
                 decoration: BoxDecoration(
-                    color: value.toLowerCase() == 'delivered'
-                        ? AppColors.primaryColor.withOpacity(0.3)
-                        : value.toLowerCase() == 'in transit'
-                            ? AppColors.deepAmberColor.withOpacity(0.3)
-                            : AppColors.redColor.withOpacity(0.3),
+                    color: getStatusColor(value.toLowerCase()),
                     borderRadius: BorderRadius.circular(
                       8.r,
                     )),
                 padding: EdgeInsets.symmetric(vertical: 5.h, horizontal: 8.w),
                 child: customText(
-                  value,
-                  color: value.toLowerCase() == 'delivered'
-                      ? AppColors.primaryColor
-                      : value.toLowerCase() == 'in transit'
-                          ? AppColors.deepAmberColor
-                          : AppColors.redColor,
+                  value.capitalizeFirst!,
+                  color: getStatusTextColor(value.toLowerCase()),
                   fontSize: 15.sp,
                   fontWeight: FontWeight.w500,
                   overflow: TextOverflow.visible,

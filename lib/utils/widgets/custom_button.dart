@@ -38,9 +38,9 @@ class CustomButton extends StatelessWidget {
             borderRadius: BorderRadius.circular(35.r),
             border: Border.all(color: borderColor, width: 1.sp),
             color: backgroundColor),
-        child:  Center(
-                child: isBusy
-                    ?SizedBox(
+        child: Center(
+          child: isBusy
+              ? SizedBox(
                   height: 25.sp,
                   width: 25.sp,
                   child: CircularProgressIndicator(
@@ -48,11 +48,12 @@ class CustomButton extends StatelessWidget {
                     strokeAlign: BorderSide.strokeAlignCenter,
                     color: fontColor,
                   ),
-                ):customText(title,
-                    fontSize: fontSize.sp,
-                    color: fontColor,
-                    fontWeight: FontWeight.w500),
-              ),
+                )
+              : customText(title,
+                  fontSize: fontSize.sp,
+                  color: fontColor,
+                  fontWeight: FontWeight.w500),
+        ),
       ),
     );
   }
@@ -122,7 +123,9 @@ class CustomIconButton extends StatelessWidget {
                       color: iconColor,
                     ),
                   ),
-                  SizedBox(width: 5.w,),
+                  SizedBox(
+                    width: 5.w,
+                  ),
                   customText(title,
                       fontSize: fontSize.sp,
                       color: fontColor,
@@ -193,20 +196,20 @@ class CustomFlatButton extends StatelessWidget {
   }
 }
 
-
 class CustomGreenTextButton extends StatelessWidget {
   final String title;
   final Function onPressed;
   final Widget? child; // Make child nullable
   final Color bgColor;
+  final bool isLoading;
 
-  const CustomGreenTextButton({
-    super.key,
-    required this.onPressed,
-     this.title="",
-    this.child, // Make child optional without a default value
-    this.bgColor = AppColors.primaryColor,
-  });
+  const CustomGreenTextButton(
+      {super.key,
+      required this.onPressed,
+      this.title = "",
+      this.child, // Make child optional without a default value
+      this.bgColor = AppColors.primaryColor,
+      this.isLoading = false});
 
   @override
   Widget build(BuildContext context) {
@@ -221,19 +224,29 @@ class CustomGreenTextButton extends StatelessWidget {
           color: bgColor,
           borderRadius: BorderRadius.circular(40.r),
         ),
-        child: child ?? Center(
-          child: Row(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              customText(
-                title,
-                color: AppColors.whiteColor,
-                fontWeight: FontWeight.w500,
-                fontSize: 12.sp,
-              ),
-            ],
-          ),
-        ),
+        child: isLoading
+            ? SizedBox(
+                height: 15.sp,
+                width: 15.sp,
+                child: CircularProgressIndicator(
+                  color: AppColors.whiteColor,
+                  strokeWidth: 1.5.sp,
+                ),
+              )
+            : child ??
+                Center(
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      customText(
+                        title,
+                        color: AppColors.whiteColor,
+                        fontWeight: FontWeight.w500,
+                        fontSize: 12.sp,
+                      ),
+                    ],
+                  ),
+                ),
       ),
     );
   }

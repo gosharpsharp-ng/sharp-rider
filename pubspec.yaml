@@ -42,7 +42,10 @@ dependencies:
   image_cropper: ^8.0.2
   intl_phone_field: ^3.1.0
   flutter_polyline_points: ^2.1.0
+  flutter_ringtone_player:
+  permission_handler: ^11.3.1
   cloudinary: ^1.2.0
+  socket_io_client: ^3.0.2
   intl:
 dev_dependencies:
   flutter_test:
@@ -51,6 +54,7 @@ dev_dependencies:
   json_serializable: ^6.0.1
   flutter_launcher_icons: ^0.14.1
   flutter_lints: ^3.0.0
+  url_launcher: ^6.3.1
 
 flutter_launcher_icons:
   android: "launcher_icon"
@@ -69,6 +73,7 @@ flutter:
     - assets/svgs/
     - assets/icons/
     - assets/imgs/
+    - assets/json/
 
   fonts:
     - family: Satoshi

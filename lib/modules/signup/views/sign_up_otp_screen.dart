@@ -19,19 +19,24 @@ class SignUpOtpScreen extends StatelessWidget {
                 title: "",
                 backgroundColor: AppColors.whiteColor,
                 children: [
-                  Row(
-                    children: [
-                      customText("Enter the 4 digit OTP code sent to ",
-                          fontWeight: FontWeight.w500,
-                          fontSize: 14.sp,
-                          color: AppColors.blackColor,
-                          overflow: TextOverflow.visible),
-                      customText(signUpController.phoneNumberController.text,
-                          fontWeight: FontWeight.w600,
-                          fontSize: 16.sp,
-                          color: AppColors.primaryColor,
-                          overflow: TextOverflow.visible),
-                    ],
+                  Container(
+                    width: 1.sw,
+                    child: Row(
+                      children: [
+                        customText("Enter the 4 digit OTP code sent to\n${signUpController.emailController.text} ",
+                            fontWeight: FontWeight.w500,
+                            fontSize: 14.sp,
+                            color: AppColors.blackColor,
+                            overflow: TextOverflow.visible),
+                        // customText(
+                        //     signUpController.filledPhoneNumber?.completeNumber ??
+                        //         "",
+                        //     fontWeight: FontWeight.w600,
+                        //     fontSize: 16.sp,
+                        //     color: AppColors.primaryColor,
+                        //     overflow: TextOverflow.visible),
+                      ],
+                    ),
                   ),
                   SizedBox(
                     height: 25.sp,
@@ -95,4 +100,3 @@ class SignUpOtpScreen extends StatelessWidget {
     });
   }
 }
-

@@ -24,18 +24,19 @@ class OnboardingScreen extends StatelessWidget {
 
                 Expanded(
                   child: Container(
-                    padding: EdgeInsets.symmetric(horizontal: 10.w, vertical: 10.h),
+                    padding: EdgeInsets.only(
+                        left: 10.w, bottom: 20.h,right: 10.w,top: 20.h),
                     color: AppColors.deepPrimaryColor,
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.center,
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        SizedBox(height: 45.h,),
+                        SizedBox(height: 30.h,),
                         customText(
                           "Welcome to GoSharpSharp Logistics",
                           color: AppColors.secondaryColor,
                           fontWeight: FontWeight.bold,
-                          fontSize: 28.sp,
+                          fontSize: 25.sp,
                           textAlign: TextAlign.center,
                           overflow: TextOverflow.visible,
                         ),
@@ -62,16 +63,14 @@ class OnboardingScreen extends StatelessWidget {
                 ),
               ],
             ),
-            Positioned(
-              top: 0,
-              child: Container(
-                width: 1.sw,
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: [
-                    Image.asset(PngAssets.onboardingImage),
-                  ],
-                ),
+            Container(
+              width: 1.sw,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                mainAxisAlignment: MainAxisAlignment.start,
+                children: [
+                  Image.asset(PngAssets.onboardingImage,height: 1.sh*0.57),
+                ],
               ),
             ),
 
