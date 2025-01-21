@@ -209,7 +209,7 @@ class DashboardScreen extends StatelessWidget {
                         ),
                         Expanded(
                           child: QuickDashboardLinkItem(
-                            assetIconUrl: SvgAssets.courierIcon,
+                            assetIconUrl: SvgAssets.bikeIcon,
                             onPressed: () {
                               Get.to(const PerformanceScreen());
                             },
@@ -227,6 +227,57 @@ class DashboardScreen extends StatelessWidget {
                       ],
                     ),
                   ),
+                  SizedBox(
+                    height: 15.h,
+                  ),
+                  GetBuilder<OrdersController>(builder: (ordersController) {
+                    return Container(
+                      width: 1.sw,
+                      decoration: BoxDecoration(gradient:  const LinearGradient(
+                        colors: [
+                          Color(0xFFFFF6E3),
+                          Color(0xFFFFFFFF),
+                        ],
+                        begin: Alignment.topRight,
+                        end: Alignment.bottomLeft,
+                      ),borderRadius: BorderRadius.circular(12.r)),
+                      padding: EdgeInsets.symmetric(horizontal: 25.sp,vertical: 8.sp),
+                      child: Column(
+                        children: [
+                          customText(
+                              ordersController.isOnline ? "You're online! Stay active to earn more or turn off the switch to take a break." : "You're offline. Turn on the switch to start earning and making deliveries!",
+                              fontWeight: FontWeight.w500,
+                              fontSize: 12.sp,
+                              textAlign: TextAlign.center,
+                              overflow: TextOverflow.visible),
+                          Container(
+                            width: 1.sw,
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                customText(
+                                    ordersController.isOnline
+                                        ? 'Go Offline'
+                                        : 'Go Online',
+                                    fontWeight: FontWeight.w600,
+                                    fontSize: 20.sp),
+                                SizedBox(
+                                    width:
+                                        10.sp), // Space between text and switch
+                                Switch(
+                                  activeColor: AppColors.greenColor,
+                                  value: ordersController.isOnline,
+                                  onChanged: (value) {
+                                    ordersController.toggleOnlineStatus();
+                                  },
+                                ),
+                              ],
+                            ),
+                          ),
+                        ],
+                      ),
+                    );
+                  }),
                   SizedBox(
                     height: 15.h,
                   ),
@@ -249,14 +300,14 @@ class DashboardScreen extends StatelessWidget {
                         ordersController.allShipments.isEmpty
                             ? Container(
                                 width: 1.sw,
-                                height: 1.sh * 0.6,
+                                height: 1.sh * 0.3,
                                 child: Column(
                                   mainAxisAlignment: MainAxisAlignment.center,
                                   children: [
                                     customText(
                                       ordersController.fetchingShipments
                                           ? "Loading..."
-                                          : "No shipments yet",
+                                          : "No deliveries yet",
                                     ),
                                   ],
                                 ),

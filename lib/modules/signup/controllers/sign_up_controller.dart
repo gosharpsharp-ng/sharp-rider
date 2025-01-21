@@ -60,7 +60,7 @@ class SignUpController extends GetxController {
       setLoadingState(true);
       dynamic data = {
         'otp': otpController.text,
-        'email':emailController.text,
+        'email': emailController.text,
       };
       APIResponse response = await authService.verifyEmailOtp(data);
       showToast(
@@ -104,7 +104,8 @@ class SignUpController extends GetxController {
   TextEditingController passwordController = TextEditingController();
   TextEditingController cPasswordController = TextEditingController();
   signUp() async {
-    if (signUpFormKey.currentState!.validate()) {
+    if (signUpFormKey.currentState!.validate() &&
+        phoneNumberController.text.isNotEmpty) {
       setLoadingState(true);
       dynamic data = {
         'fname': firstNameController.text,

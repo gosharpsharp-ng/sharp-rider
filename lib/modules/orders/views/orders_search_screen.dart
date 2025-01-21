@@ -23,6 +23,7 @@ class SearchDeliveriesScreen extends StatelessWidget {
                 CustomOutlinedRoundedInputField(
                   label: "Enter tracking number e.g: Xd391B",
                   isSearch: true,
+                  autoFocus: true,
                   color: AppColors.obscureTextColor,
                   hasTitle: true,
                   prefixWidget: Container(
@@ -68,6 +69,7 @@ class SearchDeliveriesScreen extends StatelessWidget {
                     ordersController.shipmentSearchResults.length,
                         (i) => OrderItemWidget(
                       onSelected: () {
+                        Get.back();
                         ordersController.setSelectedShipment(
                             ordersController.shipmentSearchResults[i]);
                         Get.toNamed(

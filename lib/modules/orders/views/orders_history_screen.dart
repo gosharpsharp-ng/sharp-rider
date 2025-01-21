@@ -25,9 +25,10 @@ class OrdersHistoryScreen extends StatelessWidget {
               children: [
                 CustomOutlinedClickableRoundedInputField(
                   label: "Enter tracking number e.g: Xd391B",
+                  title: "Enter tracking number e.g: Xd391B",
                   isSearch: true,
-                  color: AppColors.obscureTextColor,
-                  hasTitle: true,
+                  color: AppColors.blackColor,
+                  labelColor: AppColors.blackColor,
                   readOnly: true,
                   onPressed: () {
                     ordersController.resetDeliveriesSearchFields();
@@ -47,9 +48,7 @@ class OrdersHistoryScreen extends StatelessWidget {
                   ),
                   // controller: signInProvider.emailController,
                 ),
-                SizedBox(
-                  height: 15.h,
-                ),
+
                 // SizedBox(
                 //   width: 1.sw,
                 //   child: SingleChildScrollView(
@@ -80,7 +79,7 @@ class OrdersHistoryScreen extends StatelessWidget {
                 //   ),
                 // ),
                 SizedBox(
-                  height: 15.h,
+                  height: 10.h,
                 ),
                 ordersController.allShipments.isEmpty
                     ? Container(
@@ -92,7 +91,7 @@ class OrdersHistoryScreen extends StatelessWidget {
                       customText(
                         ordersController.fetchingShipments
                             ? "Loading..."
-                            : "No shipments yet",
+                            : "No deliveries yet",
                       ),
                     ],
                   ),
@@ -101,7 +100,11 @@ class OrdersHistoryScreen extends StatelessWidget {
                   children: List.generate(
                     ordersController.allShipments.length,
                         (i) => OrderItemWidget(
-                      onSelected: () {},
+                      onSelected: () {
+                        ordersController.setSelectedShipment(
+                            ordersController.allShipments[i]);
+                        Get.toNamed(Routes.ORDER_DETAILS);
+                      },
                       shipment: ordersController.allShipments[i],
                     ),
                   ),

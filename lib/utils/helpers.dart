@@ -1,10 +1,12 @@
 import 'dart:convert';
+import 'dart:developer';
 import 'dart:io';
+import 'dart:math' as math;
+import 'dart:ui';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:go_logistics_driver/models/direction_details_Info.dart';
 import 'package:image_cropper/image_cropper.dart';
-import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
 import 'package:go_logistics_driver/utils/exports.dart';
 import 'package:cloudinary/cloudinary.dart';
@@ -283,15 +285,16 @@ class EditIcon extends StatelessWidget {
     );
   }
 }
+
 class SaveIcon extends StatelessWidget {
   final Function onPressed;
   final bool isLoading;
   final String title;
   const SaveIcon(
       {super.key,
-        required this.onPressed,
-        this.isLoading = false,
-        this.title = "Save"});
+      required this.onPressed,
+      this.isLoading = false,
+      this.title = "Save"});
 
   @override
   Widget build(BuildContext context) {
@@ -308,35 +311,36 @@ class SaveIcon extends StatelessWidget {
         margin: EdgeInsets.symmetric(vertical: 5.sp),
         child: isLoading
             ? SizedBox(
-          height: 12.sp,
-          width: 12.sp,
-          child: CircularProgressIndicator(
-            color: AppColors.primaryColor,
-            strokeWidth: 1.0.sp,
-          ),
-        )
+                height: 12.sp,
+                width: 12.sp,
+                child: CircularProgressIndicator(
+                  color: AppColors.primaryColor,
+                  strokeWidth: 1.0.sp,
+                ),
+              )
             : Row(
-          mainAxisAlignment: MainAxisAlignment.spaceAround,
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            customText(title,
-                fontSize: 12.sp,
-                fontWeight: FontWeight.w500,
-                color: AppColors.primaryColor),
-            SizedBox(
-              width: 8.sp,
-            ),
-            SvgPicture.asset(
-              SvgAssets.saveIcon,
-              color: AppColors.primaryColor,
-              height: 14.sp,
-            ),
-          ],
-        ),
+                mainAxisAlignment: MainAxisAlignment.spaceAround,
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  customText(title,
+                      fontSize: 12.sp,
+                      fontWeight: FontWeight.w500,
+                      color: AppColors.primaryColor),
+                  SizedBox(
+                    width: 8.sp,
+                  ),
+                  SvgPicture.asset(
+                    SvgAssets.saveIcon,
+                    color: AppColors.primaryColor,
+                    height: 14.sp,
+                  ),
+                ],
+              ),
       ),
     );
   }
 }
+
 showToast({String message = "", bool isError = false}) {
   Get.snackbar(
     "",
@@ -765,30 +769,67 @@ String formatTime(String inputDate) {
   }
 }
 
+// Future<DirectionDetailsInfo> obtainOriginToDestinationDirectionDetails(
+//     LatLng originPosition, LatLng destinationPosition) async {
+//   // Construct OSRM API URL
+//   String osrmUrl =
+//       "https://router.project-osrm.org/route/v1/driving/${originPosition.longitude},${originPosition.latitude};${destinationPosition.longitude},${destinationPosition.latitude}?overview=full&geometries=polyline";
+//
+//   try {
+//     // Make the HTTP request
+//     var osrmResponse = await Dio().get(osrmUrl);
+//
+//     if (osrmResponse.statusCode == 200) {
+//       var data = osrmResponse.data;
+//       if (data['routes'] != null && data['routes'].isNotEmpty) {
+//         // Extract route details
+//         var route = data['routes'][0];
+//         var distance = route['distance']; // Distance in meters
+//         var duration = route['duration']; // Duration in seconds
+//         var geometry = route['geometry']; // Polyline points
+//         // Convert to DirectionDetailsInfo
+//         return DirectionDetailsInfo(
+//           distance_value: distance.toInt(),
+//           duration_value: duration.toInt(),
+//           distance_text: "${(distance / 1000).round()} km",
+//           duration_text: formatRideDuration(duration),
+//           e_points: geometry,
+//         );
+//       }
+//     }
+//   } catch (e) {
+//     print("Error fetching directions: $e");
+//   }
+//   return DirectionDetailsInfo();
+// }
+
 Future<DirectionDetailsInfo> obtainOriginToDestinationDirectionDetails(
     LatLng originPosition, LatLng destinationPosition) async {
-  // Construct OSRM API URL
-  String osrmUrl =
-      "https://router.project-osrm.org/route/v1/driving/${originPosition.longitude},${originPosition.latitude};${destinationPosition.longitude},${destinationPosition.latitude}?overview=full&geometries=polyline";
+  // Construct Google Maps API URL
+  String googleMapsUrl =
+      "https://maps.googleapis.com/maps/api/directions/json?origin=${originPosition.latitude},${originPosition.longitude}&destination=${destinationPosition.latitude},${destinationPosition.longitude}&mode=driving&key=${Secret.apiKey}";
 
   try {
     // Make the HTTP request
-    var osrmResponse = await Dio().get(osrmUrl);
+    var response = await Dio().get(googleMapsUrl);
 
-    if (osrmResponse.statusCode == 200) {
-      var data = osrmResponse.data;
+    if (response.statusCode == 200) {
+      var data = response.data;
       if (data['routes'] != null && data['routes'].isNotEmpty) {
         // Extract route details
         var route = data['routes'][0];
-        var distance = route['distance']; // Distance in meters
-        var duration = route['duration']; // Duration in seconds
-        var geometry = route['geometry']; // Polyline points
+        var distance =
+            route['legs'][0]['distance']['value']; // Distance in meters
+        var duration =
+            route['legs'][0]['duration']['value']; // Duration in seconds
+        var geometry = route['overview_polyline']['points'];
+
         // Convert to DirectionDetailsInfo
         return DirectionDetailsInfo(
-          distance_value: distance.toInt(),
-          duration_value: duration.toInt(),
-          distance_text: "${(distance / 1000).toStringAsFixed(2)} km",
-          duration_text: "${(duration / 60).toStringAsFixed(0)} mins",
+          distance_value: distance,
+          duration_value: duration,
+          distance_text: "${(distance / 1000).toStringAsFixed(1)} km",
+          duration_text: formatRideDuration(duration),
           e_points: geometry,
         );
       }
@@ -796,7 +837,22 @@ Future<DirectionDetailsInfo> obtainOriginToDestinationDirectionDetails(
   } catch (e) {
     print("Error fetching directions: $e");
   }
+
   return DirectionDetailsInfo();
+}
+
+String formatRideDuration(int durationInSeconds) {
+  int totalMinutes = (durationInSeconds / 60).round();
+  int hours = totalMinutes ~/ 60;
+  int minutes = totalMinutes % 60;
+
+  if (hours > 0 && minutes > 0) {
+    return "$hours hr${hours > 1 ? 's' : ''} $minutes min${minutes > 1 ? 's' : ''}";
+  } else if (hours > 0) {
+    return "$hours hr${hours > 1 ? 's' : ''}";
+  } else {
+    return "$minutes min${minutes > 1 ? 's' : ''}";
+  }
 }
 
 void openGoogleMaps(String destination) async {
@@ -809,6 +865,29 @@ void openGoogleMaps(String destination) async {
   }
 }
 
+double calculateLocationDegrees(LatLng startPoint, LatLng endPoint) {
+  final double startLat = toRadians(startPoint.latitude);
+  final double startLng = toRadians(startPoint.longitude);
+  final double endLat = toRadians(endPoint.latitude);
+  final double endLng = toRadians(endPoint.longitude);
+
+  final double deltaLng = endLng - startLng;
+
+  final double y = math.sin(deltaLng) * math.cos(endLat);
+  final double x = math.cos(startLat) * math.sin(endLat) -
+      math.sin(startLat) * math.cos(endLat) * math.cos(deltaLng);
+
+  final double bearing = math.atan2(y, x);
+  return (toDegrees(bearing) + 360) % 360;
+}
+
+double toRadians(double degrees) {
+  return degrees * (math.pi / 180.0);
+}
+
+double toDegrees(double radians) {
+  return radians * (180.0 / math.pi);
+}
 
 Color getStatusColor(String? status) {
   switch (status?.toLowerCase()) {
@@ -857,12 +936,12 @@ Color getStatusTextColor(String? status) {
 }
 
 MemoryImage base64ToMemoryImage(String base64String) {
-  String cleanBase64 = base64String.contains(',')
-      ? base64String.split(',').last
-      : base64String;
+  String cleanBase64 =
+      base64String.contains(',') ? base64String.split(',').last : base64String;
   Uint8List bytes = base64Decode(cleanBase64);
   return MemoryImage(bytes);
 }
+
 double getDeliveryProgress(String status) {
   switch (status.capitalizeFirst) {
     case 'Pending':
@@ -873,6 +952,8 @@ double getDeliveryProgress(String status) {
       return 0.67;
     case 'Delivered':
       return 1.0;
+    case 'Accepted':
+      return 0.2; // Assuming 'Accepted' is somewhere between 'Pending' and 'Confirmed'
     default:
       return 0.0; // Default case if status is unknown
   }

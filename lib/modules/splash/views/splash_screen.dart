@@ -27,7 +27,7 @@ class SplashScreen extends StatelessWidget {
                     crossAxisAlignment: CrossAxisAlignment.center,
                     children: [
                       Image.asset(PngAssets.goSharpSharpIcon),
-                      customText("GoSharpSharp Rider",
+                      customText("GoRider",
                           color: AppColors.blackColor,
                           fontWeight: FontWeight.bold,
                           fontSize: 30.sp,

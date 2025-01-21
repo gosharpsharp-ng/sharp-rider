@@ -4,10 +4,13 @@ class PngAssets {
   static const String avatarIcon = 'assets/imgs/avatar.png';
   static const String mapIcon = 'assets/imgs/map.png';
   static const String parcel = 'assets/imgs/parcel.png';
+  static const String expressBikeIcon = 'assets/imgs/express.png';
+  static const String carIcon = 'assets/imgs/car.png';
 }
 
 class SvgAssets {
   static const String settingsIcon = 'assets/svgs/settings.svg';
+  static const String googleMapsIcon = 'assets/svgs/google_maps.svg';
   static const String licenseIcon = 'assets/svgs/license.svg';
   static const String homeIcon = 'assets/svgs/home.svg';
   static const String ordersIcon = 'assets/svgs/orders.svg';

@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'package:go_logistics_driver/models/rider_stats_model.dart';
 import 'package:go_logistics_driver/utils/exports.dart';
 import 'package:intl/intl.dart';
 
@@ -27,18 +28,13 @@ class SettingsController extends GetxController {
       userProfile = UserProfile.fromJson(response.data);
       update();
       setProfileFields();
-      try {
-        await serviceManager.initializeServices(userProfile!);
-      } catch (e) {
-        showToast(
-            message: "Failed to initialize services: ${e.toString()}",
-            isError: true);
-      }
     } else {
       showToast(
           message: response.message, isError: response.status != "success");
     }
   }
+
+
 
   setProfileFields() {
     // Store initial values
@@ -246,10 +242,12 @@ class SettingsController extends GetxController {
     APIResponse response = await profileService.getVehicle();
     // setLoadingVehicleState(false);
     if (response.status == "success") {
-      print("************************************************************************************");
+      print(
+          "************************************************************************************");
       print("${response.data}");
-      print("************************************************************************************");
-      if(response.data.isNotEmpty){
+      print(
+          "************************************************************************************");
+      if (response.data.isNotEmpty) {
         vehicleModel = VehicleModel.fromJson(response.data[0]);
       }
 
@@ -263,10 +261,12 @@ class SettingsController extends GetxController {
     APIResponse response = await profileService.getLicense();
     // setLoadingVehicleState(false);
     if (response.status == "success") {
-      print("********************************************************************************************************");
+      print(
+          "********************************************************************************************************");
       print(response.data);
-      print("********************************************************************************************************");
-      if(response.data.isNotEmpty) {
+      print(
+          "********************************************************************************************************");
+      if (response.data.isNotEmpty) {
         vehicleLicense = LicenseModel.fromJson(response.data[0]);
         update();
       }

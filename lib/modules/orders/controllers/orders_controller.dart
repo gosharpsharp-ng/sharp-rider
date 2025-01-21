@@ -1,16 +1,23 @@
 import 'dart:developer';
 
 import 'package:flutter_polyline_points/flutter_polyline_points.dart';
+import 'package:geolocator/geolocator.dart';
 import 'package:go_logistics_driver/models/direction_details_Info.dart';
+import 'package:go_logistics_driver/models/rider_stats_model.dart';
 import 'package:go_logistics_driver/utils/exports.dart';
 
 class OrdersController extends GetxController {
   final shipmentService = serviceLocator<ShipmentService>();
+  final profileService = serviceLocator<ProfileService>();
   final sendingInfoFormKey = GlobalKey<FormState>();
   final deliveriesSearchFormKey = GlobalKey<FormState>();
   final itemDetailsFormKey = GlobalKey<FormState>();
+  final serviceManager = Get.find<ServiceManager>();
+  final settingsController = Get.find<SettingsController>();
 
   List<ShipmentModel> allShipments = [];
+  String? distanceToDestination;
+  String? durationToDestination;
   bool fetchingShipments = false;
   Future<void> fetchShipments() async {
     fetchingShipments = true;
@@ -27,6 +34,7 @@ class OrdersController extends GetxController {
           .toList();
       update();
     }
+    getRiderStats();
   }
 
   Future<void> getShipment() async {
@@ -55,6 +63,34 @@ class OrdersController extends GetxController {
     update();
   }
 
+  bool isOnline = false;
+  toggleOnlineStatus() async {
+    if (settingsController.userProfile != null) {
+      isOnline = !isOnline;
+      if (isOnline) {
+        try {
+          await serviceManager
+              .initializeServices(settingsController.userProfile!);
+          showToast(
+            message: "You're online",
+            isError: false,
+          );
+        } catch (e) {
+          showToast(
+              message: "Failed to initialize services: ${e.toString()}",
+              isError: true);
+        }
+      } else {
+        await serviceManager.disposeServices();
+        showToast(
+          message: "You're offline",
+          isError: false,
+        );
+      }
+      update();
+    }
+  }
+
   Set<Marker> markerSet = {};
   Set<Circle> circleSet = {};
   DirectionDetailsInfo? rideDirectionDetailsInfo;
@@ -80,12 +116,15 @@ class OrdersController extends GetxController {
         originLatLng, destinationLatLng);
 
     rideDirectionDetailsInfo = directionDetailsInfo;
+    distanceToDestination = rideDirectionDetailsInfo!.distance_text;
+    durationToDestination = rideDirectionDetailsInfo!.duration_text;
 
     // Navigator.pop(context);
     PolylinePoints pPoints = PolylinePoints();
     List<PointLatLng> decodePolyLinePointsResultList =
         pPoints.decodePolyline(directionDetailsInfo.e_points!);
     pLineCoordinatedList.clear();
+
     if (decodePolyLinePointsResultList.isNotEmpty) {
       decodePolyLinePointsResultList.forEach((PointLatLng pointLatLng) {
         pLineCoordinatedList
@@ -102,7 +141,7 @@ class OrdersController extends GetxController {
         startCap: Cap.squareCap,
         endCap: Cap.squareCap,
         geodesic: true,
-        width: 7);
+        width: 5);
 
     polyLineSet.add(polyline);
     update();
@@ -135,22 +174,26 @@ class OrdersController extends GetxController {
     }
     Marker originMarker = Marker(
       markerId: const MarkerId('OriginID'),
-      infoWindow: InfoWindow(title: originAddress ?? "", snippet: "Origin"),
-      position: originLatLng,
-      icon: BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueGreen),
+      infoWindow: InfoWindow(
+          title: selectedShipment?.originLocation.name ?? "",
+          snippet: "Sender"),
+      position: LatLng(double.parse(selectedShipment!.originLocation.latitude),
+          double.parse(selectedShipment!.originLocation.longitude)),
+      icon: BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueRed),
     );
     Marker destinationMarker = Marker(
       markerId: const MarkerId('destinationID'),
-      infoWindow:
-          InfoWindow(title: destinationAddress ?? "", snippet: "Destination"),
-      position: destinationLatLng,
-      icon: BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueRed),
+      infoWindow: InfoWindow(
+          title: selectedShipment?.destinationLocation.name ?? "",
+          snippet: "Receiver"),
+      position: LatLng(
+          double.parse(selectedShipment!.destinationLocation.latitude),
+          double.parse(selectedShipment!.destinationLocation.longitude)),
+      icon: BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueGreen),
     );
-
+    markerSet.clear();
     markerSet.add(originMarker);
     markerSet.add(destinationMarker);
-    update();
-
     Circle originCircle = Circle(
         circleId: const CircleId('originId'),
         fillColor: AppColors.primaryColor,
@@ -171,55 +214,205 @@ class OrdersController extends GetxController {
     update();
   }
 
+  Future<void> drawPolylineFromRiderToDestination(BuildContext context,
+      {required LatLng destinationPosition, LatLng? currentLocation}) async {
+    // Get the user's current location
+    LatLng riderLatLng = currentLocation ??
+        LatLng(
+          (await Geolocator.getCurrentPosition(
+                  desiredAccuracy: LocationAccuracy.bestForNavigation))
+              .latitude,
+          (await Geolocator.getCurrentPosition(
+                  desiredAccuracy: LocationAccuracy.bestForNavigation))
+              .longitude,
+        );
+
+    // Fetch direction details
+    var directionDetailsInfo = await obtainOriginToDestinationDirectionDetails(
+        riderLatLng, destinationPosition);
+
+    rideDirectionDetailsInfo = directionDetailsInfo;
+    distanceToDestination = rideDirectionDetailsInfo!.distance_text;
+    durationToDestination = rideDirectionDetailsInfo!.duration_text;
+
+    // Decode the polyline points
+    PolylinePoints polylinePoints = PolylinePoints();
+    List<PointLatLng> decodedPolylinePoints =
+        polylinePoints.decodePolyline(directionDetailsInfo.e_points ?? "");
+
+    pLineCoordinatedList.clear();
+    if (decodedPolylinePoints.isNotEmpty) {
+      decodedPolylinePoints.forEach((PointLatLng pointLatLng) {
+        pLineCoordinatedList
+            .add(LatLng(pointLatLng.latitude, pointLatLng.longitude));
+      });
+      update();
+    }
+
+    // Create and add the polyline
+    polyLineSet.clear();
+    Polyline polyline = Polyline(
+      polylineId: const PolylineId("UserToSenderPolyline"),
+      jointType: JointType.mitered,
+      color: Colors.green[700]!,
+      points: pLineCoordinatedList,
+      startCap: Cap.roundCap,
+      endCap: Cap.roundCap,
+      geodesic: true,
+      width: 5,
+    );
+
+    polyLineSet.add(polyline);
+    update();
+
+    // Adjust camera bounds
+    LatLngBounds latLngBounds;
+    if (riderLatLng.latitude > destinationPosition.latitude &&
+        riderLatLng.longitude > destinationPosition.longitude) {
+      latLngBounds =
+          LatLngBounds(southwest: destinationPosition, northeast: riderLatLng);
+    } else if (riderLatLng.longitude > destinationPosition.longitude) {
+      latLngBounds = LatLngBounds(
+          southwest:
+              LatLng(riderLatLng.latitude, destinationPosition.longitude),
+          northeast:
+              LatLng(destinationPosition.latitude, riderLatLng.longitude));
+    } else if (riderLatLng.latitude > destinationPosition.latitude) {
+      latLngBounds = LatLngBounds(
+          southwest:
+              LatLng(destinationPosition.latitude, riderLatLng.longitude),
+          northeast:
+              LatLng(riderLatLng.latitude, destinationPosition.longitude));
+    } else {
+      latLngBounds =
+          LatLngBounds(southwest: riderLatLng, northeast: destinationPosition);
+    }
+
+    if (newGoogleMapController != null) {
+      newGoogleMapController!
+          .animateCamera(CameraUpdate.newLatLngBounds(latLngBounds, 65));
+    } else {
+      print("GoogleMapController is not initialized yet.");
+    }
+
+    // Add markers and circles
+
+    Marker originMarker = Marker(
+      markerId: MarkerId(settingsController.userProfile!.id.toString()),
+      infoWindow: InfoWindow(title: "You", snippet: "Origin"),
+      position: LatLng(
+        riderLatLng.latitude,
+        riderLatLng.longitude,
+      ),
+      icon: bikeMarkerIcon ?? BitmapDescriptor.defaultMarker,
+    );
+    Marker? destinationMarker;
+    if (['accepted'].contains(selectedShipment!.status)) {
+      destinationMarker = Marker(
+        markerId: const MarkerId('senderID'),
+        infoWindow: InfoWindow(
+            title: selectedShipment?.originLocation.name ?? "",
+            snippet: "Sender"),
+        position: LatLng(
+            double.parse(selectedShipment!.originLocation.latitude),
+            double.parse(selectedShipment!.originLocation.longitude)),
+        icon: BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueGreen),
+      );
+    } else if (['picked'].contains(selectedShipment!.status)) {
+      destinationMarker = Marker(
+        markerId: const MarkerId('receiverID'),
+        infoWindow: InfoWindow(
+            title: selectedShipment?.destinationLocation.name ?? "",
+            snippet: "Receiver"),
+        position: LatLng(
+            double.parse(selectedShipment!.destinationLocation.latitude),
+            double.parse(selectedShipment!.destinationLocation.longitude)),
+        icon: BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueGreen),
+      );
+    }
+    markerSet.clear();
+    markerSet.add(originMarker);
+    if (destinationMarker != null) {
+      markerSet.add(destinationMarker);
+    }
+
+    Circle userCircle = Circle(
+      circleId: const CircleId('UserCircleId'),
+      fillColor: Colors.blueAccent,
+      radius: 20,
+      strokeWidth: 8,
+      strokeColor: Colors.white,
+      center: riderLatLng,
+    );
+    Circle senderCircle = Circle(
+      circleId: const CircleId('SenderCircleId'),
+      fillColor: Colors.redAccent,
+      radius: 20,
+      strokeWidth: 8,
+      strokeColor: Colors.white,
+      center: destinationPosition,
+    );
+
+    circleSet.assign(userCircle);
+    circleSet.assign(senderCircle);
+    update();
+  }
+
   bool acceptingShipment = false;
+  bool acceptedShipment = false;
   Future<void> acceptShipment(BuildContext context,
       {required String trackingId}) async {
+    acceptedShipment = false;
     acceptingShipment = true;
     update();
     final dynamic data = {
       "tracking_id": trackingId,
       "action": "accept",
     };
-    print(
-        "********************************************************************************************************************");
-    print(data.toString());
-    print(
-        "********************************************************************************************************************");
 
     // Call the API
     APIResponse response = await shipmentService.updateShipmentStatus(data);
     // Handle response
-
+    showToast(
+      message: response.message,
+      isError: response.status != "success",
+    );
+    acceptingShipment = false;
+    update();
     if (response.status == "success") {
       selectedShipment = ShipmentModel.fromJson(response.data);
-      acceptingShipment = false;
-      update();
-      fetchShipments();
-      Get.find<LocationService>().startEmittingParcelLocation(
-          trackingId: selectedShipment!.trackingId);
-      drawPolyLineFromOriginToDestination(context,
-          originLatitude: selectedShipment!.originLocation.latitude,
-          originLongitude: selectedShipment!.originLocation.longitude,
-          originAddress: selectedShipment!.originLocation.name,
-          destinationLatitude: selectedShipment!.destinationLocation.latitude,
-          destinationLongitude: selectedShipment!.destinationLocation.longitude,
-          destinationAddress: selectedShipment!.destinationLocation.name);
-      getShipment();
-      // Get.back();
-      showToast(
-        message: response.message,
-        isError: response.status != "success",
-      );
-      Get.toNamed(Routes.ORDER_TRACKING_SCREEN);
-    } else {
-      showToast(
-        message: response.message,
-        isError: response.status != "success",
-      );
-      acceptingShipment = false;
+
+      if (Get.isRegistered<LocationService>()) {
+        await Get.find<LocationService>().joinParcelTrackingRoom(
+            trackingId: selectedShipment?.trackingId ?? "");
+        Get.find<LocationService>().startEmittingParcelLocation(
+            trackingId: selectedShipment?.trackingId ?? "");
+        Get.find<LocationService>()
+            .listenForParcelLocationUpdate(roomId: "rider_tracking");
+      } else {
+        await serviceManager
+            .initializeServices(settingsController.userProfile!);
+        await Get.find<LocationService>().joinParcelTrackingRoom(
+            trackingId: selectedShipment?.trackingId ?? "");
+        Get.find<LocationService>().startEmittingParcelLocation(
+            trackingId: selectedShipment?.trackingId ?? "");
+        Get.find<LocationService>()
+            .listenForParcelLocationUpdate(roomId: "rider_tracking");
+      }
+      acceptedShipment = true;
       update();
     }
   }
+
+  BitmapDescriptor? bikeMarkerIcon;
+  getBikeIcon() async {
+    var icon = await BitmapDescriptor.asset(
+        const ImageConfiguration(), PngAssets.carIcon,
+        width: 35.sp, height: 35.sp);
+    bikeMarkerIcon = icon;
+    update();
+  }
+
   resetDeliveriesSearchFields() {
     searchQueryController.clear();
     shipmentSearchResults.clear();
@@ -252,16 +445,14 @@ class OrdersController extends GetxController {
   }
 
   bool updatingShipmentStatus = false;
-  Future<void> updateShipmentStatus({required String status}) async {
+  Future<void> updateShipmentStatus(BuildContext context,
+      {required String status}) async {
     updatingShipmentStatus = true;
     update();
     final dynamic data = {
       "tracking_id": selectedShipment!.trackingId,
       "action": status.toLowerCase(),
     };
-    print("***********************************************************************************************************");
-    print(data.toString());
-    print("************************************************************************************************************");
     // Call the API
     APIResponse response = await shipmentService.updateShipmentStatus(data);
     // Handle response
@@ -272,6 +463,21 @@ class OrdersController extends GetxController {
 
     if (response.status == "success") {
       selectedShipment = ShipmentModel.fromJson(response.data);
+      if (['picked'].contains(selectedShipment!.status)) {
+        drawPolylineFromRiderToDestination(context,
+            destinationPosition: LatLng(
+                double.parse(selectedShipment!.destinationLocation.latitude),
+                double.parse(selectedShipment!.destinationLocation.longitude)));
+      } else if (['delivered'].contains(selectedShipment!.status)) {
+        drawPolyLineFromOriginToDestination(context,
+            originLatitude: selectedShipment!.originLocation.latitude,
+            originLongitude: selectedShipment!.originLocation.longitude,
+            originAddress: selectedShipment!.originLocation.name,
+            destinationLatitude: selectedShipment!.destinationLocation.latitude,
+            destinationLongitude:
+                selectedShipment!.destinationLocation.longitude,
+            destinationAddress: selectedShipment!.destinationLocation.name);
+      }
       await getShipment();
       updatingShipmentStatus = false;
       update();
@@ -282,9 +488,22 @@ class OrdersController extends GetxController {
     }
   }
 
+  RiderStatsModel? riderStatsModel;
+  getRiderStats() async {
+    APIResponse response = await profileService.getRiderStats();
+    if (response.status == "success") {
+      riderStatsModel = RiderStatsModel.fromJson(response.data);
+      update();
+    } else {
+      showToast(
+          message: response.message, isError: response.status != "success");
+    }
+  }
+
   @override
   void onReady() {
     super.onReady();
     fetchShipments();
+    getBikeIcon();
   }
 }

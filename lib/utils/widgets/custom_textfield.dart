@@ -608,6 +608,7 @@ class CustomOutlinedRoundedInputField extends StatefulWidget {
   final bool isRequired;
   final bool isCurrency;
   final bool isSearch;
+  final bool autoFocus;
   final String? authPrefix;
   final String? Function(String?)? validator;
   final bool useCustomValidator;
@@ -625,6 +626,7 @@ class CustomOutlinedRoundedInputField extends StatefulWidget {
     this.controller,
     this.focusNode,
     this.hasDropdown = false,
+    this.autoFocus = false,
     this.title = "",
     this.isPhone = false,
     this.isSearch = false,
@@ -687,6 +689,7 @@ class _CustomOutlinedRoundedInputFieldState
               obscureText: widget.obscureText,
               maxLines: widget.maxLines,
               minLines: widget.maxLines,
+              autofocus: widget.autoFocus,
               keyboardType: widget.keyboardType,
               inputFormatters: widget.formatter,
               onChanged: widget.onChanged,
@@ -867,6 +870,7 @@ class CustomOutlinedClickableRoundedInputField extends StatefulWidget {
   final Widget? prefixWidget;
   final Widget? suffixWidget;
   final bool obscureText;
+  final bool autoFocus;
   final VoidCallback? onPressed;
   final Function(dynamic)? onChanged;
   final bool isRequired;
@@ -892,6 +896,7 @@ class CustomOutlinedClickableRoundedInputField extends StatefulWidget {
     this.title = "",
     this.isPhone = false,
     this.isSearch = false,
+    this.autoFocus = false,
     this.useCustomValidator = false,
     this.validator,
     this.maxLines = 1,
@@ -949,7 +954,9 @@ class _CustomOutlinedClickableRoundedInputFieldState
               readOnly: widget.readOnly,
               // textAlign: widget.isCurrency?TextAlign.center:TextAlign.left,
               cursorColor: widget.cursorColor,
+              autofocus: widget.autoFocus,
               obscureText: widget.obscureText,
+
               maxLines: widget.maxLines,
               minLines: widget.maxLines,
               keyboardType: widget.keyboardType,

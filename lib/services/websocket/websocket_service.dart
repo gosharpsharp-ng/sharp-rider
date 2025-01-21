@@ -77,14 +77,38 @@ class SocketService extends GetxService {
     }
   }
 
-  void emitParcelRiderLocationUpdate(Position position,
-      {required String trackingId}) {
+  void emitParcelRiderLocationUpdate(LatLng position,
+      {required String trackingId, required double locationDegrees}) {
     if (isConnected.value) {
       dynamic data = {
-        'lon': position.latitude,
-        'lat': position.longitude,
+        'room': trackingId,
+        'event': 'rider_tracking',
+        'data': {
+          'lon': position.latitude,
+          'lat': position.longitude,
+          'degrees': locationDegrees
+        }
       };
-      socket.emit(trackingId, data);
+      socket.emit('broadcast_to_room', data);
+    }
+  }
+
+  void listenForParcelLocationUpdate(
+      {required String roomId, required Function(dynamic) onLocationUpdate}) {
+    socket.on(roomId, onLocationUpdate);
+  }
+
+  void joinTrackingRoom(
+      {required String trackingId, required String msg}) async {
+    if (isConnected.value) {
+      socket.emit(msg, trackingId);
+    }
+  }
+
+  void leaveTrackingRoom(
+      {required String trackingId, required String msg}) async {
+    if (isConnected.value) {
+      socket.emit(msg, trackingId);
     }
   }
 
@@ -98,11 +122,9 @@ class SocketService extends GetxService {
     }
   }
 
-
   void listenForShipments(Function(dynamic) onNewShipment) {
     socket.on('shipment_events', onNewShipment);
   }
-
 
   void listenToOrders(Function(dynamic) onNewOrder) {
     socket.on('update_location', onNewOrder);

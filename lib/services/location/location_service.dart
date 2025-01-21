@@ -1,11 +1,10 @@
 import 'package:geolocator/geolocator.dart';
-
+import 'dart:math' as math;
 import '../../utils/exports.dart';
 
 class LocationService extends GetxService {
   static LocationService get instance => Get.find();
-
-  final position = Rx<Position?>(null);
+  Position? currentPosition;
   Stream<Position>? _positionStream;
   bool _initialLocationSent = false; // Track if initial location was sent
 
@@ -18,14 +17,14 @@ class LocationService extends GetxService {
   Future<void> _checkPermissions() async {
     bool serviceEnabled = await Geolocator.isLocationServiceEnabled();
     if (!serviceEnabled) {
-      throw Exception('Location services are disabled.');
+      Geolocator.requestPermission();
     }
 
     LocationPermission permission = await Geolocator.checkPermission();
     if (permission == LocationPermission.denied) {
       permission = await Geolocator.requestPermission();
       if (permission == LocationPermission.denied) {
-        throw Exception('Location permissions are denied');
+        permission = await Geolocator.requestPermission();
       }
     }
 
@@ -34,12 +33,26 @@ class LocationService extends GetxService {
     }
   }
 
+  joinParcelTrackingRoom({required String trackingId}) async {
+    if (Get.isRegistered<SocketService>()) {
+      Get.find<SocketService>()
+          .joinTrackingRoom(trackingId: trackingId, msg: 'join_room');
+    }
+  }
+
+  void leaveParcelTrackingRoom({required String trackingId}) async {
+    if (Get.isRegistered<SocketService>()) {
+      Get.find<SocketService>()
+          .joinTrackingRoom(trackingId: trackingId, msg: 'leave_room');
+    }
+  }
+
   void _startLocationTracking() {
     // First, get the initial position
     Geolocator.getCurrentPosition(
       desiredAccuracy: LocationAccuracy.high,
     ).then((Position initialPosition) {
-      position.value = initialPosition;
+      currentPosition = initialPosition;
       // Send initial location if socket service is available
       if (Get.isRegistered<SocketService>()) {
         Get.find<SocketService>().emitLocation(initialPosition);
@@ -52,15 +65,14 @@ class LocationService extends GetxService {
     // Then start the position stream for updates
     _positionStream = Geolocator.getPositionStream(
       locationSettings: const LocationSettings(
-        accuracy: LocationAccuracy.high,
+        accuracy: LocationAccuracy.bestForNavigation,
         distanceFilter: 10,
       ),
     );
 
     _positionStream?.listen(
       (Position newPosition) {
-        position.value = newPosition;
-        // Get socket service and emit location updates
+        currentPosition = newPosition;
         if (Get.isRegistered<SocketService>()) {
           if (!_initialLocationSent) {
             // If initial location wasn't sent (e.g., if socket wasn't ready), send it now
@@ -79,42 +91,52 @@ class LocationService extends GetxService {
   }
 
   void startEmittingParcelLocation({required String trackingId}) {
-    // First, get the initial position
-    Geolocator.getCurrentPosition(
-      desiredAccuracy: LocationAccuracy.high,
-    ).then((Position initialPosition) {
-      position.value = initialPosition;
-      // Send initial location if socket service is available
-      if (Get.isRegistered<SocketService>()) {
-        Get.find<SocketService>().emitParcelRiderLocationUpdate(initialPosition,
-            trackingId: trackingId);
-      }
-    }).catchError((error) {
-      print('Error getting initial position: $error');
-    });
-
-    // Then start the position stream for updates
+    // start the position stream for updates
     _positionStream = Geolocator.getPositionStream(
       locationSettings: const LocationSettings(
-        accuracy: LocationAccuracy.high,
-        distanceFilter: 10,
+        accuracy: LocationAccuracy.bestForNavigation,
+        distanceFilter: 15,
       ),
     );
+    if (Get.isRegistered<SocketService>()) {
+      // Otherwise send location update
+      _positionStream?.listen(
+        (Position newPosition) {
+          currentPosition = newPosition;
+          // Get socket service and emit location updates
+          if (Get.isRegistered<SocketService>()) {
+            // Otherwise send location update
+            Get.find<SocketService>().emitParcelRiderLocationUpdate(
+                LatLng(newPosition.latitude, newPosition.longitude),
+                locationDegrees: calculateLocationDegrees(
+                    LatLng(currentPosition?.latitude ?? 0.0,
+                        currentPosition?.longitude ?? 0.0),
+                    LatLng(newPosition.latitude, newPosition.longitude)),
+                trackingId: trackingId);
+          }
+        },
+        onError: (error) {
+          print('Location tracking error: $error');
+        },
+      );
+    }
+  }
 
-    _positionStream?.listen(
-      (Position newPosition) {
-        position.value = newPosition;
-        // Get socket service and emit location updates
-        if (Get.isRegistered<SocketService>()) {
-          // Otherwise send location update
-          Get.find<SocketService>().emitParcelRiderLocationUpdate(newPosition,
-              trackingId: trackingId);
-        }
-      },
-      onError: (error) {
-        print('Location tracking error: $error');
-      },
-    );
+  void listenForParcelLocationUpdate({required String roomId}) {
+    if (Get.isRegistered<SocketService>()) {
+      print("Listening to Parcel Location Update");
+      // Otherwise send location update
+      Get.find<SocketService>().listenForParcelLocationUpdate(
+          roomId: roomId,
+          onLocationUpdate: (data) {
+            print(
+                "=============================================================================================================================");
+            print(
+                "I just received an update of the user's location: ${data.toString()}");
+            print(
+                "=============================================================================================================================");
+          });
+    }
   }
 
   @override

@@ -29,7 +29,6 @@ class ServiceManager extends GetxService {
       // Initialize services
       await Get.putAsync(() => SocketService().init(profile));
       await Get.putAsync(() => LocationService().init());
-
       // Initialize notification service
       final notificationService = ShipmentNotificationService();
       await Get.put(notificationService);

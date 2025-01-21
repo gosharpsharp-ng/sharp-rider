@@ -11,14 +11,19 @@ class ShipmentNotificationService extends GetxService {
   bool _isListenerSetup = false;
 
   void initialize() {
-    final socketService = Get.find<SocketService>();
     if (Get.isRegistered<SocketService>()) {
       Get.find<SocketService>().listenForShipments((data) {
-        log("*********************************************Shipment don show******************************************************");
+        log("*********************************************New delivery******************************************************");
         log(data.toString());
         log("***************************************************************************************************");
         handleShipmentNotification(data);
       });
+    }
+  }
+
+  void handleDialogDismissal() {
+    if (_isDialogShowing) {
+      _isDialogShowing = false;
     }
   }
 
@@ -112,8 +117,28 @@ class ShipmentNotificationService extends GetxService {
                                   context,
                                   trackingId: shipment.trackingId,
                                 );
-                                _isDialogShowing = false;
-                                Navigator.pop(context);
+
+                                if (ordersController.acceptedShipment) {
+                                  _isDialogShowing = false;
+                                  Navigator.of(context).pop();
+                                  Get.toNamed(Routes.ORDER_TRACKING_SCREEN);
+                                  ordersController.fetchShipments();
+                                  Get.find<LocationService>()
+                                      .startEmittingParcelLocation(
+                                          trackingId: ordersController
+                                              .selectedShipment!.trackingId);
+                                  ordersController
+                                      .drawPolylineFromRiderToDestination(context,
+                                          destinationPosition: LatLng(
+                                              double.parse(ordersController
+                                                  .selectedShipment!
+                                                  .originLocation
+                                                  .latitude),
+                                              double.parse(ordersController
+                                                  .selectedShipment!
+                                                  .originLocation
+                                                  .longitude)));
+                                }
                               },
                               title: "Accept",
                               isBusy: ordersController.acceptingShipment,

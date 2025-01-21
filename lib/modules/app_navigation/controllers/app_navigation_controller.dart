@@ -98,7 +98,7 @@ class AppNavigationController extends GetxController {
 
   @override
   void onInit() {
-    _handleLocationPermission(); // Insist on enabling location on app start
+    // _handleLocationPermission(); // Insist on enabling location on app start
     super.onInit();
   }
 }

@@ -28,30 +28,95 @@ class OrderDetailsScreen extends StatelessWidget {
                   child: ['accepted', 'picked', 'delivered']
                           .contains(ordersController.selectedShipment!.status)
                       ? CustomButton(
-                          onPressed: () {
+                          onPressed: () async {
+                            final serviceManager = Get.find<ServiceManager>();
+                            if (Get.isRegistered<LocationService>()) {
+                              await Get.find<LocationService>()
+                                  .joinParcelTrackingRoom(
+                                      trackingId: ordersController
+                                              .selectedShipment?.trackingId ??
+                                          "");
+                              Get.find<LocationService>()
+                                  .startEmittingParcelLocation(
+                                      trackingId: ordersController
+                                              .selectedShipment?.trackingId ??
+                                          "");
+                              Get.find<LocationService>()
+                                  .listenForParcelLocationUpdate(
+                                      roomId: "rider_tracking");
+                            } else {
+                              await serviceManager.initializeServices(
+                                  ordersController
+                                      .settingsController.userProfile!);
+                              await Get.find<LocationService>()
+                                  .joinParcelTrackingRoom(
+                                      trackingId: ordersController
+                                              .selectedShipment?.trackingId ??
+                                          "");
+                              Get.find<LocationService>()
+                                  .startEmittingParcelLocation(
+                                      trackingId: ordersController
+                                              .selectedShipment?.trackingId ??
+                                          "");
+                              Get.find<LocationService>()
+                                  .listenForParcelLocationUpdate(
+                                  roomId:"rider_tracking");
+                            }
                             Get.toNamed(Routes.ORDER_TRACKING_SCREEN);
-                            ordersController.drawPolyLineFromOriginToDestination(
-                                context,
-                                originLatitude: ordersController
-                                    .selectedShipment!.originLocation.latitude,
-                                originLongitude: ordersController
-                                    .selectedShipment!.originLocation.longitude,
-                                originAddress: ordersController
-                                    .selectedShipment!.originLocation.name,
-                                destinationLatitude: ordersController
-                                    .selectedShipment!
-                                    .destinationLocation
-                                    .latitude,
-                                destinationLongitude: ordersController
-                                    .selectedShipment!
-                                    .destinationLocation
-                                    .longitude,
-                                destinationAddress: ordersController
-                                    .selectedShipment!
-                                    .destinationLocation
-                                    .name);
+                            if (['delivered', 'rejected', 'canceled'].contains(
+                                ordersController.selectedShipment!.status)) {
+                              ordersController.drawPolyLineFromOriginToDestination(
+                                  context,
+                                  originLatitude: ordersController
+                                      .selectedShipment!
+                                      .originLocation
+                                      .latitude,
+                                  originLongitude: ordersController
+                                      .selectedShipment!
+                                      .originLocation
+                                      .longitude,
+                                  originAddress: ordersController
+                                      .selectedShipment!.originLocation.name,
+                                  destinationLatitude: ordersController
+                                      .selectedShipment!
+                                      .destinationLocation
+                                      .latitude,
+                                  destinationLongitude: ordersController
+                                      .selectedShipment!
+                                      .destinationLocation
+                                      .longitude,
+                                  destinationAddress: ordersController
+                                      .selectedShipment!
+                                      .destinationLocation
+                                      .name);
+                            } else if (['accepted'].contains(
+                                ordersController.selectedShipment!.status)) {
+                              ordersController
+                                  .drawPolylineFromRiderToDestination(context,
+                                      destinationPosition: LatLng(
+                                          double.parse(ordersController
+                                              .selectedShipment!
+                                              .originLocation
+                                              .latitude),
+                                          double.parse(ordersController
+                                              .selectedShipment!
+                                              .originLocation
+                                              .longitude)));
+                            } else if (['picked'].contains(
+                                ordersController.selectedShipment!.status)) {
+                              ordersController
+                                  .drawPolylineFromRiderToDestination(context,
+                                      destinationPosition: LatLng(
+                                          double.parse(ordersController
+                                              .selectedShipment!
+                                              .destinationLocation
+                                              .latitude),
+                                          double.parse(ordersController
+                                              .selectedShipment!
+                                              .destinationLocation
+                                              .longitude)));
+                            }
                           },
-                          // isBusy: signInProvider.isLoading,
                           title: "View Progress",
                           width: 1.sw,
                           backgroundColor: AppColors.primaryColor,
@@ -130,7 +195,7 @@ class OrderDetailsScreen extends StatelessWidget {
                       ),
                       TitleSectionBox(
                         backgroundColor: AppColors.backgroundColor,
-                        title: "Shipment Items",
+                        title: "Delivery Items",
                         children: [
                           ...List.generate(
                               ordersController.selectedShipment!.items.length,

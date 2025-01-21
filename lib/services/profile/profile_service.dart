@@ -17,6 +17,9 @@ class ProfileService extends CoreService {
   Future<APIResponse> getNotifications() async {
     return await fetch("/me/notifications");
   }
+Future<APIResponse> getRiderStats() async {
+    return await fetch("/me/stats");
+  }
 
   Future<APIResponse> getNotificationById(dynamic data) async {
     return await fetch("/me/notifications/${data['id']}");

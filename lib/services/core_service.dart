@@ -35,7 +35,9 @@ class CoreService extends GetConnect {
         onError: (DioException error, handler) {
           // Check for 401 Unauthorized
           if (error.response?.statusCode == 401) {
-            handleUnauthorizedAccess();
+            if(Get.currentRoute!=Routes.SIGN_IN) {
+              handleUnauthorizedAccess();
+            }
           }
           return handler.next(error); // Continue handling the error
         },

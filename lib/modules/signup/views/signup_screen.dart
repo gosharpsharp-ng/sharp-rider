@@ -114,7 +114,7 @@ class SignUpScreen extends GetView<SignUpController> {
                                 countryCode: phone.countryCode,
                                 number: updatedNumber,
                               ));
-                            }else{
+                            } else {
                               signUpController.setFilledPhoneNumber(phone);
                             }
                           },
@@ -128,7 +128,12 @@ class SignUpScreen extends GetView<SignUpController> {
                             if (!regex.hasMatch(phone.completeNumber)) {
                               return "Phone number must be 10 digits long";
                             }
-
+                            if (signUpController.phoneNumberController.text ==
+                                    null ||
+                                signUpController
+                                    .phoneNumberController.text.isEmpty) {
+                              return "Phone number is required";
+                            }
                             return null; // Valid phone number
                           },
                           isPhone: true,
@@ -143,7 +148,7 @@ class SignUpScreen extends GetView<SignUpController> {
                           useCustomValidator: true,
                           hasTitle: true,
                           obscureText:
-                          !signUpController.signUpPasswordVisibility,
+                              !signUpController.signUpPasswordVisibility,
                           controller: signUpController.passwordController,
                           suffixWidget: IconButton(
                             onPressed: () {
