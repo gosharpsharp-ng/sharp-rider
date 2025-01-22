@@ -654,38 +654,7 @@ class _OrderTrackingScreenState extends State<OrderTrackingScreen> {
                                         // lineLength: 150,
                                       ),
                                       SizedBox(
-                                        height: 10.h,
-                                      ),
-                                      Row(
-                                        mainAxisAlignment:
-                                            MainAxisAlignment.spaceBetween,
-                                        children: [
-                                          customText("Delivery progress",
-                                              fontSize: 14.sp,
-                                              fontWeight: FontWeight.w500,
-                                              color:
-                                                  AppColors.obscureTextColor),
-                                          customText(
-                                              "${getDeliveryProgress(ordersController.selectedShipment!.status!) * 100}%",
-                                              fontSize: 14.sp,
-                                              fontWeight: FontWeight.w500,
-                                              color:
-                                                  AppColors.obscureTextColor),
-                                        ],
-                                      ),
-                                      SizedBox(
-                                        height: 5.h,
-                                      ),
-                                      LinearProgressIndicator(
-                                        value: getDeliveryProgress(
-                                            ordersController
-                                                .selectedShipment!.status!),
-                                        minHeight: 8.h,
-                                        color: AppColors.greenColor,
-                                        borderRadius:
-                                            BorderRadius.circular(10.r),
-                                        backgroundColor:
-                                            AppColors.fadedButtonPrimaryColor,
+                                        height: 16.h,
                                       ),
                                     ],
                                   ),
