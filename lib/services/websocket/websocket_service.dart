@@ -60,9 +60,6 @@ class SocketService extends GetxService {
         'user_id': _userProfile.id,
         'name': "${_userProfile.fname} ${_userProfile.lname}"
       };
-      log("Sending Location **********************************************************************************");
-      log(data.toString());
-      log("Sending Location **********************************************************************************");
       socket.emit('rider_connect', data);
     }
   }
@@ -84,8 +81,8 @@ class SocketService extends GetxService {
         'room': trackingId,
         'event': 'rider_tracking',
         'data': {
-          'lon': position.latitude,
-          'lat': position.longitude,
+          'lon': position.longitude,
+          'lat': position.latitude,
           'degrees': locationDegrees
         }
       };

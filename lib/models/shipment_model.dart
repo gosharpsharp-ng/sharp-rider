@@ -16,7 +16,9 @@ class ShipmentModel {
   final ShipmentLocation destinationLocation;
   final Receiver receiver;
   final Sender? sender;
+  final Rider? rider;
   final List<Item> items;
+  @JsonKey(fromJson: _parseDistance)
   final String distance;
   @JsonKey(name: 'courier_type_prices')
   final List<CourierTypePrice>? courierTypePrices;
@@ -36,6 +38,7 @@ class ShipmentModel {
     required this.destinationLocation,
     required this.receiver,
     required this.sender,
+    required this.rider,
     required this.items,
     required this.distance,
     required this.courierTypePrices,
@@ -47,7 +50,19 @@ class ShipmentModel {
   factory ShipmentModel.fromJson(Map<String, dynamic> json) =>
       _$ShipmentModelFromJson(json);
   Map<String, dynamic> toJson() => _$ShipmentModelToJson(this);
+  // Custom deserialization for distance
+  static String _parseDistance(dynamic value) {
+    if (value is String) {
+      return value;
+    } else if (value is double || value is int) {
+      return value.toString();
+    } else {
+      return "0"; // Default to "0" for unexpected values
+    }
+  }
 }
+
+
 
 @JsonSerializable()
 class ShipmentLocation {
@@ -157,7 +172,53 @@ class Sender {
   factory Sender.fromJson(Map<String, dynamic> json) => _$SenderFromJson(json);
   Map<String, dynamic> toJson() => _$SenderToJson(this);
 }
+@JsonSerializable()
+class Rider {
+  final int id;
+  final String? avatar;
+  @JsonKey(name: 'fname')
+  final String? firstName;
+  @JsonKey(name: 'lname')
+  final String? lastName;
+  final String phone;
+  final String? dob;
+  final String email;
+  final String role;
+  final String status;
+  @JsonKey(name: 'referral_code')
+  final String referralCode;
+  @JsonKey(name: 'referred_by')
+  final String? referredBy;
+  @JsonKey(name: 'last_login_at')
+  final String? lastLoginAt;
+  @JsonKey(name: 'failed_login_attempts')
+  final int failedLoginAttempts;
+  @JsonKey(name: 'created_at')
+  final String createdAt;
+  @JsonKey(name: 'updated_at')
+  final String updatedAt;
 
+  Rider({
+    required this.id,
+    required this.avatar,
+    required this.firstName,
+    required this.lastName,
+    required this.phone,
+    this.dob,
+    required this.email,
+    required this.role,
+    required this.status,
+    required this.referralCode,
+    this.referredBy,
+    this.lastLoginAt,
+    required this.failedLoginAttempts,
+    required this.createdAt,
+    required this.updatedAt,
+  });
+
+  factory Rider.fromJson(Map<String, dynamic> json) => _$RiderFromJson(json);
+  Map<String, dynamic> toJson() => _$RiderToJson(this);
+}
 @JsonSerializable()
 class Item {
   final int id;
@@ -165,13 +226,13 @@ class Item {
   @JsonKey(name: 'description', defaultValue: "")
   final String? description;
   final String category;
-  final String image;
   final String weight;
   final int quantity;
   @JsonKey(name: 'shipment_id')
   final int shipmentId;
   @JsonKey(name: 'created_at')
   final String createdAt;
+  final String image;
   @JsonKey(name: 'updated_at')
   final String updatedAt;
 
@@ -181,8 +242,8 @@ class Item {
     required this.description,
     required this.category,
     required this.weight,
-    required this.image,
     required this.quantity,
+    required this.image,
     required this.shipmentId,
     required this.createdAt,
     required this.updatedAt,
@@ -195,7 +256,7 @@ class Item {
 @JsonSerializable()
 class CourierTypePrice {
   @JsonKey(name: 'courier_type_id')
-  final dynamic courierTypeId;
+  final int courierTypeId;
   @JsonKey(name: 'courier_type')
   final String courierType;
   final double price;

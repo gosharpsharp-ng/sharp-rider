@@ -49,7 +49,7 @@ class SignInController extends GetxController {
             ? loginController.text
             : filledPhoneNumber?.completeNumber ?? '',
         'password': passwordController.text,
-        // "as_rider":true
+        "as_rider":true
       };
       APIResponse response = await authService.login(data);
       showToast(

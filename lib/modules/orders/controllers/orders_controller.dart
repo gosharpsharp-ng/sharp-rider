@@ -453,6 +453,7 @@ class OrdersController extends GetxController {
       "tracking_id": selectedShipment!.trackingId,
       "action": status.toLowerCase(),
     };
+
     // Call the API
     APIResponse response = await shipmentService.updateShipmentStatus(data);
     // Handle response
@@ -462,6 +463,10 @@ class OrdersController extends GetxController {
     );
 
     if (response.status == "success") {
+      if (status == 'deliver') {
+        await Get.find<LocationService>().leaveParcelTrackingRoom(
+            trackingId: selectedShipment?.trackingId ?? "");
+      }
       selectedShipment = ShipmentModel.fromJson(response.data);
       if (['picked'].contains(selectedShipment!.status)) {
         drawPolylineFromRiderToDestination(context,

@@ -40,7 +40,7 @@ class LocationService extends GetxService {
     }
   }
 
-  void leaveParcelTrackingRoom({required String trackingId}) async {
+   leaveParcelTrackingRoom({required String trackingId}) async {
     if (Get.isRegistered<SocketService>()) {
       Get.find<SocketService>()
           .joinTrackingRoom(trackingId: trackingId, msg: 'leave_room');
@@ -124,18 +124,8 @@ class LocationService extends GetxService {
 
   void listenForParcelLocationUpdate({required String roomId}) {
     if (Get.isRegistered<SocketService>()) {
-      print("Listening to Parcel Location Update");
-      // Otherwise send location update
       Get.find<SocketService>().listenForParcelLocationUpdate(
-          roomId: roomId,
-          onLocationUpdate: (data) {
-            print(
-                "=============================================================================================================================");
-            print(
-                "I just received an update of the user's location: ${data.toString()}");
-            print(
-                "=============================================================================================================================");
-          });
+          roomId: roomId, onLocationUpdate: (data) {});
     }
   }
 
