@@ -26,7 +26,7 @@ class OrderDetailsScreen extends StatelessWidget {
               Padding(
                   padding: const EdgeInsets.all(12.0),
                   child: ['accepted', 'picked', 'delivered']
-                          .contains(ordersController.selectedShipment!.status)
+                          .contains(ordersController.selectedDelivery!.status)
                       ? CustomButton(
                           onPressed: () async {
                             final serviceManager = Get.find<ServiceManager>();
@@ -34,13 +34,12 @@ class OrderDetailsScreen extends StatelessWidget {
                               await Get.find<LocationService>()
                                   .joinParcelTrackingRoom(
                                       trackingId: ordersController
-                                              .selectedShipment?.trackingId ??
+                                              .selectedDelivery?.trackingId ??
                                           "");
                               Get.find<LocationService>()
                                   .startEmittingParcelLocation(
-                                      trackingId: ordersController
-                                              .selectedShipment?.trackingId ??
-                                          "");
+                                      deliveryModel:
+                                          ordersController.selectedDelivery!);
                               Get.find<LocationService>()
                                   .listenForParcelLocationUpdate(
                                       roomId: "rider_tracking");
@@ -51,68 +50,67 @@ class OrderDetailsScreen extends StatelessWidget {
                               await Get.find<LocationService>()
                                   .joinParcelTrackingRoom(
                                       trackingId: ordersController
-                                              .selectedShipment?.trackingId ??
+                                              .selectedDelivery?.trackingId ??
                                           "");
                               Get.find<LocationService>()
                                   .startEmittingParcelLocation(
-                                      trackingId: ordersController
-                                              .selectedShipment?.trackingId ??
-                                          "");
+                                      deliveryModel:
+                                          ordersController.selectedDelivery!);
                               Get.find<LocationService>()
                                   .listenForParcelLocationUpdate(
-                                  roomId:"rider_tracking");
+                                      roomId: "rider_tracking");
                             }
                             Get.toNamed(Routes.ORDER_TRACKING_SCREEN);
                             if (['delivered', 'rejected', 'canceled'].contains(
-                                ordersController.selectedShipment!.status)) {
+                                ordersController.selectedDelivery!.status)) {
                               ordersController.drawPolyLineFromOriginToDestination(
                                   context,
                                   originLatitude: ordersController
-                                      .selectedShipment!
+                                      .selectedDelivery!
                                       .originLocation
                                       .latitude,
                                   originLongitude: ordersController
-                                      .selectedShipment!
+                                      .selectedDelivery!
                                       .originLocation
                                       .longitude,
                                   originAddress: ordersController
-                                      .selectedShipment!.originLocation.name,
+                                      .selectedDelivery!.originLocation.name,
                                   destinationLatitude: ordersController
-                                      .selectedShipment!
+                                      .selectedDelivery!
                                       .destinationLocation
                                       .latitude,
                                   destinationLongitude: ordersController
-                                      .selectedShipment!
+                                      .selectedDelivery!
                                       .destinationLocation
                                       .longitude,
                                   destinationAddress: ordersController
-                                      .selectedShipment!
+                                      .selectedDelivery!
                                       .destinationLocation
                                       .name);
                             } else if (['accepted'].contains(
-                                ordersController.selectedShipment!.status)) {
+                                ordersController.selectedDelivery!.status)) {
                               ordersController
                                   .drawPolylineFromRiderToDestination(context,
                                       destinationPosition: LatLng(
                                           double.parse(ordersController
-                                              .selectedShipment!
+                                              .selectedDelivery!
                                               .originLocation
                                               .latitude),
                                           double.parse(ordersController
-                                              .selectedShipment!
+                                              .selectedDelivery!
                                               .originLocation
                                               .longitude)));
                             } else if (['picked'].contains(
-                                ordersController.selectedShipment!.status)) {
+                                ordersController.selectedDelivery!.status)) {
                               ordersController
                                   .drawPolylineFromRiderToDestination(context,
                                       destinationPosition: LatLng(
                                           double.parse(ordersController
-                                              .selectedShipment!
+                                              .selectedDelivery!
                                               .destinationLocation
                                               .latitude),
                                           double.parse(ordersController
-                                              .selectedShipment!
+                                              .selectedDelivery!
                                               .destinationLocation
                                               .longitude)));
                             }
@@ -151,18 +149,18 @@ class OrderDetailsScreen extends StatelessWidget {
                           OrderSummaryDetailItem(
                             title: "Pick up address",
                             value: ordersController
-                                    .selectedShipment?.originLocation.name ??
+                                    .selectedDelivery?.originLocation.name ??
                                 "",
                           ),
                           OrderSummaryDetailItem(
                             title: "Sender",
                             value:
-                                '${ordersController.selectedShipment?.sender?.firstName ?? ""} ${ordersController.selectedShipment?.sender?.lastName ?? ""}',
+                                '${ordersController.selectedDelivery?.sender?.firstName ?? ""} ${ordersController.selectedDelivery?.sender?.lastName ?? ""}',
                           ),
                           OrderSummaryDetailItem(
                             title: "Sender's phone",
                             value: ordersController
-                                    .selectedShipment?.sender?.phone ??
+                                    .selectedDelivery?.sender?.phone ??
                                 "",
                           ),
                         ],
@@ -174,13 +172,13 @@ class OrderDetailsScreen extends StatelessWidget {
                             titleIconAsset: SvgAssets.profileIcon,
                             title: "Receiver's name",
                             value: ordersController
-                                    .selectedShipment?.receiver.name ??
+                                    .selectedDelivery?.receiver.name ??
                                 "",
                           ),
                           OrderSummaryDetailItem(
                             titleIconAsset: SvgAssets.locationIcon,
                             title: "Drop off address",
-                            value: ordersController.selectedShipment
+                            value: ordersController.selectedDelivery
                                     ?.destinationLocation.name ??
                                 "",
                           ),
@@ -188,7 +186,7 @@ class OrderDetailsScreen extends StatelessWidget {
                             titleIconAsset: SvgAssets.contactIcon,
                             title: "Receiver's phone",
                             value: ordersController
-                                    .selectedShipment?.receiver.phone ??
+                                    .selectedDelivery?.receiver.phone ??
                                 "",
                           ),
                         ],
@@ -198,10 +196,10 @@ class OrderDetailsScreen extends StatelessWidget {
                         title: "Delivery Items",
                         children: [
                           ...List.generate(
-                              ordersController.selectedShipment!.items.length,
+                              ordersController.selectedDelivery!.items.length,
                               (i) => OrderItemAccordion(
                                   shipmentItemData: ordersController
-                                      .selectedShipment!.items[i]))
+                                      .selectedDelivery!.items[i]))
                         ],
                       ),
                       SectionBox(
@@ -215,7 +213,7 @@ class OrderDetailsScreen extends StatelessWidget {
                             },
                             clickableTitle: "Track",
                             value:
-                                ordersController.selectedShipment?.trackingId ??
+                                ordersController.selectedDelivery?.trackingId ??
                                     "",
                           ),
                           // ClickAbleOrderSummaryDetailItem(
@@ -229,7 +227,7 @@ class OrderDetailsScreen extends StatelessWidget {
                           OrderSummaryStatusDetailItem(
                             title: "Status",
                             value:
-                                ordersController.selectedShipment?.status ?? "",
+                                ordersController.selectedDelivery?.status ?? "",
                           ),
                           const OrderSummaryDetailItem(
                               title: "Total amount",

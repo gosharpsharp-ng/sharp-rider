@@ -7,7 +7,7 @@ import 'package:go_logistics_driver/models/rider_stats_model.dart';
 import 'package:go_logistics_driver/utils/exports.dart';
 
 class OrdersController extends GetxController {
-  final shipmentService = serviceLocator<ShipmentService>();
+  final deliveryService = serviceLocator<DeliveryService>();
   final profileService = serviceLocator<ProfileService>();
   final sendingInfoFormKey = GlobalKey<FormState>();
   final deliveriesSearchFormKey = GlobalKey<FormState>();
@@ -15,50 +15,50 @@ class OrdersController extends GetxController {
   final serviceManager = Get.find<ServiceManager>();
   final settingsController = Get.find<SettingsController>();
 
-  List<ShipmentModel> allShipments = [];
+  List<DeliveryModel> allDeliveries = [];
   String? distanceToDestination;
   String? durationToDestination;
-  bool fetchingShipments = false;
-  Future<void> fetchShipments() async {
-    fetchingShipments = true;
+  bool fetchingDeliveries = false;
+  Future<void> fetchDeliveries() async {
+    fetchingDeliveries = true;
     update();
 
-    APIResponse response = await shipmentService.getAllShipment();
+    APIResponse response = await deliveryService.getAllDeliveries();
     // Handle response
 
-    fetchingShipments = false;
+    fetchingDeliveries = false;
     update();
     if (response.status == "success") {
-      allShipments = (response.data as List)
-          .map((sh) => ShipmentModel.fromJson(sh))
+      allDeliveries = (response.data as List)
+          .map((sh) => DeliveryModel.fromJson(sh))
           .toList();
       update();
     }
     getRiderStats();
   }
 
-  Future<void> getShipment() async {
-    fetchingShipments = true;
+  Future<void> getDelivery() async {
+    fetchingDeliveries = true;
     update();
 
     APIResponse response =
-        await shipmentService.getShipment({'id': selectedShipment!.id});
+        await deliveryService.getDelivery({'id': selectedDelivery!.id});
     // Handle response
     showToast(
       message: response.message,
       isError: response.status != "success",
     );
-    fetchingShipments = false;
+    fetchingDeliveries = false;
     update();
     if (response.status == "success") {
-      selectedShipment = ShipmentModel.fromJson(response.data);
+      selectedDelivery = DeliveryModel.fromJson(response.data);
       update();
     }
   }
 
-  ShipmentModel? selectedShipment;
-  setSelectedShipment(ShipmentModel sh) {
-    selectedShipment = sh;
+  DeliveryModel? selectedDelivery;
+  setSelectedDelivery(DeliveryModel sh) {
+    selectedDelivery = sh;
 
     update();
   }
@@ -175,20 +175,20 @@ class OrdersController extends GetxController {
     Marker originMarker = Marker(
       markerId: const MarkerId('OriginID'),
       infoWindow: InfoWindow(
-          title: selectedShipment?.originLocation.name ?? "",
+          title: selectedDelivery?.originLocation.name ?? "",
           snippet: "Sender"),
-      position: LatLng(double.parse(selectedShipment!.originLocation.latitude),
-          double.parse(selectedShipment!.originLocation.longitude)),
+      position: LatLng(double.parse(selectedDelivery!.originLocation.latitude),
+          double.parse(selectedDelivery!.originLocation.longitude)),
       icon: BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueRed),
     );
     Marker destinationMarker = Marker(
       markerId: const MarkerId('destinationID'),
       infoWindow: InfoWindow(
-          title: selectedShipment?.destinationLocation.name ?? "",
+          title: selectedDelivery?.destinationLocation.name ?? "",
           snippet: "Receiver"),
       position: LatLng(
-          double.parse(selectedShipment!.destinationLocation.latitude),
-          double.parse(selectedShipment!.destinationLocation.longitude)),
+          double.parse(selectedDelivery!.destinationLocation.latitude),
+          double.parse(selectedDelivery!.destinationLocation.longitude)),
       icon: BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueGreen),
     );
     markerSet.clear();
@@ -307,26 +307,26 @@ class OrdersController extends GetxController {
       icon: bikeMarkerIcon ?? BitmapDescriptor.defaultMarker,
     );
     Marker? destinationMarker;
-    if (['accepted'].contains(selectedShipment!.status)) {
+    if (['accepted'].contains(selectedDelivery!.status)) {
       destinationMarker = Marker(
         markerId: const MarkerId('senderID'),
         infoWindow: InfoWindow(
-            title: selectedShipment?.originLocation.name ?? "",
+            title: selectedDelivery?.originLocation.name ?? "",
             snippet: "Sender"),
         position: LatLng(
-            double.parse(selectedShipment!.originLocation.latitude),
-            double.parse(selectedShipment!.originLocation.longitude)),
+            double.parse(selectedDelivery!.originLocation.latitude),
+            double.parse(selectedDelivery!.originLocation.longitude)),
         icon: BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueGreen),
       );
-    } else if (['picked'].contains(selectedShipment!.status)) {
+    } else if (['picked'].contains(selectedDelivery!.status)) {
       destinationMarker = Marker(
         markerId: const MarkerId('receiverID'),
         infoWindow: InfoWindow(
-            title: selectedShipment?.destinationLocation.name ?? "",
+            title: selectedDelivery?.destinationLocation.name ?? "",
             snippet: "Receiver"),
         position: LatLng(
-            double.parse(selectedShipment!.destinationLocation.latitude),
-            double.parse(selectedShipment!.destinationLocation.longitude)),
+            double.parse(selectedDelivery!.destinationLocation.latitude),
+            double.parse(selectedDelivery!.destinationLocation.longitude)),
         icon: BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueGreen),
       );
     }
@@ -358,12 +358,12 @@ class OrdersController extends GetxController {
     update();
   }
 
-  bool acceptingShipment = false;
-  bool acceptedShipment = false;
-  Future<void> acceptShipment(BuildContext context,
+  bool acceptingDelivery = false;
+  bool acceptedDelivery = false;
+  Future<void> acceptDelivery(BuildContext context,
       {required String trackingId}) async {
-    acceptedShipment = false;
-    acceptingShipment = true;
+    acceptedDelivery = false;
+    acceptingDelivery = true;
     update();
     final dynamic data = {
       "tracking_id": trackingId,
@@ -371,68 +371,86 @@ class OrdersController extends GetxController {
     };
 
     // Call the API
-    APIResponse response = await shipmentService.updateShipmentStatus(data);
+    APIResponse response = await deliveryService.updateDeliveryStatus(data);
     // Handle response
     showToast(
       message: response.message,
       isError: response.status != "success",
     );
-    acceptingShipment = false;
+    acceptingDelivery = false;
     update();
     if (response.status == "success") {
-      selectedShipment = ShipmentModel.fromJson(response.data);
+      selectedDelivery = DeliveryModel.fromJson(response.data);
 
       if (Get.isRegistered<LocationService>()) {
         await Get.find<LocationService>().joinParcelTrackingRoom(
-            trackingId: selectedShipment?.trackingId ?? "");
-        Get.find<LocationService>().startEmittingParcelLocation(
-            trackingId: selectedShipment?.trackingId ?? "");
+            trackingId: selectedDelivery?.trackingId ?? "");
+        Get.find<LocationService>()
+            .notifyUserOfDeliveryAcceptanceWithLocationLocation(
+                deliveryModel: selectedDelivery!);
+        Get.find<LocationService>()
+            .startEmittingParcelLocation(deliveryModel: selectedDelivery!);
         Get.find<LocationService>()
             .listenForParcelLocationUpdate(roomId: "rider_tracking");
       } else {
         await serviceManager
             .initializeServices(settingsController.userProfile!);
         await Get.find<LocationService>().joinParcelTrackingRoom(
-            trackingId: selectedShipment?.trackingId ?? "");
-        Get.find<LocationService>().startEmittingParcelLocation(
-            trackingId: selectedShipment?.trackingId ?? "");
+            trackingId: selectedDelivery?.trackingId ?? "");
+        Get.find<LocationService>()
+            .notifyUserOfDeliveryAcceptanceWithLocationLocation(
+                deliveryModel: selectedDelivery!);
+        Get.find<LocationService>()
+            .startEmittingParcelLocation(deliveryModel: selectedDelivery!);
         Get.find<LocationService>()
             .listenForParcelLocationUpdate(roomId: "rider_tracking");
       }
-      acceptedShipment = true;
+      acceptedDelivery = true;
       update();
     }
   }
 
+  //
+  // BitmapDescriptor? bikeMarkerIcon;
+  // getBikeIcon() async {
+  //   var icon = await BitmapDescriptor.asset(
+  //       const ImageConfiguration(), PngAssets.carIcon,
+  //       width: 35.sp, height: 35.sp);
+  //   bikeMarkerIcon = icon;
+  //   update();
+  // }
   BitmapDescriptor? bikeMarkerIcon;
   getBikeIcon() async {
     var icon = await BitmapDescriptor.asset(
-        const ImageConfiguration(), PngAssets.carIcon,
-        width: 35.sp, height: 35.sp);
+      const ImageConfiguration(),
+      PngAssets.motorCycleIcon,
+      width: 35.sp,
+      height: 35.sp,
+    );
     bikeMarkerIcon = icon;
     update();
   }
 
   resetDeliveriesSearchFields() {
     searchQueryController.clear();
-    shipmentSearchResults.clear();
+    deliverySearchResults.clear();
     update();
   }
 
-  List<ShipmentModel> shipmentSearchResults = [];
+  List<DeliveryModel> deliverySearchResults = [];
   TextEditingController searchQueryController = TextEditingController();
-  bool searchingShipments = false;
-  searchShipments() async {
+  bool searchingDeliveries = false;
+  searchDeliveries() async {
     if (deliveriesSearchFormKey.currentState!.validate()) {
       dynamic data = {'search': searchQueryController.text};
-      searchingShipments = true;
+      searchingDeliveries = true;
       update();
-      APIResponse response = await shipmentService.searchShipments(data);
-      searchingShipments = false;
+      APIResponse response = await deliveryService.searchDeliveries(data);
+      searchingDeliveries = false;
       update();
       if (response.status == "success") {
-        shipmentSearchResults = (response.data as List)
-            .map((sh) => ShipmentModel.fromJson(sh))
+        deliverySearchResults = (response.data as List)
+            .map((sh) => DeliveryModel.fromJson(sh))
             .toList();
         update();
       } else {
@@ -444,18 +462,18 @@ class OrdersController extends GetxController {
     }
   }
 
-  bool updatingShipmentStatus = false;
-  Future<void> updateShipmentStatus(BuildContext context,
+  bool updatingDeliveryStatus = false;
+  Future<void> updateDeliveryStatus(BuildContext context,
       {required String status}) async {
-    updatingShipmentStatus = true;
+    updatingDeliveryStatus = true;
     update();
     final dynamic data = {
-      "tracking_id": selectedShipment!.trackingId,
+      "tracking_id": selectedDelivery!.trackingId,
       "action": status.toLowerCase(),
     };
 
     // Call the API
-    APIResponse response = await shipmentService.updateShipmentStatus(data);
+    APIResponse response = await deliveryService.updateDeliveryStatus(data);
     // Handle response
     showToast(
       message: response.message,
@@ -465,30 +483,30 @@ class OrdersController extends GetxController {
     if (response.status == "success") {
       if (status == 'deliver') {
         await Get.find<LocationService>().leaveParcelTrackingRoom(
-            trackingId: selectedShipment?.trackingId ?? "");
+            trackingId: selectedDelivery?.trackingId ?? "");
       }
-      selectedShipment = ShipmentModel.fromJson(response.data);
-      if (['picked'].contains(selectedShipment!.status)) {
+      selectedDelivery = DeliveryModel.fromJson(response.data);
+      if (['picked'].contains(selectedDelivery!.status)) {
         drawPolylineFromRiderToDestination(context,
             destinationPosition: LatLng(
-                double.parse(selectedShipment!.destinationLocation.latitude),
-                double.parse(selectedShipment!.destinationLocation.longitude)));
-      } else if (['delivered'].contains(selectedShipment!.status)) {
+                double.parse(selectedDelivery!.destinationLocation.latitude),
+                double.parse(selectedDelivery!.destinationLocation.longitude)));
+      } else if (['delivered'].contains(selectedDelivery!.status)) {
         drawPolyLineFromOriginToDestination(context,
-            originLatitude: selectedShipment!.originLocation.latitude,
-            originLongitude: selectedShipment!.originLocation.longitude,
-            originAddress: selectedShipment!.originLocation.name,
-            destinationLatitude: selectedShipment!.destinationLocation.latitude,
+            originLatitude: selectedDelivery!.originLocation.latitude,
+            originLongitude: selectedDelivery!.originLocation.longitude,
+            originAddress: selectedDelivery!.originLocation.name,
+            destinationLatitude: selectedDelivery!.destinationLocation.latitude,
             destinationLongitude:
-                selectedShipment!.destinationLocation.longitude,
-            destinationAddress: selectedShipment!.destinationLocation.name);
+                selectedDelivery!.destinationLocation.longitude,
+            destinationAddress: selectedDelivery!.destinationLocation.name);
       }
-      await getShipment();
-      updatingShipmentStatus = false;
+      await getDelivery();
+      updatingDeliveryStatus = false;
       update();
-      fetchShipments();
+      fetchDeliveries();
     } else {
-      updatingShipmentStatus = false;
+      updatingDeliveryStatus = false;
       update();
     }
   }
@@ -508,7 +526,7 @@ class OrdersController extends GetxController {
   @override
   void onReady() {
     super.onReady();
-    fetchShipments();
+    fetchDeliveries();
     getBikeIcon();
   }
 }

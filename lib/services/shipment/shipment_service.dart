@@ -1,25 +1,25 @@
 import 'package:go_logistics_driver/utils/exports.dart';
 
-class ShipmentService extends CoreService {
-  Future<ShipmentService> init() async => this;
+class DeliveryService extends CoreService {
+  Future<DeliveryService> init() async => this;
 
-  Future<APIResponse> updateShipmentStatus(dynamic data) async {
+  Future<APIResponse> updateDeliveryStatus(dynamic data) async {
     return await send(
         "/shipments/${data['tracking_id'].toString()}?action=${data['action']}",
         null);
   }
-  Future<APIResponse> getAllShipment() async {
+  Future<APIResponse> getAllDeliveries() async {
     return await fetch("/shipments");
   }
 
-  Future<APIResponse> getShipment(dynamic data) async {
+  Future<APIResponse> getDelivery(dynamic data) async {
     return await fetch("/shipments/${data['id']}");
   }
 
   Future<APIResponse> getRider(dynamic data) async {
     return await send("/api/auth/password-reset", data);
   }
-  Future<APIResponse> searchShipments(dynamic data) async {
+  Future<APIResponse> searchDeliveries(dynamic data) async {
     return await fetch("/shipments?search=${data['search']}");
   }
 }

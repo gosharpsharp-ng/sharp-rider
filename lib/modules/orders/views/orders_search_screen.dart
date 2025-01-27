@@ -33,9 +33,9 @@ class SearchDeliveriesScreen extends StatelessWidget {
                       )),
                   suffixWidget: CustomGreenTextButton(
                     title: "Go",
-                    isLoading: ordersController.searchingShipments,
+                    isLoading: ordersController.searchingDeliveries,
                     onPressed: () {
-                      ordersController.searchShipments();
+                      ordersController.searchDeliveries();
                     },
                   ),
                   // controller: signInProvider.emailController,
@@ -49,7 +49,7 @@ class SearchDeliveriesScreen extends StatelessWidget {
                 SizedBox(
                   height: 10.h,
                 ),
-                ordersController.shipmentSearchResults.isEmpty
+                ordersController.deliverySearchResults.isEmpty
                     ? Container(
                   width: 1.sw,
                   height: 1.sh * 0.6,
@@ -57,7 +57,7 @@ class SearchDeliveriesScreen extends StatelessWidget {
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       customText(
-                        ordersController.searchingShipments
+                        ordersController.searchingDeliveries
                             ? "Loading..."
                             : "Enter your search query above",
                       ),
@@ -66,16 +66,16 @@ class SearchDeliveriesScreen extends StatelessWidget {
                 )
                     : Column(
                   children: List.generate(
-                    ordersController.shipmentSearchResults.length,
+                    ordersController.deliverySearchResults.length,
                         (i) => OrderItemWidget(
                       onSelected: () {
                         Get.back();
-                        ordersController.setSelectedShipment(
-                            ordersController.shipmentSearchResults[i]);
+                        ordersController.setSelectedDelivery(
+                            ordersController.deliverySearchResults[i]);
                         Get.toNamed(
                             Routes.ORDER_DETAILS);
                       },
-                      shipment: ordersController.shipmentSearchResults[i],
+                      shipment: ordersController.deliverySearchResults[i],
                     ),
                   ),
                 ),

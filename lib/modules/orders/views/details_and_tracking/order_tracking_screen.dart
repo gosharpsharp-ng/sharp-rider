@@ -1,5 +1,6 @@
 import 'package:fbroadcast/fbroadcast.dart' as broadcast;
 import 'package:geolocator/geolocator.dart';
+import 'package:go_logistics_driver/modules/orders/views/widgets/phone_number_widget.dart';
 import 'package:go_logistics_driver/utils/exports.dart';
 
 class OrderTrackingScreen extends StatefulWidget {
@@ -22,7 +23,7 @@ class _OrderTrackingScreenState extends State<OrderTrackingScreen> {
         locationService.currentPosition?.longitude ?? 0.0);
     checkIfLocationPermissionIsAllowed();
     if (!['delivered', 'rejected']
-        .contains(ordersController.selectedShipment!.status)) {
+        .contains(ordersController.selectedDelivery!.status)) {
       setupLocationTracking();
     }
   }
@@ -67,22 +68,22 @@ class _OrderTrackingScreenState extends State<OrderTrackingScreen> {
 
     if (deviation > deviationThreshold) {
       // Recalculate the route
-      if (['accepted'].contains(ordersController.selectedShipment!.status)) {
+      if (['accepted'].contains(ordersController.selectedDelivery!.status)) {
         ordersController.drawPolylineFromRiderToDestination(context,
             destinationPosition: LatLng(
                 double.parse(
-                    ordersController.selectedShipment!.originLocation.latitude),
+                    ordersController.selectedDelivery!.originLocation.latitude),
                 double.parse(ordersController
-                    .selectedShipment!.originLocation.longitude)),
+                    .selectedDelivery!.originLocation.longitude)),
             currentLocation: newPosition);
       } else if (['picked']
-          .contains(ordersController.selectedShipment!.status)) {
+          .contains(ordersController.selectedDelivery!.status)) {
         ordersController.drawPolylineFromRiderToDestination(context,
             destinationPosition: LatLng(
                 double.parse(ordersController
-                    .selectedShipment!.destinationLocation.latitude),
+                    .selectedDelivery!.destinationLocation.latitude),
                 double.parse(ordersController
-                    .selectedShipment!.destinationLocation.longitude)),
+                    .selectedDelivery!.destinationLocation.longitude)),
             currentLocation: newPosition);
       }
 
@@ -183,7 +184,7 @@ class _OrderTrackingScreenState extends State<OrderTrackingScreen> {
             children: [
               Container(
                 width: 1.sw,
-                height: ordersController.selectedShipment!.status == 'delivered'
+                height: ordersController.selectedDelivery!.status == 'delivered'
                     ? 1.sh * 0.804
                     : 1.sh * 0.65,
                 margin: EdgeInsets.symmetric(horizontal: 0.sp),
@@ -218,17 +219,17 @@ class _OrderTrackingScreenState extends State<OrderTrackingScreen> {
               ),
               DraggableScrollableSheet(
                 initialChildSize:
-                    ordersController.selectedShipment!.status!.toLowerCase() ==
+                    ordersController.selectedDelivery!.status!.toLowerCase() ==
                             'delivered'
                         ? 0.31
-                        : 0.31,
+                        : 0.35,
                 minChildSize:
-                    ordersController.selectedShipment!.status!.toLowerCase() ==
+                    ordersController.selectedDelivery!.status!.toLowerCase() ==
                             'delivered'
                         ? 0.31
                         : 0.31,
                 maxChildSize:
-                    ordersController.selectedShipment!.status!.toLowerCase() ==
+                    ordersController.selectedDelivery!.status!.toLowerCase() ==
                             'delivered'
                         ? 0.50
                         : 0.65,
@@ -237,19 +238,19 @@ class _OrderTrackingScreenState extends State<OrderTrackingScreen> {
                 builder: (context, scrollController) {
                   return StatefulBuilder(
                     builder: (context, setState) {
-                      return SingleChildScrollView(
-                        controller: scrollController,
-                        physics: const ClampingScrollPhysics(),
-                        child: ConstrainedBox(
-                          constraints: BoxConstraints(
-                            maxHeight: MediaQuery.of(context).size.height *
-                                0.63, // Ensure content does not exceed max size
-                          ),
+                      return ConstrainedBox(
+                        constraints: BoxConstraints(
+                          maxHeight: MediaQuery.of(context).size.height *
+                              0.65, // Ensure content does not exceed max size
+                        ),
+                        child: SingleChildScrollView(
+                          controller: scrollController,
+                          physics: const ClampingScrollPhysics(),
                           child: Container(
                             // height: MediaQuery.of(context).size.height,
                             padding: EdgeInsets.symmetric(vertical: 8.sp),
                             decoration: const BoxDecoration(
-                              color: AppColors.backgroundColor,
+                              color: AppColors.whiteColor,
                               borderRadius: BorderRadius.only(
                                 topLeft: Radius.circular(30),
                                 topRight: Radius.circular(30),
@@ -260,11 +261,10 @@ class _OrderTrackingScreenState extends State<OrderTrackingScreen> {
                               children: [
                                 ['delivered', 'rejected', 'canceled'].contains(
                                         ordersController
-                                            .selectedShipment!.status!
+                                            .selectedDelivery!.status!
                                             .toLowerCase())
                                     ? const SizedBox.shrink()
                                     : Container(
-                                        width: 1.sw,
                                         child: Column(
                                           mainAxisAlignment:
                                               MainAxisAlignment.start,
@@ -273,50 +273,69 @@ class _OrderTrackingScreenState extends State<OrderTrackingScreen> {
                                           children: [
                                             Row(
                                               mainAxisAlignment:
-                                                  MainAxisAlignment.end,
+                                                  MainAxisAlignment.center,
                                               children: [
                                                 Padding(
                                                   padding: const EdgeInsets
                                                       .symmetric(
                                                       horizontal: 12),
-                                                  child: FloatingActionButton(
+                                                  child: TextButton(
                                                     onPressed: () {
                                                       // _launchGoogleMaps(pickLocation!);
                                                       if (ordersController
-                                                              .selectedShipment!
+                                                              .selectedDelivery!
                                                               .status!
                                                               .toLowerCase() ==
                                                           'accepted') {
                                                         openGoogleMaps(
-                                                            '${ordersController.selectedShipment!.originLocation.latitude},${ordersController.selectedShipment!.originLocation.longitude}');
+                                                            '${ordersController.selectedDelivery!.originLocation.latitude},${ordersController.selectedDelivery!.originLocation.longitude}');
                                                       } else if (ordersController
-                                                              .selectedShipment!
+                                                              .selectedDelivery!
                                                               .status!
                                                               .toLowerCase() ==
                                                           'picked') {
                                                         openGoogleMaps(
-                                                            '${ordersController.selectedShipment!.destinationLocation.latitude},${ordersController.selectedShipment!.destinationLocation.longitude}');
+                                                            '${ordersController.selectedDelivery!.destinationLocation.latitude},${ordersController.selectedDelivery!.destinationLocation.longitude}');
                                                       }
                                                     },
-                                                    backgroundColor:
-                                                        AppColors.whiteColor,
                                                     child: Container(
                                                       padding:
-                                                          EdgeInsets.all(5.sp),
+                                                          EdgeInsets.symmetric(
+                                                              horizontal: 15.sp,
+                                                              vertical: 5.sp),
+                                                      decoration: BoxDecoration(
+                                                          color: AppColors
+                                                              .greenColor,
+                                                          borderRadius:
+                                                              BorderRadius
+                                                                  .circular(
+                                                                      15.r)),
                                                       // width: 55.w,
                                                       child: Row(
                                                         children: [
-                                                          Expanded(
-                                                            child: SvgPicture.asset(
-                                                                SvgAssets
-                                                                    .googleMapsIcon,
-                                                                height: 55.sp,
-                                                                width: 55.sp),
+                                                          SvgPicture.asset(
+                                                              SvgAssets
+                                                                  .googleMapsIcon,
+                                                              height: 30.sp,
+                                                              width: 30.sp),
+                                                          customText(
+                                                            "Navigate",
+                                                            fontSize: 14.sp,
+                                                            fontWeight:
+                                                                FontWeight.bold,
+                                                            color: AppColors
+                                                                .whiteColor,
+                                                            overflow:
+                                                                TextOverflow
+                                                                    .visible,
                                                           ),
-                                                          const Icon(
-                                                              Icons.directions,
+                                                          SizedBox(
+                                                            width: 15.sp,
+                                                          ),
+                                                          Icon(Icons.directions,
+                                                              size: 25.sp,
                                                               color:
-                                                                  Colors.blue),
+                                                                  Colors.white),
                                                         ],
                                                       ),
                                                     ),
@@ -324,49 +343,24 @@ class _OrderTrackingScreenState extends State<OrderTrackingScreen> {
                                                 ),
                                               ],
                                             ),
-                                            // Padding(
-                                            //     padding: const EdgeInsets.all(8.0),
-                                            //     child: ordersController.selectedShipment!.status!
-                                            //                 .toLowerCase() ==
-                                            //             'accepted'
-                                            //         ? CustomButton(
-                                            //             onPressed: () {
-                                            //                            },
-                                            //             title: "Go to pick-up address",
-                                            //             width: 1.sw,
-                                            //             backgroundColor: AppColors.greenColor,
-                                            //             fontColor: AppColors.whiteColor,
-                                            //           )
-                                            //         : ordersController.selectedShipment!.status!
-                                            //                     .toLowerCase() ==
-                                            //                 'picked'
-                                            //             ? CustomButton(
-                                            //                 onPressed: () {
-                                            //                                    },
-                                            //                 title: "Go to drop off location",
-                                            //                 width: 1.sw,
-                                            //                 backgroundColor: AppColors.greenColor,
-                                            //                 fontColor: AppColors.whiteColor,
-                                            //               )
-                                            //             : SizedBox.shrink()),
                                             Padding(
                                               padding:
                                                   const EdgeInsets.all(8.0),
                                               child: ordersController
-                                                          .selectedShipment!
+                                                          .selectedDelivery!
                                                           .status!
                                                           .toLowerCase() ==
                                                       'accepted'
                                                   ? CustomButton(
                                                       onPressed: () {
                                                         ordersController
-                                                            .updateShipmentStatus(
+                                                            .updateDeliveryStatus(
                                                                 context,
                                                                 status:
                                                                     'pickup');
                                                       },
                                                       isBusy: ordersController
-                                                          .updatingShipmentStatus,
+                                                          .updatingDeliveryStatus,
                                                       title:
                                                           "Click here if you've picked the item",
                                                       width: 1.sw,
@@ -376,20 +370,20 @@ class _OrderTrackingScreenState extends State<OrderTrackingScreen> {
                                                           AppColors.whiteColor,
                                                     )
                                                   : ordersController
-                                                              .selectedShipment!
+                                                              .selectedDelivery!
                                                               .status!
                                                               .toLowerCase() ==
                                                           'picked'
                                                       ? CustomButton(
                                                           onPressed: () {
                                                             ordersController
-                                                                .updateShipmentStatus(
+                                                                .updateDeliveryStatus(
                                                                     context,
                                                                     status:
                                                                         'deliver');
                                                           },
                                                           isBusy: ordersController
-                                                              .updatingShipmentStatus,
+                                                              .updatingDeliveryStatus,
                                                           title:
                                                               "Click here if you've delivered the item",
                                                           width: 1.sw,
@@ -452,7 +446,7 @@ class _OrderTrackingScreenState extends State<OrderTrackingScreen> {
                                                 ),
                                                 customText(
                                                   ordersController
-                                                          .selectedShipment
+                                                          .selectedDelivery
                                                           ?.originLocation
                                                           .name ??
                                                       "",
@@ -517,7 +511,7 @@ class _OrderTrackingScreenState extends State<OrderTrackingScreen> {
                                                 ),
                                                 customText(
                                                   ordersController
-                                                          .selectedShipment
+                                                          .selectedDelivery
                                                           ?.destinationLocation
                                                           .name ??
                                                       "",
@@ -537,9 +531,9 @@ class _OrderTrackingScreenState extends State<OrderTrackingScreen> {
                                 ),
                                 Container(
                                   padding: EdgeInsets.symmetric(
-                                      horizontal: 10.sp, vertical: 10.sp),
+                                      horizontal: 10.sp, vertical: 5.sp),
                                   margin: EdgeInsets.symmetric(
-                                      horizontal: 10.sp, vertical: 10.sp),
+                                      horizontal: 10.sp, vertical: 0.sp),
                                   width: 1.sw,
                                   decoration: BoxDecoration(
                                       borderRadius: BorderRadius.circular(12.r),
@@ -549,22 +543,26 @@ class _OrderTrackingScreenState extends State<OrderTrackingScreen> {
                                       Row(
                                         children: [
                                           Visibility(
-                                            visible: settingsController
-                                                    .userProfile?.avatar !=
+                                            visible: ordersController
+                                                    .selectedDelivery
+                                                    ?.sender
+                                                    ?.avatar !=
                                                 null,
                                             replacement: CircleAvatar(
                                               radius: 15.r,
                                               backgroundColor:
                                                   AppColors.backgroundColor,
                                               child: customText(
-                                                "${settingsController.userProfile?.fname.substring(0, 1) ?? ""}${settingsController.userProfile?.lname.substring(0, 1) ?? ""}",
+                                                "${ordersController.selectedDelivery?.sender?.firstName?.substring(0, 1) ?? ""}${ordersController.selectedDelivery?.sender?.lastName?.substring(0, 1) ?? ""}",
                                                 fontSize: 8.sp,
                                               ),
                                             ),
                                             child: CircleAvatar(
                                                 backgroundImage:
                                                     CachedNetworkImageProvider(
-                                                  settingsController.userProfile
+                                                  ordersController
+                                                          .selectedDelivery
+                                                          ?.sender
                                                           ?.avatar ??
                                                       '',
                                                 ),
@@ -579,7 +577,7 @@ class _OrderTrackingScreenState extends State<OrderTrackingScreen> {
                                                   CrossAxisAlignment.start,
                                               children: [
                                                 customText(
-                                                  "${settingsController.userProfile?.fname} ${settingsController.userProfile?.lname}",
+                                                  "${ordersController.selectedDelivery?.sender?.firstName} ${ordersController.selectedDelivery?.sender?.lastName}",
                                                   color: AppColors.blackColor,
                                                   fontSize: 16.sp,
                                                   fontWeight: FontWeight.w500,
@@ -590,7 +588,7 @@ class _OrderTrackingScreenState extends State<OrderTrackingScreen> {
                                                   height: 5.h,
                                                 ),
                                                 customText(
-                                                  "Courier",
+                                                  "Sender",
                                                   color: AppColors
                                                       .obscureTextColor,
                                                   fontSize: 12.sp,
@@ -603,6 +601,34 @@ class _OrderTrackingScreenState extends State<OrderTrackingScreen> {
                                           ),
                                         ],
                                       ),
+                                      PhoneNumberWidget(
+                                          title: "Call sender",
+                                          phoneNumber: ordersController
+                                                  .selectedDelivery
+                                                  ?.sender
+                                                  ?.phone ??
+                                              "",
+                                          callAction: () async {
+                                            makePhoneCall(ordersController
+                                                    .selectedDelivery
+                                                    ?.sender
+                                                    ?.phone ??
+                                                "");
+                                          }),
+                                      PhoneNumberWidget(
+                                          title: "Call receiver",
+                                          phoneNumber: ordersController
+                                                  .selectedDelivery
+                                                  ?.receiver
+                                                  .phone ??
+                                              "",
+                                          callAction: () {
+                                            makePhoneCall(ordersController
+                                                    .selectedDelivery
+                                                    ?.receiver
+                                                    .phone ??
+                                                "");
+                                          }),
                                       SizedBox(
                                         height: 10.h,
                                       ),
@@ -623,7 +649,7 @@ class _OrderTrackingScreenState extends State<OrderTrackingScreen> {
                                           OrderTrackingMiniInfoItem(
                                             title: "Order status",
                                             value: ordersController
-                                                    .selectedShipment
+                                                    .selectedDelivery
                                                     ?.status!
                                                     .capitalizeFirst ??
                                                 "",
@@ -644,7 +670,10 @@ class _OrderTrackingScreenState extends State<OrderTrackingScreen> {
                                         ],
                                       ),
                                       SizedBox(
-                                        height: 10.h,
+                                        height: 5.h,
+                                      ),
+                                      SizedBox(
+                                        height: 5.h,
                                       ),
                                       const DottedLine(
                                         dashLength: 3,

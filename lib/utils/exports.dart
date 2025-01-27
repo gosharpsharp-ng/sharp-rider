@@ -134,7 +134,7 @@ export 'package:go_logistics_driver/models/notification_model.dart';
 
 export 'dart:async';
 export 'package:go_logistics_driver/services/shipment/shipment_service.dart';
-export 'package:go_logistics_driver/models/shipment_model.dart';
+export 'package:go_logistics_driver/models/delivery_model.dart';
 export 'package:go_logistics_driver/modules/wallets/views/add_withdrawal_account_screen.dart';
 
 export 'package:image_picker/image_picker.dart';

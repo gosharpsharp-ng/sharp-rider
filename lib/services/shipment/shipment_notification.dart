@@ -113,35 +113,35 @@ class ShipmentNotificationService extends GetxService {
                           Expanded(
                             child: CustomButton(
                               onPressed: () async {
-                                await ordersController.acceptShipment(
+                                await ordersController.acceptDelivery(
                                   context,
                                   trackingId: shipment.trackingId,
                                 );
 
-                                if (ordersController.acceptedShipment) {
+                                if (ordersController.acceptedDelivery) {
                                   _isDialogShowing = false;
                                   Navigator.of(context).pop();
                                   Get.toNamed(Routes.ORDER_TRACKING_SCREEN);
-                                  ordersController.fetchShipments();
+                                  ordersController.fetchDeliveries();
                                   Get.find<LocationService>()
                                       .startEmittingParcelLocation(
-                                          trackingId: ordersController
-                                              .selectedShipment!.trackingId);
+                                          deliveryModel: ordersController
+                                              .selectedDelivery!);
                                   ordersController
                                       .drawPolylineFromRiderToDestination(context,
                                           destinationPosition: LatLng(
                                               double.parse(ordersController
-                                                  .selectedShipment!
+                                                  .selectedDelivery!
                                                   .originLocation
                                                   .latitude),
                                               double.parse(ordersController
-                                                  .selectedShipment!
+                                                  .selectedDelivery!
                                                   .originLocation
                                                   .longitude)));
                                 }
                               },
                               title: "Accept",
-                              isBusy: ordersController.acceptingShipment,
+                              isBusy: ordersController.acceptingDelivery,
                               backgroundColor: AppColors.greenColor,
                             ),
                           ),

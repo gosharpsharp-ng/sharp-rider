@@ -297,7 +297,7 @@ class DashboardScreen extends StatelessWidget {
                   GetBuilder<OrdersController>(builder: (ordersController) {
                     return Column(
                       children: [
-                        ordersController.allShipments.isEmpty
+                        ordersController.allDeliveries.isEmpty
                             ? Container(
                                 width: 1.sw,
                                 height: 1.sh * 0.3,
@@ -305,7 +305,7 @@ class DashboardScreen extends StatelessWidget {
                                   mainAxisAlignment: MainAxisAlignment.center,
                                   children: [
                                     customText(
-                                      ordersController.fetchingShipments
+                                      ordersController.fetchingDeliveries
                                           ? "Loading..."
                                           : "No deliveries yet",
                                     ),
@@ -314,14 +314,14 @@ class DashboardScreen extends StatelessWidget {
                               )
                             : Column(
                                 children: List.generate(
-                                  ordersController.allShipments.length,
+                                  ordersController.allDeliveries.length,
                                   (i) => OrderItemWidget(
                                     onSelected: () {
-                                      ordersController.setSelectedShipment(
-                                          ordersController.allShipments[i]);
+                                      ordersController.setSelectedDelivery(
+                                          ordersController.allDeliveries[i]);
                                       Get.toNamed(Routes.ORDER_DETAILS);
                                     },
-                                    shipment: ordersController.allShipments[i],
+                                    shipment: ordersController.allDeliveries[i],
                                   ),
                                 ),
                               ),

@@ -5,6 +5,8 @@ class PngAssets {
   static const String mapIcon = 'assets/imgs/map.png';
   static const String parcel = 'assets/imgs/parcel.png';
   static const String expressBikeIcon = 'assets/imgs/express.png';
+  static const String motorBikeIcon = 'assets/imgs/motorbike.png';
+  static const String motorCycleIcon = 'assets/imgs/motorcycle.png';
   static const String carIcon = 'assets/imgs/car.png';
 }
 

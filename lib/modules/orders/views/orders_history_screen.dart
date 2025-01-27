@@ -81,7 +81,7 @@ class OrdersHistoryScreen extends StatelessWidget {
                 SizedBox(
                   height: 10.h,
                 ),
-                ordersController.allShipments.isEmpty
+                ordersController.allDeliveries.isEmpty
                     ? Container(
                   width: 1.sw,
                   height: 1.sh * 0.6,
@@ -89,7 +89,7 @@ class OrdersHistoryScreen extends StatelessWidget {
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       customText(
-                        ordersController.fetchingShipments
+                        ordersController.fetchingDeliveries
                             ? "Loading..."
                             : "No deliveries yet",
                       ),
@@ -98,14 +98,14 @@ class OrdersHistoryScreen extends StatelessWidget {
                 )
                     : Column(
                   children: List.generate(
-                    ordersController.allShipments.length,
+                    ordersController.allDeliveries.length,
                         (i) => OrderItemWidget(
                       onSelected: () {
-                        ordersController.setSelectedShipment(
-                            ordersController.allShipments[i]);
+                        ordersController.setSelectedDelivery(
+                            ordersController.allDeliveries[i]);
                         Get.toNamed(Routes.ORDER_DETAILS);
                       },
-                      shipment: ordersController.allShipments[i],
+                      shipment: ordersController.allDeliveries[i],
                     ),
                   ),
                 ),

@@ -75,14 +75,15 @@ class SocketService extends GetxService {
   }
 
   void emitParcelRiderLocationUpdate(LatLng position,
-      {required String trackingId, required double locationDegrees}) {
+      {required DeliveryModel deliveryModel, required double locationDegrees}) {
     if (isConnected.value) {
       dynamic data = {
-        'room': trackingId,
+        'room': deliveryModel.trackingId,
         'event': 'rider_tracking',
         'data': {
           'lon': position.longitude,
           'lat': position.latitude,
+          'status': deliveryModel.status,
           'degrees': locationDegrees
         }
       };

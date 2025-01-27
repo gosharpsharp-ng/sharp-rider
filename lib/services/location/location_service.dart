@@ -40,7 +40,7 @@ class LocationService extends GetxService {
     }
   }
 
-   leaveParcelTrackingRoom({required String trackingId}) async {
+  leaveParcelTrackingRoom({required String trackingId}) async {
     if (Get.isRegistered<SocketService>()) {
       Get.find<SocketService>()
           .joinTrackingRoom(trackingId: trackingId, msg: 'leave_room');
@@ -90,7 +90,31 @@ class LocationService extends GetxService {
     );
   }
 
-  void startEmittingParcelLocation({required String trackingId}) {
+  void notifyUserOfDeliveryAcceptanceWithLocationLocation(
+      {required DeliveryModel deliveryModel}) {
+    // start the position stream for updates
+    Geolocator.getCurrentPosition(
+      desiredAccuracy: LocationAccuracy.high,
+    ).then((Position initialPosition) {
+      currentPosition = initialPosition;
+      // Send initial location if socket service is available
+      if (Get.isRegistered<SocketService>()) {
+        Get.find<SocketService>().emitParcelRiderLocationUpdate(
+            LatLng(currentPosition?.latitude ?? 0.0,
+                currentPosition?.longitude ?? 0.0),
+            locationDegrees: calculateLocationDegrees(
+                LatLng(currentPosition?.latitude ?? 0.0,
+                    currentPosition?.longitude ?? 0.0),
+                LatLng(currentPosition?.latitude ?? 0.0,
+                    currentPosition?.longitude ?? 0.0)),
+            deliveryModel: deliveryModel);
+      }
+    }).catchError((error) {
+      print('Error getting initial position: $error');
+    });
+  }
+
+  void startEmittingParcelLocation({required DeliveryModel deliveryModel}) {
     // start the position stream for updates
     _positionStream = Geolocator.getPositionStream(
       locationSettings: const LocationSettings(
@@ -112,7 +136,7 @@ class LocationService extends GetxService {
                     LatLng(currentPosition?.latitude ?? 0.0,
                         currentPosition?.longitude ?? 0.0),
                     LatLng(newPosition.latitude, newPosition.longitude)),
-                trackingId: trackingId);
+                deliveryModel: deliveryModel);
           }
         },
         onError: (error) {

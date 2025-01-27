@@ -1,9 +1,9 @@
 import 'package:json_annotation/json_annotation.dart';
 
-part 'shipment_model.g.dart';
+part 'delivery_model.g.dart';
 
 @JsonSerializable()
-class ShipmentModel {
+class DeliveryModel {
   final int id;
   @JsonKey(name: 'user_id')
   final int userId;
@@ -29,7 +29,7 @@ class ShipmentModel {
   @JsonKey(name: 'timestamp', defaultValue: "")
   final String? timestamp;
 
-  ShipmentModel({
+  DeliveryModel({
     required this.id,
     required this.userId,
     required this.trackingId,
@@ -47,9 +47,9 @@ class ShipmentModel {
     required this.timestamp,
   });
 
-  factory ShipmentModel.fromJson(Map<String, dynamic> json) =>
-      _$ShipmentModelFromJson(json);
-  Map<String, dynamic> toJson() => _$ShipmentModelToJson(this);
+  factory DeliveryModel.fromJson(Map<String, dynamic> json) =>
+      _$DeliveryModelFromJson(json);
+  Map<String, dynamic> toJson() => _$DeliveryModelToJson(this);
   // Custom deserialization for distance
   static String _parseDistance(dynamic value) {
     if (value is String) {
@@ -61,8 +61,6 @@ class ShipmentModel {
     }
   }
 }
-
-
 
 @JsonSerializable()
 class ShipmentLocation {
@@ -172,6 +170,7 @@ class Sender {
   factory Sender.fromJson(Map<String, dynamic> json) => _$SenderFromJson(json);
   Map<String, dynamic> toJson() => _$SenderToJson(this);
 }
+
 @JsonSerializable()
 class Rider {
   final int id;
@@ -219,6 +218,7 @@ class Rider {
   factory Rider.fromJson(Map<String, dynamic> json) => _$RiderFromJson(json);
   Map<String, dynamic> toJson() => _$RiderToJson(this);
 }
+
 @JsonSerializable()
 class Item {
   final int id;

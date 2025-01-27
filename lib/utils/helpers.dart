@@ -958,3 +958,11 @@ double getDeliveryProgress(String status) {
       return 0.0; // Default case if status is unknown
   }
 }
+void makePhoneCall(String phoneNumber) async {
+  final url = 'tel:$phoneNumber';
+  if (await canLaunchUrl(Uri.parse(url))) {
+    await launchUrl(Uri.parse(url));
+  } else {
+    print('Could not launch $url');
+  }
+}

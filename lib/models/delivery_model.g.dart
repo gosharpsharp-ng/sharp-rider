@@ -1,13 +1,13 @@
 // GENERATED CODE - DO NOT MODIFY BY HAND
 
-part of 'shipment_model.dart';
+part of 'delivery_model.dart';
 
 // **************************************************************************
 // JsonSerializableGenerator
 // **************************************************************************
 
-ShipmentModel _$ShipmentModelFromJson(Map<String, dynamic> json) =>
-    ShipmentModel(
+DeliveryModel _$DeliveryModelFromJson(Map<String, dynamic> json) =>
+    DeliveryModel(
       id: (json['id'] as num).toInt(),
       userId: (json['user_id'] as num).toInt(),
       trackingId: json['tracking_id'] as String,
@@ -26,7 +26,7 @@ ShipmentModel _$ShipmentModelFromJson(Map<String, dynamic> json) =>
       items: (json['items'] as List<dynamic>)
           .map((e) => Item.fromJson(e as Map<String, dynamic>))
           .toList(),
-      distance: ShipmentModel._parseDistance(json['distance']),
+      distance: DeliveryModel._parseDistance(json['distance']),
       courierTypePrices: (json['courier_type_prices'] as List<dynamic>?)
           ?.map((e) => CourierTypePrice.fromJson(e as Map<String, dynamic>))
           .toList(),
@@ -35,7 +35,7 @@ ShipmentModel _$ShipmentModelFromJson(Map<String, dynamic> json) =>
       timestamp: json['timestamp'] as String? ?? '',
     );
 
-Map<String, dynamic> _$ShipmentModelToJson(ShipmentModel instance) =>
+Map<String, dynamic> _$DeliveryModelToJson(DeliveryModel instance) =>
     <String, dynamic>{
       'id': instance.id,
       'user_id': instance.userId,

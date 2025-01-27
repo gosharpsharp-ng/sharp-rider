@@ -3,7 +3,7 @@ import 'package:go_logistics_driver/utils/exports.dart';
 class OrderItemWidget extends StatelessWidget {
   const OrderItemWidget({super.key, required this.onSelected, required this.shipment});
   final Function onSelected;
-  final ShipmentModel shipment;
+  final DeliveryModel shipment;
 
   @override
   Widget build(BuildContext context) {
