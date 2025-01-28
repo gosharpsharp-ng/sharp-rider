@@ -11,7 +11,7 @@ class AppNavigationController extends GetxController {
 
   List<Widget> screens = [
     const DashboardScreen(),
-    const OrdersHistoryScreen(),
+    const DeliveriesHistoryScreen(),
     const SettingsHomeScreen(),
   ];
 

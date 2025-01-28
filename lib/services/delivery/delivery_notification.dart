@@ -4,19 +4,19 @@ import 'dart:developer';
 import 'package:go_logistics_driver/models/delivery_notification_model.dart';
 import 'package:go_logistics_driver/utils/exports.dart';
 
-class ShipmentNotificationService extends GetxService {
-  static ShipmentNotificationService get instance => Get.find();
+class DeliveryNotificationService extends GetxService {
+  static DeliveryNotificationService get instance => Get.find();
 
   bool _isDialogShowing = false;
   bool _isListenerSetup = false;
 
   void initialize() {
     if (Get.isRegistered<SocketService>()) {
-      Get.find<SocketService>().listenForShipments((data) {
+      Get.find<SocketService>().listenForDeliveries((data) {
         log("*********************************************New delivery******************************************************");
         log(data.toString());
         log("***************************************************************************************************");
-        handleShipmentNotification(data);
+        handleDeliveryNotification(data);
       });
     }
   }
@@ -37,31 +37,27 @@ class ShipmentNotificationService extends GetxService {
 
     // Setup shipment listener
     socketService.socket.on('shipment_events', (dynamic data) {
-      log('Received shipment notification');
-      log("**********************************************************************************");
-      log(data.toString());
-      log("Shipment Entered **********************************************************************************");
-      handleShipmentNotification(data);
+      handleDeliveryNotification(data);
     });
 
     _isListenerSetup = true;
   }
 
-  void handleShipmentNotification(dynamic data) {
+  void handleDeliveryNotification(dynamic data) {
     try {
       final parsedData = data is String ? jsonDecode(data) : data;
-      final shipment = DeliveryNotificationModel.fromJson(parsedData);
+      final delivery = DeliveryNotificationModel.fromJson(parsedData);
       _isDialogShowing = false;
       if (!_isDialogShowing) {
         FlutterRingtonePlayer().playNotification();
-        showShipmentDialog(shipment);
+        showDeliveryDialog(delivery);
       }
     } catch (e) {
       log('Error handling shipment notification: $e');
     }
   }
 
-  void showShipmentDialog(DeliveryNotificationModel shipment) {
+  void showDeliveryDialog(DeliveryNotificationModel shipment) {
     _isDialogShowing = true;
 
     Get.dialog(
@@ -69,7 +65,7 @@ class ShipmentNotificationService extends GetxService {
         builder: (context) {
           return WillPopScope(
             onWillPop: () async => false,
-            child: GetBuilder<OrdersController>(builder: (ordersController) {
+            child: GetBuilder<DeliveriesController>(builder: (deliveriesController) {
               return Dialog(
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(15),
@@ -113,35 +109,35 @@ class ShipmentNotificationService extends GetxService {
                           Expanded(
                             child: CustomButton(
                               onPressed: () async {
-                                await ordersController.acceptDelivery(
+                                await deliveriesController.acceptDelivery(
                                   context,
                                   trackingId: shipment.trackingId,
                                 );
 
-                                if (ordersController.acceptedDelivery) {
+                                if (deliveriesController.acceptedDelivery) {
                                   _isDialogShowing = false;
                                   Navigator.of(context).pop();
-                                  Get.toNamed(Routes.ORDER_TRACKING_SCREEN);
-                                  ordersController.fetchDeliveries();
+                                  Get.toNamed(Routes.DELIVERY_TRACKING_SCREEN);
+                                  deliveriesController.fetchDeliveries();
                                   Get.find<LocationService>()
                                       .startEmittingParcelLocation(
-                                          deliveryModel: ordersController
+                                          deliveryModel: deliveriesController
                                               .selectedDelivery!);
-                                  ordersController
+                                  deliveriesController
                                       .drawPolylineFromRiderToDestination(context,
                                           destinationPosition: LatLng(
-                                              double.parse(ordersController
+                                              double.parse(deliveriesController
                                                   .selectedDelivery!
                                                   .originLocation
                                                   .latitude),
-                                              double.parse(ordersController
+                                              double.parse(deliveriesController
                                                   .selectedDelivery!
                                                   .originLocation
                                                   .longitude)));
                                 }
                               },
                               title: "Accept",
-                              isBusy: ordersController.acceptingDelivery,
+                              isBusy: deliveriesController.acceptingDelivery,
                               backgroundColor: AppColors.greenColor,
                             ),
                           ),

@@ -1,8 +1,8 @@
 import 'package:go_logistics_driver/utils/exports.dart';
 
-class OrderItemAccordion extends StatelessWidget {
+class DeliveryItemAccordion extends StatelessWidget {
   final Item shipmentItemData;
-  const OrderItemAccordion({super.key, required this.shipmentItemData});
+  const DeliveryItemAccordion({super.key, required this.shipmentItemData});
 
   @override
   Widget build(BuildContext context) {
@@ -62,11 +62,11 @@ class OrderItemAccordion extends StatelessWidget {
                     SizedBox(
                       height: 5.h,
                     ),
-                    OrderSummaryDetailItem(
+                    DeliverySummaryDetailItem(
                         isVertical: false,
                         title: "Category",
                         value: shipmentItemData.category),
-                    OrderSummaryDetailItem(
+                    DeliverySummaryDetailItem(
                         isVertical: false,
                         title: "Quantity",
                         value: shipmentItemData.quantity.toString()),

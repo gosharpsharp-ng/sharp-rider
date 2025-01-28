@@ -12,7 +12,7 @@ class AppNavigationBinding extends Bindings {
       DashboardController(),
     );
     Get.put(
-      OrdersController(),
+      DeliveriesController(),
     );
     Get.put(
       WalletController(),

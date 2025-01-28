@@ -26,19 +26,19 @@ abstract class Routes {
   static const ADD_MENU = _Paths.ADD_MENU;
   static const EDIT_MENU = _Paths.EDIT_MENU;
   static const MENU_HOME = _Paths.MENU_HOME;
-  static const ORDERS_HOME = _Paths.ORDERS_HOME;
-  static const ORDER_DETAILS = _Paths.ORDER_DETAILS;
-  static const ORDER_INVOICE_DETAILS = _Paths.ORDER_INVOICE_DETAILS;
-  static const ORDER_SEARCH_SCREEN = _Paths.ORDER_SEARCH_SCREEN;
-  static const ORDER_TRACKING_SCREEN = _Paths.ORDER_TRACKING_SCREEN;
-  static const ORDER_PRE_ACCEPTANCE_DETAILS =
-      _Paths.ORDER_PRE_ACCEPTANCE_DETAILS;
-  static const ORDER_ITEM_INPUT_SCREEN = _Paths.ORDER_ITEM_INPUT_SCREEN;
-  static const ORDER_PAYMENT_OPTIONS_SCREEN =
-      _Paths.ORDER_PAYMENT_OPTIONS_SCREEN;
-  static const ORDER_SUMMARY_SCREEN = _Paths.ORDER_SUMMARY_SCREEN;
-  static const ORDER_PACKAGE_INFORMATION_UPLOAD_SCREEN =
-      _Paths.ORDER_PACKAGE_INFORMATION_UPLOAD_SCREEN;
+  static const DELIVERIES_HOME = _Paths.DELIVERIES_HOME;
+  static const DELIVERY_DETAILS = _Paths.DELIVERY_DETAILS;
+  static const DELIVERY_INVOICE_DETAILS = _Paths.DELIVERY_INVOICE_DETAILS;
+  static const DELIVERY_SEARCH_SCREEN = _Paths.DELIVERY_SEARCH_SCREEN;
+  static const DELIVERY_TRACKING_SCREEN = _Paths.DELIVERY_TRACKING_SCREEN;
+  static const DELIVERY_PRE_ACCEPTANCE_DETAILS =
+      _Paths.DELIVERY_PRE_ACCEPTANCE_DETAILS;
+  static const DELIVERY_ITEM_INPUT_SCREEN = _Paths.DELIVERY_ITEM_INPUT_SCREEN;
+  static const DELIVERY_PAYMENT_OPTIONS_SCREEN =
+      _Paths.DELIVERY_PAYMENT_OPTIONS_SCREEN;
+  static const DELIVERY_SUMMARY_SCREEN = _Paths.DELIVERY_SUMMARY_SCREEN;
+  static const DELIVERY_PACKAGE_INFORMATION_UPLOAD_SCREEN =
+      _Paths.DELIVERY_PACKAGE_INFORMATION_UPLOAD_SCREEN;
   static const NOTIFICATIONS_HOME = _Paths.NOTIFICATIONS_HOME;
   static const NOTIFICATIONS_DETAILS = _Paths.NOTIFICATIONS_DETAILS;
   static const RATINGS_AND_REVIEWS_HOME = _Paths.RATINGS_AND_REVIEWS_HOME;
@@ -83,17 +83,17 @@ abstract class _Paths {
   static const EDIT_MENU = '/edit_menu';
   static const MENU_HOME = '/menu_home';
 
-  static const ORDERS_HOME = '/orders_home';
-  static const ORDER_DETAILS = '/order_details';
-  static const ORDER_PRE_ACCEPTANCE_DETAILS = '/order_pre_acceptance_details';
-  static const ORDER_PACKAGE_INFORMATION_UPLOAD_SCREEN =
-      '/order_package_information_upload_screen';
-  static const ORDER_TRACKING_SCREEN = '/order_tracking_screen';
-  static const ORDER_SEARCH_SCREEN = '/order_search_screen';
-  static const ORDER_INVOICE_DETAILS = '/order_invoice_details';
-  static const ORDER_ITEM_INPUT_SCREEN = '/order_item_input_screen';
-  static const ORDER_PAYMENT_OPTIONS_SCREEN = '/order_payment_options_screen';
-  static const ORDER_SUMMARY_SCREEN = '/order_summary_screen';
+  static const DELIVERIES_HOME = '/deliveries_home';
+  static const DELIVERY_DETAILS = '/delivery_details';
+  static const DELIVERY_PRE_ACCEPTANCE_DETAILS = '/delivery_pre_acceptance_details';
+  static const DELIVERY_PACKAGE_INFORMATION_UPLOAD_SCREEN =
+      '/delivery_package_information_upload_screen';
+  static const DELIVERY_TRACKING_SCREEN = '/delivery_tracking_screen';
+  static const DELIVERY_SEARCH_SCREEN = '/delivery_search_screen';
+  static const DELIVERY_INVOICE_DETAILS = '/delivery_invoice_details';
+  static const DELIVERY_ITEM_INPUT_SCREEN = '/delivery_item_input_screen';
+  static const DELIVERY_PAYMENT_OPTIONS_SCREEN = '/delivery_payment_options_screen';
+  static const DELIVERY_SUMMARY_SCREEN = '/delivery_summary_screen';
 
   static const NOTIFICATIONS_HOME = '/notifications_home';
   static const NOTIFICATIONS_DETAILS = '/notifications_details';

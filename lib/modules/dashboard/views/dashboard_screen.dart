@@ -230,22 +230,27 @@ class DashboardScreen extends StatelessWidget {
                   SizedBox(
                     height: 15.h,
                   ),
-                  GetBuilder<OrdersController>(builder: (ordersController) {
+                  GetBuilder<DeliveriesController>(builder: (ordersController) {
                     return Container(
                       width: 1.sw,
-                      decoration: BoxDecoration(gradient:  const LinearGradient(
-                        colors: [
-                          Color(0xFFFFF6E3),
-                          Color(0xFFFFFFFF),
-                        ],
-                        begin: Alignment.topRight,
-                        end: Alignment.bottomLeft,
-                      ),borderRadius: BorderRadius.circular(12.r)),
-                      padding: EdgeInsets.symmetric(horizontal: 25.sp,vertical: 8.sp),
+                      decoration: BoxDecoration(
+                          gradient: const LinearGradient(
+                            colors: [
+                              Color(0xFFFFF6E3),
+                              Color(0xFFFFFFFF),
+                            ],
+                            begin: Alignment.topRight,
+                            end: Alignment.bottomLeft,
+                          ),
+                          borderRadius: BorderRadius.circular(12.r)),
+                      padding: EdgeInsets.symmetric(
+                          horizontal: 25.sp, vertical: 8.sp),
                       child: Column(
                         children: [
                           customText(
-                              ordersController.isOnline ? "You're online! Stay active to earn more or turn off the switch to take a break." : "You're offline. Turn on the switch to start earning and making deliveries!",
+                              ordersController.isOnline
+                                  ? "You're online! Stay active to earn more or turn off the switch to take a break."
+                                  : "You're offline. Turn on the switch to start earning and making deliveries!",
                               fontWeight: FontWeight.w500,
                               fontSize: 12.sp,
                               textAlign: TextAlign.center,
@@ -294,7 +299,7 @@ class DashboardScreen extends StatelessWidget {
                   SizedBox(
                     height: 5.h,
                   ),
-                  GetBuilder<OrdersController>(builder: (ordersController) {
+                  GetBuilder<DeliveriesController>(builder: (ordersController) {
                     return Column(
                       children: [
                         ordersController.allDeliveries.isEmpty
@@ -315,11 +320,11 @@ class DashboardScreen extends StatelessWidget {
                             : Column(
                                 children: List.generate(
                                   ordersController.allDeliveries.length,
-                                  (i) => OrderItemWidget(
+                                  (i) => DeliveryItemWidget(
                                     onSelected: () {
                                       ordersController.setSelectedDelivery(
                                           ordersController.allDeliveries[i]);
-                                      Get.toNamed(Routes.ORDER_DETAILS);
+                                      Get.toNamed(Routes.DELIVERY_DETAILS);
                                     },
                                     shipment: ordersController.allDeliveries[i],
                                   ),

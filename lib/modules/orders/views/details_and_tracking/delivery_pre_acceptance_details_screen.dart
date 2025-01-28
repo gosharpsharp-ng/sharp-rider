@@ -1,12 +1,12 @@
 
 import 'package:go_logistics_driver/utils/exports.dart';
 
-class OrderPreAcceptanceDetailsScreen extends StatelessWidget {
-  const OrderPreAcceptanceDetailsScreen({super.key});
+class DeliveryPreAcceptanceDetailsScreen extends StatelessWidget {
+  const DeliveryPreAcceptanceDetailsScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
-    return GetBuilder<OrdersController>(
+    return GetBuilder<DeliveriesController>(
         builder: (ordersController){
         return Scaffold(
           appBar: defaultAppBar(
@@ -36,12 +36,12 @@ class OrderPreAcceptanceDetailsScreen extends StatelessWidget {
                           backgroundColor: AppColors.backgroundColor,
                           title: "Sender",
                           children: [
-                            OrderSummaryDetailItem(
+                            DeliverySummaryDetailItem(
                               titleIconAsset: SvgAssets.profileIcon,
                               title: "Sender",
                               value: "Chinonye Nnamdi",
                             ),
-                            OrderSummaryDetailItem(
+                            DeliverySummaryDetailItem(
                               titleIconAsset: SvgAssets.locationIcon,
                               title: "Pick up address",
                               value:
@@ -54,12 +54,12 @@ class OrderPreAcceptanceDetailsScreen extends StatelessWidget {
                           backgroundColor: AppColors.backgroundColor,
                           title: "Receiver",
                           children: [
-                            OrderSummaryDetailItem(
+                            DeliverySummaryDetailItem(
                               titleIconAsset: SvgAssets.profileIcon,
                               title: "Receiver",
                               value: "James Abiodun",
                             ),
-                            OrderSummaryDetailItem(
+                            DeliverySummaryDetailItem(
                               titleIconAsset: SvgAssets.locationIcon,
                               title: "Drop off address",
                               value:
@@ -72,21 +72,21 @@ class OrderPreAcceptanceDetailsScreen extends StatelessWidget {
                           backgroundColor: AppColors.backgroundColor,
                           title: "Order information",
                           children: [
-                            OrderSummaryDetailItem(
+                            DeliverySummaryDetailItem(
                               title: "Item name",
                               value: "Electronics",
                             ),
-                            OrderSummaryDetailItem(
+                            DeliverySummaryDetailItem(
                               title: "Category",
                               value: "Electronics",
                             ),
 
-                            OrderSummaryDetailItem(
+                            DeliverySummaryDetailItem(
                               isVertical: false,
                               title: "Quantity",
                               value: "4",
                             ),
-                            OrderSummaryDetailItem(
+                            DeliverySummaryDetailItem(
                               titleIconAsset: SvgAssets.ridesIcon,
                               title: "Courier type",
                               value: "Bike",
@@ -97,7 +97,7 @@ class OrderPreAcceptanceDetailsScreen extends StatelessWidget {
 
                               value: "In transit",
                             ),
-                            OrderSummaryDetailItem(
+                            DeliverySummaryDetailItem(
                               title: "Total amount",
                               value: "#7,000",
                             ),
@@ -113,7 +113,7 @@ class OrderPreAcceptanceDetailsScreen extends StatelessWidget {
                     padding: const EdgeInsets.all(8.0),
                     child: CustomButton(
                       onPressed: () {
-                        Get.to(const OrderPackageInformationUploadScreen());
+                        Get.to(const DeliveryPackageInformationUploadScreen());
                       },
                       // isBusy: signInProvider.isLoading,
                       title: "Accept and Pick up order",

@@ -1,5 +1,5 @@
 import 'dart:developer';
-import 'package:go_logistics_driver/services/shipment/shipment_notification.dart';
+import 'package:go_logistics_driver/services/delivery/delivery_notification.dart';
 import '../utils/exports.dart';
 
 class ServiceManager extends GetxService {
@@ -22,15 +22,15 @@ class ServiceManager extends GetxService {
       if (Get.isRegistered<LocationService>()) {
         await Get.delete<LocationService>();
       }
-      if (Get.isRegistered<ShipmentNotificationService>()) {
-        await Get.delete<ShipmentNotificationService>();
+      if (Get.isRegistered<DeliveryNotificationService>()) {
+        await Get.delete<DeliveryNotificationService>();
       }
 
       // Initialize services
       await Get.putAsync(() => SocketService().init(profile));
       await Get.putAsync(() => LocationService().init());
       // Initialize notification service
-      final notificationService = ShipmentNotificationService();
+      final notificationService = DeliveryNotificationService();
       await Get.put(notificationService);
       notificationService.initialize();
 
@@ -54,8 +54,8 @@ class ServiceManager extends GetxService {
       await Get.delete<LocationService>();
     }
 
-    if (Get.isRegistered<ShipmentNotificationService>()) {
-      await Get.delete<ShipmentNotificationService>();
+    if (Get.isRegistered<DeliveryNotificationService>()) {
+      await Get.delete<DeliveryNotificationService>();
     }
 
     _isServicesInitialized = false;

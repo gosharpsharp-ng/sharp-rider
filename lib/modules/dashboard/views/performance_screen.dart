@@ -5,7 +5,7 @@ class PerformanceScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return  GetBuilder<OrdersController>(builder: (ordersController) {
+    return  GetBuilder<DeliveriesController>(builder: (ordersController) {
         return Scaffold(
           appBar: flatAppBar(
             bgColor: AppColors.backgroundColor,

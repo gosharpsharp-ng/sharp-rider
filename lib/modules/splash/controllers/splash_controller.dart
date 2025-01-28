@@ -31,6 +31,6 @@ class SplashController extends GetxController {
     Get.put(WalletController());
     Get.put(DashboardController());
     Get.put(SettingsController());
-    Get.put(OrdersController());
+    Get.put(DeliveriesController());
   }
 }

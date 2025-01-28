@@ -120,16 +120,16 @@ class SocketService extends GetxService {
     }
   }
 
-  void listenForShipments(Function(dynamic) onNewShipment) {
-    socket.on('shipment_events', onNewShipment);
+  void listenForDeliveries(Function(dynamic) onNewDelivery) {
+    socket.on('shipment_events', onNewDelivery);
   }
 
-  void listenToOrders(Function(dynamic) onNewOrder) {
+  void listenToDeliveries(Function(dynamic) onNewOrder) {
     socket.on('update_location', onNewOrder);
   }
 
-  void acceptOrder(String orderId) {
-    socket.emit('shipment', {'orderId': orderId});
+  void acceptOrder(String deliveryId) {
+    socket.emit('shipment', {'orderId': deliveryId});
   }
 
   void rejectOrder(String orderId) {

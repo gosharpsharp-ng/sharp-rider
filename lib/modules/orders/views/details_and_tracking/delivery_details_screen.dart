@@ -1,12 +1,12 @@
-import 'package:go_logistics_driver/modules/orders/views/widgets/order_item_accordion.dart';
+import 'package:go_logistics_driver/modules/orders/views/widgets/delivery_item_accordion.dart';
 import 'package:go_logistics_driver/utils/exports.dart';
 
-class OrderDetailsScreen extends StatelessWidget {
-  const OrderDetailsScreen({super.key});
+class DeliveryDetailsScreen extends StatelessWidget {
+  const DeliveryDetailsScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
-    return GetBuilder<OrdersController>(builder: (ordersController) {
+    return GetBuilder<DeliveriesController>(builder: (ordersController) {
       return Scaffold(
         appBar: defaultAppBar(
           bgColor: AppColors.backgroundColor,
@@ -60,7 +60,7 @@ class OrderDetailsScreen extends StatelessWidget {
                                   .listenForParcelLocationUpdate(
                                       roomId: "rider_tracking");
                             }
-                            Get.toNamed(Routes.ORDER_TRACKING_SCREEN);
+                            Get.toNamed(Routes.DELIVERY_TRACKING_SCREEN);
                             if (['delivered', 'rejected', 'canceled'].contains(
                                 ordersController.selectedDelivery!.status)) {
                               ordersController.drawPolyLineFromOriginToDestination(
@@ -146,18 +146,18 @@ class OrderDetailsScreen extends StatelessWidget {
                       SectionBox(
                         backgroundColor: AppColors.backgroundColor,
                         children: [
-                          OrderSummaryDetailItem(
+                          DeliverySummaryDetailItem(
                             title: "Pick up address",
                             value: ordersController
                                     .selectedDelivery?.originLocation.name ??
                                 "",
                           ),
-                          OrderSummaryDetailItem(
+                          DeliverySummaryDetailItem(
                             title: "Sender",
                             value:
                                 '${ordersController.selectedDelivery?.sender?.firstName ?? ""} ${ordersController.selectedDelivery?.sender?.lastName ?? ""}',
                           ),
-                          OrderSummaryDetailItem(
+                          DeliverySummaryDetailItem(
                             title: "Sender's phone",
                             value: ordersController
                                     .selectedDelivery?.sender?.phone ??
@@ -168,21 +168,21 @@ class OrderDetailsScreen extends StatelessWidget {
                       SectionBox(
                         backgroundColor: AppColors.backgroundColor,
                         children: [
-                          OrderSummaryDetailItem(
+                          DeliverySummaryDetailItem(
                             titleIconAsset: SvgAssets.profileIcon,
                             title: "Receiver's name",
                             value: ordersController
                                     .selectedDelivery?.receiver.name ??
                                 "",
                           ),
-                          OrderSummaryDetailItem(
+                          DeliverySummaryDetailItem(
                             titleIconAsset: SvgAssets.locationIcon,
                             title: "Drop off address",
                             value: ordersController.selectedDelivery
                                     ?.destinationLocation.name ??
                                 "",
                           ),
-                          OrderSummaryDetailItem(
+                          DeliverySummaryDetailItem(
                             titleIconAsset: SvgAssets.contactIcon,
                             title: "Receiver's phone",
                             value: ordersController
@@ -197,7 +197,7 @@ class OrderDetailsScreen extends StatelessWidget {
                         children: [
                           ...List.generate(
                               ordersController.selectedDelivery!.items.length,
-                              (i) => OrderItemAccordion(
+                              (i) => DeliveryItemAccordion(
                                   shipmentItemData: ordersController
                                       .selectedDelivery!.items[i]))
                         ],
@@ -229,7 +229,7 @@ class OrderDetailsScreen extends StatelessWidget {
                             value:
                                 ordersController.selectedDelivery?.status ?? "",
                           ),
-                          const OrderSummaryDetailItem(
+                          const DeliverySummaryDetailItem(
                               title: "Total amount",
                               // value: formatToCurrency(double.parse(ordersController.selectedShipment?. ?? "")),
                               value: ""),

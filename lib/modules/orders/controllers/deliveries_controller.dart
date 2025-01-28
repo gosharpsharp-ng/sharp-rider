@@ -6,7 +6,7 @@ import 'package:go_logistics_driver/models/direction_details_Info.dart';
 import 'package:go_logistics_driver/models/rider_stats_model.dart';
 import 'package:go_logistics_driver/utils/exports.dart';
 
-class OrdersController extends GetxController {
+class DeliveriesController extends GetxController {
   final deliveryService = serviceLocator<DeliveryService>();
   final profileService = serviceLocator<ProfileService>();
   final sendingInfoFormKey = GlobalKey<FormState>();

@@ -1,12 +1,12 @@
-import 'package:go_logistics_driver/modules/orders/views/widgets/order_tab_chip.dart';
+import 'package:go_logistics_driver/modules/orders/views/widgets/delivery_tab_chip.dart';
 import 'package:go_logistics_driver/utils/exports.dart';
 
-class OrdersHistoryScreen extends StatelessWidget {
-  const OrdersHistoryScreen({super.key});
+class DeliveriesHistoryScreen extends StatelessWidget {
+  const DeliveriesHistoryScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
-    return GetBuilder<OrdersController>(builder: (ordersController) {
+    return GetBuilder<DeliveriesController>(builder: (ordersController) {
       return Scaffold(
         appBar: defaultAppBar(
           bgColor: AppColors.backgroundColor,
@@ -99,11 +99,11 @@ class OrdersHistoryScreen extends StatelessWidget {
                     : Column(
                   children: List.generate(
                     ordersController.allDeliveries.length,
-                        (i) => OrderItemWidget(
+                        (i) => DeliveryItemWidget(
                       onSelected: () {
                         ordersController.setSelectedDelivery(
                             ordersController.allDeliveries[i]);
-                        Get.toNamed(Routes.ORDER_DETAILS);
+                        Get.toNamed(Routes.DELIVERY_DETAILS);
                       },
                       shipment: ordersController.allDeliveries[i],
                     ),

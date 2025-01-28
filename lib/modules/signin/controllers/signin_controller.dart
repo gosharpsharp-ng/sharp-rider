@@ -65,7 +65,7 @@ class SignInController extends GetxController {
         Get.put(WalletController());
         Get.put(DashboardController());
         Get.put(SettingsController());
-        Get.put(OrdersController());
+        Get.put(DeliveriesController());
         Get.toNamed(Routes.APP_NAVIGATION);
       }
     }

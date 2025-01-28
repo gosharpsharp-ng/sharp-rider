@@ -1,12 +1,12 @@
 
 import 'package:go_logistics_driver/utils/exports.dart';
 
-class OrderPackageInformationUploadScreen extends StatelessWidget {
-  const OrderPackageInformationUploadScreen({super.key});
+class DeliveryPackageInformationUploadScreen extends StatelessWidget {
+  const DeliveryPackageInformationUploadScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
-    return GetBuilder<OrdersController>(
+    return GetBuilder<DeliveriesController>(
         builder: (ordersController){
         return Form(
           child: Scaffold(

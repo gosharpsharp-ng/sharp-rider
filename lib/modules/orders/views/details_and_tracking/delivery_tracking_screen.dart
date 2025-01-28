@@ -3,17 +3,17 @@ import 'package:geolocator/geolocator.dart';
 import 'package:go_logistics_driver/modules/orders/views/widgets/phone_number_widget.dart';
 import 'package:go_logistics_driver/utils/exports.dart';
 
-class OrderTrackingScreen extends StatefulWidget {
-  const OrderTrackingScreen({super.key});
+class DeliveryTrackingScreen extends StatefulWidget {
+  const DeliveryTrackingScreen({super.key});
 
   @override
-  State<OrderTrackingScreen> createState() => _OrderTrackingScreenState();
+  State<DeliveryTrackingScreen> createState() => _DeliveryTrackingScreenState();
 }
 
-class _OrderTrackingScreenState extends State<OrderTrackingScreen> {
+class _DeliveryTrackingScreenState extends State<DeliveryTrackingScreen> {
   late LatLng currentPosition;
   final settingsController = Get.find<SettingsController>();
-  final ordersController = Get.find<OrdersController>();
+  final ordersController = Get.find<DeliveriesController>();
   final locationService = Get.find<LocationService>();
   StreamSubscription<Position>? _positionSubscription;
   @override
@@ -153,7 +153,7 @@ class _OrderTrackingScreenState extends State<OrderTrackingScreen> {
   );
   Position? userCurrentPosition;
   locateUserPosition() async {
-    final ordersController = Get.find<OrdersController>();
+    final ordersController = Get.find<DeliveriesController>();
 
     LocationSettings locationSettings = const LocationSettings(
       accuracy: LocationAccuracy.high,
@@ -172,7 +172,7 @@ class _OrderTrackingScreenState extends State<OrderTrackingScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return GetBuilder<OrdersController>(builder: (ordersController) {
+    return GetBuilder<DeliveriesController>(builder: (ordersController) {
       return Scaffold(
         appBar: flatAppBar(),
         backgroundColor: AppColors.backgroundColor,
@@ -646,7 +646,7 @@ class _OrderTrackingScreenState extends State<OrderTrackingScreen> {
                                         mainAxisAlignment:
                                             MainAxisAlignment.spaceBetween,
                                         children: [
-                                          OrderTrackingMiniInfoItem(
+                                          DeliveryTrackingMiniInfoItem(
                                             title: "Order status",
                                             value: ordersController
                                                     .selectedDelivery
@@ -655,13 +655,13 @@ class _OrderTrackingScreenState extends State<OrderTrackingScreen> {
                                                 "",
                                             isStatus: true,
                                           ),
-                                          OrderTrackingMiniInfoItem(
+                                          DeliveryTrackingMiniInfoItem(
                                             title: "Estimated distance",
                                             value: ordersController
                                                     .distanceToDestination ??
                                                 "",
                                           ),
-                                          OrderTrackingMiniInfoItem(
+                                          DeliveryTrackingMiniInfoItem(
                                             title: "ETA",
                                             value: ordersController
                                                     .durationToDestination ??

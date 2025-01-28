@@ -5,7 +5,7 @@ class SearchDeliveriesScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return GetBuilder<OrdersController>(builder: (ordersController) {
+    return GetBuilder<DeliveriesController>(builder: (ordersController) {
       return Form(
         key: ordersController.deliveriesSearchFormKey,
         child: Container(
@@ -67,13 +67,13 @@ class SearchDeliveriesScreen extends StatelessWidget {
                     : Column(
                   children: List.generate(
                     ordersController.deliverySearchResults.length,
-                        (i) => OrderItemWidget(
+                        (i) => DeliveryItemWidget(
                       onSelected: () {
                         Get.back();
                         ordersController.setSelectedDelivery(
                             ordersController.deliverySearchResults[i]);
                         Get.toNamed(
-                            Routes.ORDER_DETAILS);
+                            Routes.DELIVERY_DETAILS);
                       },
                       shipment: ordersController.deliverySearchResults[i],
                     ),

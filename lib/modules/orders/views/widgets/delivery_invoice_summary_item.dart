@@ -1,10 +1,10 @@
 import 'package:go_logistics_driver/utils/exports.dart';
 
-class OrderInvoiceSummaryItem extends StatelessWidget {
+class DeliveryInvoiceSummaryItem extends StatelessWidget {
   final String title;
   final String value;
   final bool isVertical;
-  const OrderInvoiceSummaryItem(
+  const DeliveryInvoiceSummaryItem(
       {super.key, this.title = "", this.value = "", this.isVertical = false});
 
   @override

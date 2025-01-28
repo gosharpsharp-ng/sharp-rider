@@ -1,10 +1,10 @@
 import 'package:go_logistics_driver/utils/exports.dart';
 
-class OrderTabChip extends StatelessWidget {
+class DeliveryTabChip extends StatelessWidget {
   final String title;
   final Function onSelected;
   final bool isSelected;
-  const OrderTabChip(
+  const DeliveryTabChip(
       {super.key,
       this.title = "All",
       this.isSelected = false,

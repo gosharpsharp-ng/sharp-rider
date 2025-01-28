@@ -1,11 +1,11 @@
 import 'package:go_logistics_driver/utils/exports.dart';
 
-class OrderInvoiceDetailsScreen extends StatelessWidget {
-  const OrderInvoiceDetailsScreen({super.key});
+class DeliveryInvoiceDetailsScreen extends StatelessWidget {
+  const DeliveryInvoiceDetailsScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
-    return GetBuilder<OrdersController>(
+    return GetBuilder<DeliveriesController>(
         builder: (ordersController){
         return Scaffold(
           appBar: defaultAppBar(
@@ -21,31 +21,31 @@ class OrderInvoiceDetailsScreen extends StatelessWidget {
               child: Column(
                 children: [
                   SectionBox(children: const [
-                    OrderInvoiceSummaryItem(
+                    DeliveryInvoiceSummaryItem(
                       title: "Item name",
                       value: "Books",
                     ),
-                    OrderInvoiceSummaryItem(
+                    DeliveryInvoiceSummaryItem(
                       title: "Item category",
                       value: "Educational",
                     ),
-                    OrderInvoiceSummaryItem(
+                    DeliveryInvoiceSummaryItem(
                       title: "Weight",
                       value: "25 kg",
                     ),
-                    OrderInvoiceSummaryItem(
+                    DeliveryInvoiceSummaryItem(
                       title: "Shipping Fee",
                       value: "N1,000",
                     ),
-                    OrderInvoiceSummaryItem(
+                    DeliveryInvoiceSummaryItem(
                       title: "Tracking number",
                       value: "ZFD233435756",
                     ),
-                    OrderInvoiceSummaryItem(
+                    DeliveryInvoiceSummaryItem(
                       title: "Payment Method",
                       value: "GoWallet",
                     ),
-                    OrderInvoiceSummaryItem(
+                    DeliveryInvoiceSummaryItem(
                       title: "Date",
                       value: "Thu. Dec 5, 2024 7:15am",
                     ),
@@ -53,25 +53,25 @@ class OrderInvoiceDetailsScreen extends StatelessWidget {
                       title: "Status",
                       value: "Delivered",
                     ),
-                    OrderInvoiceSummaryItem(
+                    DeliveryInvoiceSummaryItem(
                       title: "Contact",
                       value: "08162848289",
                     ),
                   ]),
                   SectionBox(children: const [
-                    OrderInvoiceSummaryItem(
+                    DeliveryInvoiceSummaryItem(
                       title: "Sender's Name",
                       value: "Ayodeji Sebanjo",
                     ),
-                    OrderInvoiceSummaryItem(
+                    DeliveryInvoiceSummaryItem(
                       title: "Phone Number",
                       value: "08162848289",
                     ),
-                    OrderInvoiceSummaryItem(
+                    DeliveryInvoiceSummaryItem(
                       title: "Email",
                       value: "ayounie@gmail.com",
                     ),
-                    OrderInvoiceSummaryItem(
+                    DeliveryInvoiceSummaryItem(
                       title: "Address",
                       isVertical: true,
                       value:
@@ -79,19 +79,19 @@ class OrderInvoiceDetailsScreen extends StatelessWidget {
                     ),
                   ]),
                   SectionBox(children: const [
-                    OrderInvoiceSummaryItem(
+                    DeliveryInvoiceSummaryItem(
                       title: "Receiver's Name",
                       value: "Maloung Doe",
                     ),
-                    OrderInvoiceSummaryItem(
+                    DeliveryInvoiceSummaryItem(
                       title: "Phone Number",
                       value: "08036322653",
                     ),
-                    OrderInvoiceSummaryItem(
+                    DeliveryInvoiceSummaryItem(
                       title: "Email",
                       value: "emekaleingo@gmail.com",
                     ),
-                    OrderInvoiceSummaryItem(
+                    DeliveryInvoiceSummaryItem(
                       title: "Address",
                       isVertical: true,
                       value:

@@ -1,10 +1,10 @@
 import 'package:go_logistics_driver/utils/exports.dart';
 
-class OrderTrackingMiniInfoItem extends StatelessWidget {
+class DeliveryTrackingMiniInfoItem extends StatelessWidget {
   final String title;
   final String value;
   final bool isStatus;
-  const OrderTrackingMiniInfoItem(
+  const DeliveryTrackingMiniInfoItem(
       {super.key,
       required this.title,
       required this.value,
