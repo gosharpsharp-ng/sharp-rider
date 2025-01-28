@@ -523,6 +523,18 @@ class DeliveriesController extends GetxController {
     }
   }
 
+  RiderStatsModel? riderRatingStatsModel;
+  getRiderRatingStats() async {
+    APIResponse response = await profileService.getRiderRatingStats();
+    if (response.status == "success") {
+      riderRatingStatsModel = RiderStatsModel.fromJson(response.data);
+      update();
+    } else {
+      showToast(
+          message: response.message, isError: response.status != "success");
+    }
+  }
+
   @override
   void onReady() {
     super.onReady();
