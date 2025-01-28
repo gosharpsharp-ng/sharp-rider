@@ -184,9 +184,7 @@ class _DeliveryTrackingScreenState extends State<DeliveryTrackingScreen> {
             children: [
               Container(
                 width: 1.sw,
-                height: ordersController.selectedDelivery!.status == 'delivered'
-                    ? 1.sh * 0.804
-                    : 1.sh * 0.65,
+                height:1.sh * 0.65,
                 margin: EdgeInsets.symmetric(horizontal: 0.sp),
                 child: ClipRRect(
                   borderRadius: BorderRadius.circular(12.r),

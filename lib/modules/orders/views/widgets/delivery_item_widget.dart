@@ -53,7 +53,7 @@ class DeliveryItemWidget extends StatelessWidget {
             ),
             Container(
               width: 1.sw,
-              height: 70.h,
+              height: 0.15 *1.sh,
               child: Row(
                 children: [
                   Container(
