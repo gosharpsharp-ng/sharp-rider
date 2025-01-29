@@ -4,7 +4,6 @@ import 'package:go_logistics_driver/utils/exports.dart';
 class CustomImagePickerBottomSheet extends StatelessWidget {
   final Function takePhotoFunction;
   final Function selectFromGalleryFunction;
-  final Function deleteFunction;
   final String title;
 
   const CustomImagePickerBottomSheet({
@@ -12,7 +11,6 @@ class CustomImagePickerBottomSheet extends StatelessWidget {
     required this.title,
     required this.takePhotoFunction,
     required this.selectFromGalleryFunction,
-    required this.deleteFunction,
   });
 
   @override
@@ -74,19 +72,7 @@ class CustomImagePickerBottomSheet extends StatelessWidget {
                       fontSize: 16.sp,
                       color: AppColors.primaryColor),
                 )),
-            InkWell(
-                splashColor: AppColors.transparent,
-                onTap: () async {
-                  await deleteFunction();
-                  Get.back();
-                },
-                child: Text(
-                  'Delete image',
-                  style: GoogleFonts.dmSans(
-                      fontWeight: FontWeight.w700,
-                      fontSize: 16.sp,
-                      color: Colors.red),
-                )),
+
           ],
         ),
       ),

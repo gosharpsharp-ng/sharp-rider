@@ -1,3 +1,4 @@
+import 'package:go_logistics_driver/models/bank_account_model.dart';
 import 'package:go_logistics_driver/utils/exports.dart';
 
 class WalletController extends GetxController {
@@ -114,7 +115,6 @@ class WalletController extends GetxController {
     isLoadingBanks = true;
     update();
     APIResponse response = await walletService.getBankList();
-    showToast(message: response.message, isError: response.status != "success");
     isLoadingBanks = false;
     update();
     if (response.status == "success") {
@@ -166,16 +166,38 @@ class WalletController extends GetxController {
     }
   }
 
+  BankAccount? payoutBankAccount;
+  bool isFetchingBankAccount = false;
+  getPayoutBankAccount() async {
+    isFetchingBankAccount = true;
+    update();
+    APIResponse response = await walletService.getPayoutBankAccount();
+    isFetchingBankAccount = false;
+    update();
+    if (response.status == "success") {
+      payoutBankAccount = BankAccount.fromJson(response.data);
+      update();
+    }
+  }
+
   TextEditingController resolvedBankAccountName = TextEditingController();
   clearImputedBankFields() {
     resolvedBankAccountName.clear();
     bankNameController.clear();
     accountNumberController.clear();
+    accountPasswordController.clear();
     selectedBank = null;
     update();
   }
 
-  TextEditingController otpController = TextEditingController();
+  bool accountPasswordVisibility = false;
+
+  toggleAccountPasswordVisibility() {
+    accountPasswordVisibility = !accountPasswordVisibility;
+    update();
+  }
+
+  TextEditingController accountPasswordController = TextEditingController();
   bool updatingBankAccount = false;
   updatePayoutAccount() async {
     if (payoutAccountFormKey.currentState!.validate()) {
@@ -184,7 +206,7 @@ class WalletController extends GetxController {
       dynamic data = {
         'bank_account_number': accountNumberController.text,
         'bank_code': selectedBank!.code,
-        "otp": "1234",
+        "password": accountPasswordController.text,
       };
       APIResponse response = await walletService.updatePayoutAccount(data);
       updatingBankAccount = false;
@@ -194,6 +216,7 @@ class WalletController extends GetxController {
       setLoadingState(false);
       if (response.status == "success") {
         clearImputedBankFields();
+        getPayoutBankAccount();
       }
     }
   }
@@ -207,6 +230,7 @@ class WalletController extends GetxController {
     }
     update();
     getWalletBalance();
+    getPayoutBankAccount();
     getAllTransactions();
   }
 

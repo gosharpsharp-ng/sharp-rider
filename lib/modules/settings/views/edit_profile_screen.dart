@@ -92,8 +92,7 @@ class EditProfileScreen extends StatelessWidget {
                                         selectFromGalleryFunction: () {
                                           settingsController.pickUserProfilePicture(
                                               pickFromCamera: false);
-                                        },
-                                        deleteFunction: () {},
+                                        }
                                       );
                                     });
                               },

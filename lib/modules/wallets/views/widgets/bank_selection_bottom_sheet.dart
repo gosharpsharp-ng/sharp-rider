@@ -8,7 +8,7 @@ class BankSelectionBottomSheet extends StatelessWidget {
   Widget build(BuildContext context) {
     return GetBuilder<WalletController>(builder: (walletController) {
       return Container(
-        padding: const EdgeInsets.symmetric(vertical: 16.0, horizontal: 8.0),
+        padding:  EdgeInsets.only(top: 20.sp,bottom: 12.sp, left: 14.sp,right: 14.sp),
         decoration: BoxDecoration(
           borderRadius: BorderRadius.only(
             topLeft: Radius.circular(10.0.sp),
@@ -18,24 +18,28 @@ class BankSelectionBottomSheet extends StatelessWidget {
         height: 440.h,
         child: Column(
           children: [
-            CustomOutlinedRoundedInputField(
-              labelColor: AppColors.blackColor,
-              cursorColor: AppColors.blackColor,
-              label: "Search",
-              controller: walletController.banksFilterController,
-              prefixWidget: const Icon(
-                Icons.search,
-                color: AppColors.blackColor,
-                // size: 14.sp,
+            Container(
+
+              child: CustomOutlinedRoundedInputField(
+                labelColor: AppColors.blackColor,
+                cursorColor: AppColors.blackColor,
+                label: "Search",
+                controller: walletController.banksFilterController,
+                prefixWidget: const Icon(
+                  Icons.search,
+                  color: AppColors.blackColor,
+                  // size: 14.sp,
+                ),
+                onChanged: (val) {
+                  walletController.filterBanks(val.toString());
+                },
               ),
-              onChanged: (val) {
-                walletController.filterBanks(val.toString());
-              },
             ),
-            SizedBox(height: 5.sp,),
+            SizedBox(height: 10.h,),
             Container(
               height: 340.h,
               width: 1.sw,
+
               child: SingleChildScrollView(
                 child: Column(
                   crossAxisAlignment:  walletController.filteredBanks.isEmpty?CrossAxisAlignment.center:CrossAxisAlignment.start,
@@ -45,7 +49,7 @@ class BankSelectionBottomSheet extends StatelessWidget {
                   children: walletController.filteredBanks.isEmpty
                       ? [
                     walletController.isLoadingBanks
-                        ? customText("Loading...")
+                        ? customText("Loading...",fontWeight: FontWeight.bold)
                         : InkWell(
                       onTap: () {
                         walletController.getBankList();

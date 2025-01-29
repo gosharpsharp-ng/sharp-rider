@@ -1,3 +1,4 @@
+import 'package:go_logistics_driver/modules/wallets/views/widgets/bank_details_item.dart';
 import 'package:go_logistics_driver/utils/exports.dart';
 import 'package:intl/intl.dart';
 
@@ -100,6 +101,53 @@ class WithdrawalAmountScreen extends StatelessWidget {
                       ),
                     ],
                   ),
+                  walletController.payoutBankAccount == null
+                      ? TitleSectionBox(title: "Payout account", children: [
+                          TextButton(
+                              onPressed: () {
+                                Get.toNamed(
+                                    Routes.ADD_WITHDRAWAL_ACCOUNT_SCREEN);
+                              },
+                              child: customText("Add Payout Account",
+                                  color: AppColors.greenColor,
+                                  fontSize: 16.sp,
+                                  fontWeight: FontWeight.bold)),
+                        ])
+                      : TitleSectionBox(title: "Payout account", children: [
+                          SizedBox(
+                            height: 5.sp,
+                          ),
+                          BankDetailsItem(
+                            title: "Bank name",
+                            value:
+                                walletController.payoutBankAccount?.bankName ??
+                                    "",
+                          ),
+                          BankDetailsItem(
+                            title: "Account number",
+                            value: walletController
+                                    .payoutBankAccount?.bankAccountNumber ??
+                                "",
+                          ),
+                          BankDetailsItem(
+                            title: "Account name",
+                            value: walletController
+                                    .payoutBankAccount?.bankAccountName ??
+                                "",
+                          ),
+                          TextButton(
+                              onPressed: () {
+                                Get.toNamed(
+                                    Routes.ADD_WITHDRAWAL_ACCOUNT_SCREEN);
+                              },
+                              child: customText(
+                                  walletController.payoutBankAccount != null
+                                      ? "Update Payout Account"
+                                      : "Add Payout Account",
+                                  color: AppColors.greenColor,
+                                  fontSize: 16.sp,
+                                  fontWeight: FontWeight.bold)),
+                        ]),
                 ],
               ),
             ),

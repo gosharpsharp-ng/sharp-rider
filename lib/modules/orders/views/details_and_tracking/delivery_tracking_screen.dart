@@ -198,7 +198,6 @@ class _DeliveryTrackingScreenState extends State<DeliveryTrackingScreen> {
                       trafficEnabled: true,
                       polylines: ordersController.polyLineSet,
                       markers: ordersController.markerSet,
-                      circles: ordersController.circleSet,
                       initialCameraPosition: _kLagosPosition,
                       onMapCreated: (GoogleMapController controller) {
                         if (!ordersController.googleMapController.isCompleted) {

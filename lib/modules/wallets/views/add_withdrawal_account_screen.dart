@@ -12,7 +12,7 @@ class AddWithdrawalAccountScreen extends StatelessWidget {
         child: Scaffold(
           appBar: defaultAppBar(
             bgColor: AppColors.backgroundColor,
-            title: "Add Bank Account",
+            title: "Update Bank Account",
           ),
           backgroundColor: AppColors.backgroundColor,
           body: Container(
@@ -109,13 +109,47 @@ class AddWithdrawalAccountScreen extends StatelessWidget {
                           // controller: signInProvider.passwordController,
                         ),
                         SizedBox(
+                          height: 10.sp,
+                        ),
+                        CustomRoundedInputField(
+                          title: "Password",
+                          label: "Enter your password",
+                          showLabel: true,
+                          isRequired: true,
+                          useCustomValidator: true,
+                          obscureText:
+                              !walletController.accountPasswordVisibility,
+                          hasTitle: true,
+                          controller:
+                              walletController.accountPasswordController,
+                          validator: (value) {
+                            if (value == null || value.isEmpty) {
+                              return 'Please enter your password';
+                            }
+                            return null;
+                          },
+                          suffixWidget: IconButton(
+                            onPressed: () {
+                              walletController
+                                  .toggleAccountPasswordVisibility();
+                            },
+                            icon: Icon(
+                              !walletController.accountPasswordVisibility
+                                  ? Icons.visibility_outlined
+                                  : Icons.visibility_off_outlined,
+                              size: 20.sp,
+                              color: AppColors.primaryColor,
+                            ),
+                          ),
+                        ),
+                        SizedBox(
                           height: 15.h,
                         ),
                         CustomButton(
                           onPressed: () {
                             walletController.updatePayoutAccount();
                           },
-                          // isBusy: signInProvider.isLoading,
+                          isBusy: walletController.updatingBankAccount,
                           title: "Submit",
                           width: 1.sw,
                           backgroundColor: AppColors.primaryColor,

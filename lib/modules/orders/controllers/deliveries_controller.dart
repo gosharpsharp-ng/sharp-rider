@@ -3,6 +3,7 @@ import 'dart:developer';
 import 'package:flutter_polyline_points/flutter_polyline_points.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:go_logistics_driver/models/direction_details_Info.dart';
+import 'package:go_logistics_driver/models/review_model.dart';
 import 'package:go_logistics_driver/models/rider_stats_model.dart';
 import 'package:go_logistics_driver/utils/exports.dart';
 
@@ -35,6 +36,7 @@ class DeliveriesController extends GetxController {
       update();
     }
     getRiderStats();
+    getRiderRatingStats();
   }
 
   Future<void> getDelivery() async {
@@ -64,10 +66,24 @@ class DeliveriesController extends GetxController {
   }
 
   bool isOnline = false;
-  toggleOnlineStatus() async {
+
+  Future<void> toggleOnlineStatus() async {
     if (settingsController.userProfile != null) {
       isOnline = !isOnline;
+
       if (isOnline) {
+        bool isLocationEnabled = await Geolocator.isLocationServiceEnabled();
+        LocationPermission permission = await Geolocator.checkPermission();
+
+        if (!isLocationEnabled || permission == LocationPermission.denied) {
+          bool granted = await showLocationPermissionDialog();
+          if (!granted) {
+            isOnline = false; // Revert status
+            update();
+            return;
+          }
+        }
+
         try {
           await serviceManager
               .initializeServices(settingsController.userProfile!);
@@ -77,8 +93,9 @@ class DeliveriesController extends GetxController {
           );
         } catch (e) {
           showToast(
-              message: "Failed to initialize services: ${e.toString()}",
-              isError: true);
+            message: "Failed to initialize services: ${e.toString()}",
+            isError: true,
+          );
         }
       } else {
         await serviceManager.disposeServices();
@@ -92,7 +109,6 @@ class DeliveriesController extends GetxController {
   }
 
   Set<Marker> markerSet = {};
-  Set<Circle> circleSet = {};
   DirectionDetailsInfo? rideDirectionDetailsInfo;
   final Completer<GoogleMapController> googleMapController =
       Completer<GoogleMapController>();
@@ -194,23 +210,6 @@ class DeliveriesController extends GetxController {
     markerSet.clear();
     markerSet.add(originMarker);
     markerSet.add(destinationMarker);
-    Circle originCircle = Circle(
-        circleId: const CircleId('originId'),
-        fillColor: AppColors.primaryColor,
-        radius: 20,
-        strokeWidth: 12,
-        strokeColor: AppColors.whiteColor,
-        center: originLatLng);
-    Circle destinationCircle = Circle(
-        circleId: const CircleId('destinationId'),
-        fillColor: AppColors.primaryColor,
-        radius: 20,
-        strokeWidth: 12,
-        strokeColor: AppColors.whiteColor,
-        center: destinationLatLng);
-
-    circleSet.assign(originCircle);
-    circleSet.assign(destinationCircle);
     update();
   }
 
@@ -295,7 +294,7 @@ class DeliveriesController extends GetxController {
       print("GoogleMapController is not initialized yet.");
     }
 
-    // Add markers and circles
+    // Add markers
 
     Marker originMarker = Marker(
       markerId: MarkerId(settingsController.userProfile!.id.toString()),
@@ -336,25 +335,6 @@ class DeliveriesController extends GetxController {
       markerSet.add(destinationMarker);
     }
 
-    Circle userCircle = Circle(
-      circleId: const CircleId('UserCircleId'),
-      fillColor: Colors.blueAccent,
-      radius: 20,
-      strokeWidth: 8,
-      strokeColor: Colors.white,
-      center: riderLatLng,
-    );
-    Circle senderCircle = Circle(
-      circleId: const CircleId('SenderCircleId'),
-      fillColor: Colors.redAccent,
-      radius: 20,
-      strokeWidth: 8,
-      strokeColor: Colors.white,
-      center: destinationPosition,
-    );
-
-    circleSet.assign(userCircle);
-    circleSet.assign(senderCircle);
     update();
   }
 
@@ -381,7 +361,7 @@ class DeliveriesController extends GetxController {
     update();
     if (response.status == "success") {
       selectedDelivery = DeliveryModel.fromJson(response.data);
-
+      update();
       if (Get.isRegistered<LocationService>()) {
         await Get.find<LocationService>().joinParcelTrackingRoom(
             trackingId: selectedDelivery?.trackingId ?? "");
@@ -523,11 +503,11 @@ class DeliveriesController extends GetxController {
     }
   }
 
-  RiderStatsModel? riderRatingStatsModel;
+  ReviewModel? riderRatingStatsModel;
   getRiderRatingStats() async {
     APIResponse response = await profileService.getRiderRatingStats();
     if (response.status == "success") {
-      riderRatingStatsModel = RiderStatsModel.fromJson(response.data);
+      riderRatingStatsModel = ReviewModel.fromJson(response.data);
       update();
     } else {
       showToast(

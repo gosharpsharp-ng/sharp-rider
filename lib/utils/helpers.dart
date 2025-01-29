@@ -3,6 +3,7 @@ import 'dart:developer';
 import 'dart:io';
 import 'dart:math' as math;
 import 'dart:ui';
+import 'package:geolocator/geolocator.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:go_logistics_driver/models/direction_details_Info.dart';
@@ -23,6 +24,53 @@ showAnyBottomSheet({required Widget child, bool isControlled = true}) {
       ),
     ),
   );
+}
+
+Future<bool> showLocationPermissionDialog() async {
+  bool isGranted = false;
+
+  await Get.defaultDialog(
+    title: "Enable Location",
+    cancelTextColor: AppColors.redColor,
+    buttonColor: AppColors.primaryColor,
+    middleText:
+        "To go online, please enable location services and allow permissions.",
+    textConfirm: "Enable",
+    textCancel: "Cancel",
+    contentPadding: EdgeInsets.symmetric(vertical: 14.sp, horizontal: 8.sp),
+    onConfirm: () async {
+      // Request location permission
+      LocationPermission permission = await Geolocator.requestPermission();
+
+      if (permission == LocationPermission.deniedForever) {
+        // Open settings if permanently denied
+        await Geolocator.openAppSettings();
+      } else if (permission == LocationPermission.denied) {
+        isGranted = false;
+      } else {
+        // Check if location is enabled
+        bool isLocationEnabled = await Geolocator.isLocationServiceEnabled();
+        if (!isLocationEnabled) {
+          await Geolocator.openLocationSettings();
+        }
+
+        // Wait and recheck if location is now enabled
+        await Future.delayed(Duration(seconds: 3));
+        isLocationEnabled = await Geolocator.isLocationServiceEnabled();
+
+        if (isLocationEnabled) {
+          isGranted = true;
+        }
+      }
+
+      Get.back(); // Close dialog
+    },
+    onCancel: () {
+      isGranted = false;
+    },
+  );
+
+  return isGranted;
 }
 
 class InvertedPlateClipper extends CustomClipper<Path> {
@@ -958,6 +1006,7 @@ double getDeliveryProgress(String status) {
       return 0.0; // Default case if status is unknown
   }
 }
+
 void makePhoneCall(String phoneNumber) async {
   final url = 'tel:$phoneNumber';
   if (await canLaunchUrl(Uri.parse(url))) {

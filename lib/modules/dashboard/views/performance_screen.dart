@@ -147,7 +147,7 @@ class PerformanceScreen extends StatelessWidget {
                           height: 10.h,
                         ),
                         RatingBarIndicator(
-                          rating: 2.75,
+                          rating:ordersController.riderRatingStatsModel?.averageRating??0.0,
                           itemBuilder: (context, index) => Icon(
                             Icons.star,
                             color: Colors.amber,
@@ -160,7 +160,7 @@ class PerformanceScreen extends StatelessWidget {
                         Row(
                           mainAxisAlignment: MainAxisAlignment.end,
                           children: [
-                            customText("/225",
+                            customText("${ordersController.riderRatingStatsModel?.reviews.length??0}",
                                 color: AppColors.blackColor,
                                 fontWeight: FontWeight.w500,
                                 fontSize: 14.sp,
