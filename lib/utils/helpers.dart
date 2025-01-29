@@ -165,6 +165,9 @@ class DottedDivider extends StatelessWidget {
 }
 
 double stripCurrencyFormat(String formattedAmount) {
+  print("************************************************************************************************");
+  print(formattedAmount);
+  print("************************************************************************************************");
   if (formattedAmount.isEmpty) {
     return 1.0;
   }

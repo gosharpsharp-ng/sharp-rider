@@ -16,12 +16,14 @@ class WalletsService extends CoreService {
   }
 
   Future<APIResponse> withdrawFromWallet(dynamic data) async {
-    return await send("/me/wallet/withdraw", data);
+    return await send("/me/wallet/payout", data);
   }
 
   Future<APIResponse> getBankList() async {
     return await fetch("/bank-list");
-  }  Future<APIResponse> getPayoutBankAccount() async {
+  }
+
+  Future<APIResponse> getPayoutBankAccount() async {
     return await fetch("/me/payout-account");
   }
 

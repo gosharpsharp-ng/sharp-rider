@@ -16,7 +16,7 @@ class WalletController extends GetxController {
     APIResponse response = await walletService.getAllTransactions();
     setLoadingState(false);
     if (response.status == "success") {
-      transactions = (response.data as List)
+      transactions = (response.data['data'] as List)
           .map((tr) => Transaction.fromJson(tr))
           .toList();
       update();
@@ -70,17 +70,14 @@ class WalletController extends GetxController {
       dynamic data = {
         'amount': stripCurrencyFormat(amountEntryController.text),
       };
-
       APIResponse response = await walletService.withdrawFromWallet(data);
-
+      showToast(
+          message: response.message, isError: response.status != "success");
       setLoadingState(false);
       if (response.status == "success") {
         amountEntryController.clear();
         getWalletBalance();
         update();
-      } else {
-        showToast(
-            message: response.message, isError: response.status != "success");
       }
     }
   }

@@ -91,7 +91,7 @@ class WithdrawalAmountScreen extends StatelessWidget {
                           walletController.withdrawFromWallet();
                         },
                         isBusy: walletController.isLoading,
-                        title: "Continue",
+                        title: "Submit",
                         width: 1.sw,
                         backgroundColor: AppColors.primaryColor,
                         fontColor: AppColors.whiteColor,
