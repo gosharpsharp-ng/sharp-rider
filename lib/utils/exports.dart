@@ -156,3 +156,7 @@ export 'package:go_logistics_driver/models/vehicle_model.dart';
 export 'package:go_logistics_driver/services/websocket_service_manager.dart';
 export 'package:go_logistics_driver/modules/settings/views/widgets/vehicle_details_item_widget.dart';
 export 'package:go_logistics_driver/modules/settings/views/vehicle/vehicle_details_screen.dart';
+
+export 'package:go_logistics_driver/models/direction_details_Info.dart';
+export 'package:go_logistics_driver/models/review_model.dart';
+export 'package:go_logistics_driver/models/rider_stats_model.dart';

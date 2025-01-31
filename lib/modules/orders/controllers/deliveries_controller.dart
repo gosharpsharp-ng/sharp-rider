@@ -2,9 +2,6 @@ import 'dart:developer';
 
 import 'package:flutter_polyline_points/flutter_polyline_points.dart';
 import 'package:geolocator/geolocator.dart';
-import 'package:go_logistics_driver/models/direction_details_Info.dart';
-import 'package:go_logistics_driver/models/review_model.dart';
-import 'package:go_logistics_driver/models/rider_stats_model.dart';
 import 'package:go_logistics_driver/utils/exports.dart';
 
 class DeliveriesController extends GetxController {
@@ -45,11 +42,6 @@ class DeliveriesController extends GetxController {
 
     APIResponse response =
         await deliveryService.getDelivery({'id': selectedDelivery!.id});
-    // Handle response
-    showToast(
-      message: response.message,
-      isError: response.status != "success",
-    );
     fetchingDeliveries = false;
     update();
     if (response.status == "success") {
@@ -353,40 +345,43 @@ class DeliveriesController extends GetxController {
     // Call the API
     APIResponse response = await deliveryService.updateDeliveryStatus(data);
     // Handle response
-    showToast(
-      message: response.message,
-      isError: response.status != "success",
-    );
-    acceptingDelivery = false;
-    update();
+
     if (response.status == "success") {
-      selectedDelivery = DeliveryModel.fromJson(response.data);
+      showToast(
+        message: response.message,
+        isError: response.status != "success",
+      );
+      acceptingDelivery = false;
       update();
+      selectedDelivery = DeliveryModel.fromJson(response.data);
+      await getDelivery();
       if (Get.isRegistered<LocationService>()) {
         await Get.find<LocationService>().joinParcelTrackingRoom(
             trackingId: selectedDelivery?.trackingId ?? "");
         Get.find<LocationService>()
-            .notifyUserOfDeliveryAcceptanceWithLocationLocation(
+            .notifyUserOfDeliveryStatusWithLocationLocation(
                 deliveryModel: selectedDelivery!);
         Get.find<LocationService>()
             .startEmittingParcelLocation(deliveryModel: selectedDelivery!);
-        Get.find<LocationService>()
-            .listenForParcelLocationUpdate(roomId: "rider_tracking");
       } else {
         await serviceManager
             .initializeServices(settingsController.userProfile!);
         await Get.find<LocationService>().joinParcelTrackingRoom(
             trackingId: selectedDelivery?.trackingId ?? "");
         Get.find<LocationService>()
-            .notifyUserOfDeliveryAcceptanceWithLocationLocation(
+            .notifyUserOfDeliveryStatusWithLocationLocation(
                 deliveryModel: selectedDelivery!);
         Get.find<LocationService>()
             .startEmittingParcelLocation(deliveryModel: selectedDelivery!);
-        Get.find<LocationService>()
-            .listenForParcelLocationUpdate(roomId: "rider_tracking");
       }
       acceptedDelivery = true;
+      acceptingDelivery = false;
       update();
+    } else {
+      showToast(
+        message: response.message,
+        isError: response.status != "success",
+      );
     }
   }
 
@@ -461,6 +456,23 @@ class DeliveriesController extends GetxController {
     );
 
     if (response.status == "success") {
+      if (Get.isRegistered<LocationService>()) {
+        await getDelivery();
+        await Get.find<LocationService>().joinParcelTrackingRoom(
+            trackingId: selectedDelivery?.trackingId ?? "");
+        Get.find<LocationService>()
+            .notifyUserOfDeliveryStatusWithLocationLocation(
+                deliveryModel: selectedDelivery!);
+      } else {
+        await serviceManager
+            .initializeServices(settingsController.userProfile!);
+        await Get.find<LocationService>().joinParcelTrackingRoom(
+            trackingId: selectedDelivery?.trackingId ?? "");
+        // Notify user of current status of delivery
+        Get.find<LocationService>()
+            .notifyUserOfDeliveryStatusWithLocationLocation(
+                deliveryModel: selectedDelivery!);
+      }
       if (status == 'deliver') {
         await Get.find<LocationService>().leaveParcelTrackingRoom(
             trackingId: selectedDelivery?.trackingId ?? "");

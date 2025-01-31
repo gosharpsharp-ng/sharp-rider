@@ -90,7 +90,7 @@ class LocationService extends GetxService {
     );
   }
 
-  void notifyUserOfDeliveryAcceptanceWithLocationLocation(
+  void notifyUserOfDeliveryStatusWithLocationLocation(
       {required DeliveryModel deliveryModel}) {
     // start the position stream for updates
     Geolocator.getCurrentPosition(
@@ -99,7 +99,7 @@ class LocationService extends GetxService {
       currentPosition = initialPosition;
       // Send initial location if socket service is available
       if (Get.isRegistered<SocketService>()) {
-        Get.find<SocketService>().emitParcelRiderLocationUpdate(
+        Get.find<SocketService>().emitParcelRiderLocationUpdateOnce(
             LatLng(currentPosition?.latitude ?? 0.0,
                 currentPosition?.longitude ?? 0.0),
             locationDegrees: calculateLocationDegrees(
