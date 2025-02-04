@@ -248,7 +248,7 @@ class SignInScreen extends StatelessWidget {
                             ),
                             InkWell(
                               onTap: () {
-                                Get.toNamed(Routes.SIGNUP_SCREEN);
+                                Get.offAndToNamed(Routes.SIGNUP_SCREEN);
                               },
                               child: customText("Create an account",
                                   color: AppColors.primaryColor,

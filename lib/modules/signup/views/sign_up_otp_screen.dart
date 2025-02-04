@@ -53,6 +53,9 @@ class SignUpOtpScreen extends StatelessWidget {
                         return null;
                       }
                     },
+                    onDone: (val){
+                      signUpController.verifyOtp();
+                    },
                   ),
                   SizedBox(
                     height: 30.sp,

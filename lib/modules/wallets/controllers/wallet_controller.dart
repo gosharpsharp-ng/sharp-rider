@@ -1,4 +1,3 @@
-import 'package:go_logistics_driver/models/bank_account_model.dart';
 import 'package:go_logistics_driver/utils/exports.dart';
 
 class WalletController extends GetxController {
@@ -172,8 +171,10 @@ class WalletController extends GetxController {
     isFetchingBankAccount = false;
     update();
     if (response.status == "success") {
-      payoutBankAccount = BankAccount.fromJson(response.data);
-      update();
+      if (response.data.toString().isNotEmpty) {
+            payoutBankAccount = BankAccount.fromJson(response.data);
+        update();
+      }
     }
   }
 

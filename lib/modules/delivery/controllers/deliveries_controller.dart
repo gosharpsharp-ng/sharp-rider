@@ -10,7 +10,7 @@ class DeliveriesController extends GetxController {
   final sendingInfoFormKey = GlobalKey<FormState>();
   final deliveriesSearchFormKey = GlobalKey<FormState>();
   final itemDetailsFormKey = GlobalKey<FormState>();
-  final serviceManager = Get.find<ServiceManager>();
+  final serviceManager = Get.find<DeliveryNotificationServiceManager>();
   final settingsController = Get.find<SettingsController>();
 
   List<DeliveryModel> allDeliveries = [];
@@ -61,42 +61,46 @@ class DeliveriesController extends GetxController {
 
   Future<void> toggleOnlineStatus() async {
     if (settingsController.userProfile != null) {
-      isOnline = !isOnline;
+      if (settingsController.userProfile!.vehicle != null) {
+        isOnline = !isOnline;
 
-      if (isOnline) {
-        bool isLocationEnabled = await Geolocator.isLocationServiceEnabled();
-        LocationPermission permission = await Geolocator.checkPermission();
+        if (isOnline) {
+          bool isLocationEnabled = await Geolocator.isLocationServiceEnabled();
+          LocationPermission permission = await Geolocator.checkPermission();
 
-        if (!isLocationEnabled || permission == LocationPermission.denied) {
-          bool granted = await showLocationPermissionDialog();
-          if (!granted) {
-            isOnline = false; // Revert status
-            update();
-            return;
+          if (!isLocationEnabled || permission == LocationPermission.denied) {
+            bool granted = await showLocationPermissionDialog();
+            if (!granted) {
+              isOnline = false; // Revert status
+              update();
+              return;
+            }
           }
-        }
 
-        try {
-          await serviceManager
-              .initializeServices(settingsController.userProfile!);
+          try {
+            await serviceManager
+                .initializeServices(settingsController.userProfile!);
+            showToast(
+              message: "You're online",
+              isError: false,
+            );
+          } catch (e) {
+            showToast(
+              message: "Failed to initialize services: ${e.toString()}",
+              isError: true,
+            );
+          }
+        } else {
+          await serviceManager.disposeServices();
           showToast(
-            message: "You're online",
+            message: "You're offline",
             isError: false,
           );
-        } catch (e) {
-          showToast(
-            message: "Failed to initialize services: ${e.toString()}",
-            isError: true,
-          );
         }
+        update();
       } else {
-        await serviceManager.disposeServices();
-        showToast(
-          message: "You're offline",
-          isError: false,
-        );
+        showAddBikeDialog();
       }
-      update();
     }
   }
 
@@ -108,6 +112,14 @@ class DeliveriesController extends GetxController {
   List<LatLng> pLineCoordinatedList = [];
   Set<Polyline> polyLineSet = {};
 
+  Future<void> setMapController(GoogleMapController controller) async {
+    if (!googleMapController.isCompleted) {
+      googleMapController.complete(controller);
+    }
+    newGoogleMapController = controller; // Store the initialized controller
+    update(); // Notify listeners
+  }
+
   Future<void> drawPolyLineFromOriginToDestination(BuildContext context,
       {required String originLatitude,
       required String originLongitude,
@@ -115,6 +127,7 @@ class DeliveriesController extends GetxController {
       required String destinationLongitude,
       required String originAddress,
       required String destinationAddress}) async {
+    await googleMapController.future;
     var originLatLng =
         LatLng(double.parse(originLatitude), double.parse(originLongitude));
     var destinationLatLng = LatLng(
@@ -144,7 +157,7 @@ class DeliveriesController extends GetxController {
     Polyline polyline = Polyline(
         polylineId: const PolylineId("PolyLineId"),
         jointType: JointType.mitered,
-        color: Colors.blue[900]!,
+        color: Colors.green,
         points: pLineCoordinatedList,
         startCap: Cap.squareCap,
         endCap: Cap.squareCap,
@@ -217,7 +230,7 @@ class DeliveriesController extends GetxController {
                   desiredAccuracy: LocationAccuracy.bestForNavigation))
               .longitude,
         );
-
+    await googleMapController.future;
     // Fetch direction details
     var directionDetailsInfo = await obtainOriginToDestinationDirectionDetails(
         riderLatLng, destinationPosition);
@@ -245,7 +258,7 @@ class DeliveriesController extends GetxController {
     Polyline polyline = Polyline(
       polylineId: const PolylineId("UserToSenderPolyline"),
       jointType: JointType.mitered,
-      color: Colors.green[700]!,
+      color: Colors.green!,
       points: pLineCoordinatedList,
       startCap: Cap.roundCap,
       endCap: Cap.roundCap,

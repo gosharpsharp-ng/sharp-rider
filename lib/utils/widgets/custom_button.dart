@@ -196,14 +196,14 @@ class CustomFlatButton extends StatelessWidget {
   }
 }
 
-class CustomGreenTextButton extends StatelessWidget {
+class CustomColouredTextButton extends StatelessWidget {
   final String title;
   final Function onPressed;
   final Widget? child; // Make child nullable
   final Color bgColor;
   final bool isLoading;
 
-  const CustomGreenTextButton(
+  const CustomColouredTextButton(
       {super.key,
       required this.onPressed,
       this.title = "",
@@ -219,7 +219,6 @@ class CustomGreenTextButton extends StatelessWidget {
       },
       child: Container(
         padding: EdgeInsets.symmetric(horizontal: 14.sp, vertical: 8.sp),
-        margin: EdgeInsets.all(5.sp),
         decoration: BoxDecoration(
           color: bgColor,
           borderRadius: BorderRadius.circular(40.r),

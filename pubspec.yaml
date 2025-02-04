@@ -5,7 +5,7 @@ description: "Join GoRider to earn by delivering parcels quickly and efficiently
 publish_to: 'none' # Remove this line if you wish to publish to pub.dev
 
 
-version: 1.0.0+4
+version: 1.0.0+5
 
 environment:
   sdk: '>=3.4.4 <4.0.0'
@@ -28,6 +28,7 @@ dependencies:
   cached_network_image: ^3.4.0
   dotted_line: ^3.2.3
   flutter_rating_bar: ^4.0.1
+  webview_flutter: ^4.8.0
   lottie: ^3.1.3
   pinput: ^3.0.1
   flutter_svg: ^2.0.10+1
@@ -48,6 +49,8 @@ dependencies:
   fbroadcast: ^2.0.0
   socket_io_client: ^3.0.2
   intl:
+  zego_uikit_prebuilt_call: ^4.16.21
+  zego_uikit_signaling_plugin: ^2.8.9
 dev_dependencies:
   flutter_test:
     sdk: flutter

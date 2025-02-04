@@ -10,7 +10,8 @@ WalletBalanceDataModel _$WalletBalanceDataModelFromJson(
         Map<String, dynamic> json) =>
     WalletBalanceDataModel(
       id: (json['id'] as num).toInt(),
-      balance: json['balance'] as String,
+      availableBalance: json['available_balance'] as String,
+      pendingBalance: json['pending_balance'] as String,
       bonusBalance: json['bonus_balance'] as String,
       currencyId: (json['currency_id'] as num?)?.toInt(),
       userId: (json['user_id'] as num).toInt(),
@@ -22,7 +23,8 @@ Map<String, dynamic> _$WalletBalanceDataModelToJson(
         WalletBalanceDataModel instance) =>
     <String, dynamic>{
       'id': instance.id,
-      'balance': instance.balance,
+      'available_balance': instance.availableBalance,
+      'pending_balance': instance.pendingBalance,
       'bonus_balance': instance.bonusBalance,
       'currency_id': instance.currencyId,
       'user_id': instance.userId,

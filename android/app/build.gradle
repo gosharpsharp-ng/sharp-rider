@@ -49,7 +49,7 @@ android {
         applicationId = "com.driver.gologistics.go_logistics_driver"
         // You can update the following values to match your application needs.
         // For more information, see: https://docs.flutter.dev/deployment/android#reviewing-the-gradle-build-configuration.
-        minSdk = flutter.minSdkVersion
+        minSdk = 21
         targetSdk = flutter.targetSdkVersion
         versionCode = flutterVersionCode.toInteger()
         versionName = flutterVersionName
@@ -69,4 +69,5 @@ flutter {
 
 dependencies {
     implementation 'com.google.android.material:material:1.5.0' // Use the latest version here
+    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlin_version"
 }

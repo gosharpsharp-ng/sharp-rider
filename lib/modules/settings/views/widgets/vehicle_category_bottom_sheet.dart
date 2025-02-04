@@ -13,7 +13,7 @@ class VehicleCategoryBottomSheet extends StatelessWidget {
         padding: EdgeInsets.symmetric(horizontal: 8.sp, vertical: 12.sp),
         child: Column(
           children: [
-            customText("Select Vehicle Type",
+            customText("Select Courier Type",
                 fontWeight: FontWeight.bold,
                 fontSize: 20.sp,
                 color: AppColors.primaryColor),
@@ -24,51 +24,60 @@ class VehicleCategoryBottomSheet extends StatelessWidget {
                   children: [
                     ...List.generate(
                       settingsController.courierTypes.length,
-                          (index) => InkWell(
+                      (index) => InkWell(
                         child: Column(
-                          mainAxisAlignment:settingsController.isLoadingCourierTypes?MainAxisAlignment.center: MainAxisAlignment.start,
-                          children:  settingsController.isLoadingCourierTypes? [customText("Loading...")]: [
-
-                            Container(
-                              padding: EdgeInsets.symmetric(
-                                  horizontal: 5.sp, vertical: 2.sp),
-                              height: 45.sp,
-                              margin: EdgeInsets.symmetric(
-                                  horizontal: 10.sp, vertical: 6.sp),
-                              child: Row(
-                                mainAxisAlignment:
-                                MainAxisAlignment.spaceBetween,
-                                children: [
-                                  Expanded(
-                                    flex: 2,
-                                    child: customText(
-                                        settingsController
-                                            .courierTypes[index].name,
-                                        fontSize: 18.sp,
-                                        color:  settingsController
-                                            .courierTypes[index].name ==
+                          mainAxisAlignment:
+                              settingsController.isLoadingCourierTypes
+                                  ? MainAxisAlignment.center
+                                  : MainAxisAlignment.start,
+                          children: settingsController.isLoadingCourierTypes
+                              ? [customText("Loading...")]
+                              : [
+                                  Container(
+                                    padding: EdgeInsets.symmetric(
+                                        horizontal: 5.sp, vertical: 2.sp),
+                                    height: 45.sp,
+                                    margin: EdgeInsets.symmetric(
+                                        horizontal: 10.sp, vertical: 6.sp),
+                                    child: Row(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.spaceBetween,
+                                      children: [
+                                        Expanded(
+                                          flex: 2,
+                                          child: customText(
                                             settingsController
-                                                .vehicleCourierTypeController.text
-                                            ? AppColors.primaryColor
-                                            : AppColors.blackColor),
+                                                .courierTypes[index].name,
+                                            fontSize: 18.sp,
+                                            color: settingsController
+                                                        .courierTypes[index]
+                                                        .name ==
+                                                    settingsController
+                                                        .vehicleCourierTypeController
+                                                        .text
+                                                ? AppColors.primaryColor
+                                                : AppColors.blackColor,
+                                          ),
+                                        ),
+                                        settingsController
+                                                    .courierTypes[index].name ==
+                                                settingsController
+                                                    .vehicleCourierTypeController
+                                                    .text
+                                            ? Icon(
+                                                Icons.check_circle_outline,
+                                                color: AppColors.primaryColor,
+                                                size: 20.sp,
+                                              )
+                                            : const SizedBox.shrink()
+                                      ],
+                                    ),
                                   ),
-                                  settingsController
-                                      .courierTypes[index].name ==
-                                      settingsController
-                                          .vehicleCourierTypeController.text
-                                      ? Icon(
-                                    Icons.check_circle_outline,
-                                    color: AppColors.primaryColor,
-                                    size: 20.sp,
+                                  Divider(
+                                    color:
+                                        AppColors.primaryColor.withOpacity(0.1),
                                   )
-                                      : const SizedBox.shrink()
                                 ],
-                              ),
-                            ),
-                            Divider(
-                              color: AppColors.primaryColor.withOpacity(0.1),
-                            )
-                          ],
                         ),
                         onTap: () {
                           settingsController.setSelectedCourierType(

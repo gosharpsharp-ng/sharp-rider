@@ -1,4 +1,4 @@
-import 'package:go_logistics_driver/modules/orders/views/widgets/delivery_tab_chip.dart';
+
 import 'package:go_logistics_driver/utils/exports.dart';
 
 class DeliveriesHistoryScreen extends StatelessWidget {

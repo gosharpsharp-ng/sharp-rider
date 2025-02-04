@@ -1,16 +1,16 @@
 import 'dart:developer';
-import 'package:go_logistics_driver/services/delivery/delivery_notification.dart';
-import '../utils/exports.dart';
 
-class ServiceManager extends GetxService {
-  static ServiceManager get instance => Get.find();
+import '../../utils/exports.dart';
+
+class DeliveryNotificationServiceManager extends GetxService {
+  static DeliveryNotificationServiceManager get instance => Get.find();
   bool _isServicesInitialized = false;
 
   bool get isServicesInitialized => _isServicesInitialized;
 
   Future<void> initializeServices(UserProfile profile) async {
     if (_isServicesInitialized) {
-      print('Services already initialized');
+      log('Services already initialized');
       return;
     }
 

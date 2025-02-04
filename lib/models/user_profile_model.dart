@@ -1,3 +1,4 @@
+import 'package:go_logistics_driver/utils/exports.dart';
 import 'package:json_annotation/json_annotation.dart';
 
 part 'user_profile_model.g.dart';
@@ -28,6 +29,11 @@ class UserProfile {
   final bool isEmailVerified;
   @JsonKey(name: 'is_phone_verified')
   final bool isPhoneVerified;
+  @JsonKey(name: 'has_valid_driver_license')
+  final bool hasValidDriverLicense;
+  @JsonKey(name: 'has_verified_vehicle')
+  final bool hasVerifiedVehicle;
+  final VehicleModel? vehicle;
 
   UserProfile({
     required this.id,
@@ -45,7 +51,10 @@ class UserProfile {
     required this.createdAt,
     required this.updatedAt,
     required this.isEmailVerified,
+    required this.hasValidDriverLicense,
+    required this.hasVerifiedVehicle,
     required this.isPhoneVerified,
+    required this.vehicle,
   });
 
   // Factory method to create an instance from JSON

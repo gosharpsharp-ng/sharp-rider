@@ -1,5 +1,5 @@
+import 'dart:developer';
 import 'dart:io';
-
 import 'package:dio/dio.dart' as dio_pack;
 import 'package:dio/dio.dart';
 import 'package:go_logistics_driver/utils/exports.dart';
@@ -35,7 +35,7 @@ class CoreService extends GetConnect {
         onError: (DioException error, handler) {
           // Check for 401 Unauthorized
           if (error.response?.statusCode == 401) {
-            if(Get.currentRoute!=Routes.SIGN_IN) {
+            if (Get.currentRoute != Routes.SIGN_IN) {
               handleUnauthorizedAccess();
             }
           }
@@ -89,11 +89,6 @@ class CoreService extends GetConnect {
       }
     } on DioException catch (e) {
       if (e.response != null) {
-        print(
-            "*****************************************************************************************888");
-        print(e.response!.data.toString());
-        print(
-            "*****************************************************************************************888");
         return APIResponse.fromMap(e.response?.data);
       } else {
         return APIResponse(
@@ -139,12 +134,12 @@ class CoreService extends GetConnect {
       }
     } on DioException catch (e) {
       if (e.response != null) {
-        print(
-            "*****************************************************************************************888");
-        print("URL: $url");
-        print(e.response.toString());
-        print(
-            "*****************************************************************************************888");
+        // log(
+        //     "*****************************************************************************************888");
+        // log("URL: $url");
+        // log(e.response.toString());
+        // log(
+        //     "*****************************************************************************************888");
         return APIResponse.fromMap(e.response?.data);
       } else {
         return APIResponse(
@@ -223,11 +218,6 @@ class CoreService extends GetConnect {
       }
     } on DioException catch (e) {
       if (e.response != null) {
-        print(
-            "*********************************************************************************************************");
-        print(e.response.toString());
-        print(
-            "*********************************************************************************************************");
         return APIResponse.fromMap(e.response?.data);
       } else {
         return APIResponse(

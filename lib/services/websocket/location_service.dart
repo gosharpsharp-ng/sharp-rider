@@ -1,5 +1,5 @@
+import 'dart:developer';
 import 'package:geolocator/geolocator.dart';
-import 'dart:math' as math;
 import '../../utils/exports.dart';
 
 class LocationService extends GetxService {
@@ -11,6 +11,7 @@ class LocationService extends GetxService {
   Future<LocationService> init() async {
     await _checkPermissions();
     _startLocationTracking();
+    _initialLocationSent = false;
     return this;
   }
 
@@ -35,38 +36,50 @@ class LocationService extends GetxService {
 
   joinParcelTrackingRoom({required String trackingId}) async {
     if (Get.isRegistered<SocketService>()) {
-      Get.find<SocketService>()
-          .joinTrackingRoom(trackingId: trackingId, msg: 'join_room');
+      Get.find<SocketService>().joinRoom(roomId: trackingId);
+    }
+  }
+
+  joinRiderLocationUpdateRoom({required String courierType}) async {
+    // Join room based on your courier type: express or e-bike
+    if (Get.isRegistered<SocketService>()) {
+      Get.find<SocketService>().joinRiderRoom();
     }
   }
 
   leaveParcelTrackingRoom({required String trackingId}) async {
     if (Get.isRegistered<SocketService>()) {
-      Get.find<SocketService>()
-          .joinTrackingRoom(trackingId: trackingId, msg: 'leave_room');
+      Get.find<SocketService>().leaveRoom(roomId: trackingId);
     }
   }
 
-  void _startLocationTracking() {
+  void _startLocationTracking() async {
+    await joinRiderLocationUpdateRoom(courierType: 'express');
     // First, get the initial position
     Geolocator.getCurrentPosition(
       desiredAccuracy: LocationAccuracy.high,
     ).then((Position initialPosition) {
       currentPosition = initialPosition;
       // Send initial location if socket service is available
-      if (Get.isRegistered<SocketService>()) {
-        Get.find<SocketService>().emitLocation(initialPosition);
-        _initialLocationSent = true;
-      }
+        if(Get.isRegistered<SocketService>() && Get.find<SocketService>().isConnected.value==true ){
+          Get.find<SocketService>()
+              .emitRiderLocationUpdateByCurrierType(initialPosition);
+          _initialLocationSent = true;
+          Get.find<SocketService>().listenForDeliveries((data) {
+            Get.find<DeliveryNotificationService>().handleDeliveryNotification(data);
+          });
+        }
+
+
     }).catchError((error) {
-      print('Error getting initial position: $error');
+      log('Error getting initial position: $error');
     });
 
     // Then start the position stream for updates
     _positionStream = Geolocator.getPositionStream(
       locationSettings: const LocationSettings(
         accuracy: LocationAccuracy.bestForNavigation,
-        distanceFilter: 10,
+        distanceFilter: 15,
       ),
     );
 
@@ -76,23 +89,29 @@ class LocationService extends GetxService {
         if (Get.isRegistered<SocketService>()) {
           if (!_initialLocationSent) {
             // If initial location wasn't sent (e.g., if socket wasn't ready), send it now
-            Get.find<SocketService>().emitLocation(newPosition);
+            joinRiderLocationUpdateRoom(courierType: "express");
+            Get.find<SocketService>()
+                .emitRiderLocationUpdateByCurrierType(newPosition);
             _initialLocationSent = true;
+            Get.find<SocketService>().listenForDeliveries((data) {
+              Get.find<DeliveryNotificationService>().handleDeliveryNotification(data);
+            });
           } else {
             // Otherwise send location update
-            Get.find<SocketService>().emitLocationUpdate(newPosition);
+            Get.find<SocketService>()
+                .emitRiderLocationUpdateByCurrierType(newPosition);
           }
         }
       },
       onError: (error) {
-        print('Location tracking error: $error');
+        log('Location tracking error: $error');
       },
     );
   }
 
   void notifyUserOfDeliveryStatusWithLocationLocation(
       {required DeliveryModel deliveryModel}) {
-    // start the position stream for updates
+    // Notify the user of the status of his order/delivery
     Geolocator.getCurrentPosition(
       desiredAccuracy: LocationAccuracy.high,
     ).then((Position initialPosition) {
@@ -110,12 +129,12 @@ class LocationService extends GetxService {
             deliveryModel: deliveryModel);
       }
     }).catchError((error) {
-      print('Error getting initial position: $error');
+      log('Error getting initial position: $error');
     });
   }
 
   void startEmittingParcelLocation({required DeliveryModel deliveryModel}) {
-    // start the position stream for updates
+    // start the position stream for updates when a parcel is picked
     _positionStream = Geolocator.getPositionStream(
       locationSettings: const LocationSettings(
         accuracy: LocationAccuracy.bestForNavigation,
@@ -140,7 +159,7 @@ class LocationService extends GetxService {
           }
         },
         onError: (error) {
-          print('Location tracking error: $error');
+          log('Location tracking error: $error');
         },
       );
     }

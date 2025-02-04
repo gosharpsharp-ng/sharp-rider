@@ -5,7 +5,7 @@ import 'package:intl/intl.dart';
 
 class SettingsController extends GetxController {
   final profileService = serviceLocator<ProfileService>();
-  final serviceManager = Get.put(ServiceManager());
+  final serviceManager = Get.put(DeliveryNotificationServiceManager());
 
   // Initial values for comparison
   String? initialFName;
@@ -27,14 +27,26 @@ class SettingsController extends GetxController {
     if (response.status == "success") {
       userProfile = UserProfile.fromJson(response.data);
       update();
+      ZegoUIKitPrebuiltCallInvitationService().init(
+        appID: int.parse(Secret.zegoCloudAppID),
+        appSign: Secret.zegoCloudAppSign,
+        userID: userProfile!.id.toString(),
+        userName: "${userProfile?.fname ?? ""} ${userProfile?.lname ?? ""}",
+        plugins: [ZegoUIKitSignalingPlugin()],
+        notificationConfig: ZegoCallInvitationNotificationConfig(
+            androidNotificationConfig: ZegoCallAndroidNotificationConfig(
+              sound: null,
+              showFullScreen: true,
+            ),
+            iOSNotificationConfig:
+                ZegoCallIOSNotificationConfig(appName: "GoSharpSharp")),
+      );
       setProfileFields();
     } else {
       showToast(
           message: response.message, isError: response.status != "success");
     }
   }
-
-
 
   setProfileFields() {
     // Store initial values
@@ -242,11 +254,6 @@ class SettingsController extends GetxController {
     APIResponse response = await profileService.getVehicle();
     // setLoadingVehicleState(false);
     if (response.status == "success") {
-      print(
-          "************************************************************************************");
-      print("${response.data}");
-      print(
-          "************************************************************************************");
       if (response.data.isNotEmpty) {
         vehicleModel = VehicleModel.fromJson(response.data[0]);
       }
@@ -261,11 +268,6 @@ class SettingsController extends GetxController {
     APIResponse response = await profileService.getLicense();
     // setLoadingVehicleState(false);
     if (response.status == "success") {
-      print(
-          "********************************************************************************************************");
-      print(response.data);
-      print(
-          "********************************************************************************************************");
       if (response.data.isNotEmpty) {
         vehicleLicense = LicenseModel.fromJson(response.data[0]);
         update();
@@ -300,10 +302,10 @@ class SettingsController extends GetxController {
 
       dynamic data = {
         "courier_type_id": selectedCourierType!.id,
-        "brand": vehicleBrandController.text,
-        "model": vehicleModelController.text,
+        // "brand": vehicleBrandController.text,
+        // "model": vehicleModelController.text,
         "reg_num": vehicleRegNumController.text,
-        "year": vehicleYearController.text
+        // "year": vehicleYearController.text
       };
       APIResponse response = await profileService.addVehicle(data);
 
@@ -311,6 +313,7 @@ class SettingsController extends GetxController {
       showToast(
           message: response.message, isError: response.status != "success");
       if (response.status == "success") {
+        getProfile();
         getMyVehicle();
         clearVehicleTextFields();
       }
@@ -414,8 +417,18 @@ class SettingsController extends GetxController {
       if (response.status == "success") {
         clearLicenseTextFields();
         getMyVehicleLicense();
+        getProfile();
       }
     }
+  }
+
+  logout() async {
+    GetStorage getStorage = GetStorage();
+    DeliveryNotificationServiceManager serviceManager = DeliveryNotificationServiceManager();
+    serviceManager.disposeServices();
+    getStorage.remove('token');
+    Get.offAllNamed(Routes.SIGN_IN);
+    ZegoUIKitPrebuiltCallInvitationService().uninit();
   }
 
   @override

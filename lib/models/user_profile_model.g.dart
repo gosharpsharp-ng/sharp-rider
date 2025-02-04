@@ -22,7 +22,12 @@ UserProfile _$UserProfileFromJson(Map<String, dynamic> json) => UserProfile(
       createdAt: json['created_at'] as String,
       updatedAt: json['updated_at'] as String,
       isEmailVerified: json['is_email_verified'] as bool,
+      hasValidDriverLicense: json['has_valid_driver_license'] as bool,
+      hasVerifiedVehicle: json['has_verified_vehicle'] as bool,
       isPhoneVerified: json['is_phone_verified'] as bool,
+      vehicle: json['vehicle'] == null
+          ? null
+          : VehicleModel.fromJson(json['vehicle'] as Map<String, dynamic>),
     );
 
 Map<String, dynamic> _$UserProfileToJson(UserProfile instance) =>
@@ -43,4 +48,7 @@ Map<String, dynamic> _$UserProfileToJson(UserProfile instance) =>
       'updated_at': instance.updatedAt,
       'is_email_verified': instance.isEmailVerified,
       'is_phone_verified': instance.isPhoneVerified,
+      'has_valid_driver_license': instance.hasValidDriverLicense,
+      'has_verified_vehicle': instance.hasVerifiedVehicle,
+      'vehicle': instance.vehicle,
     };

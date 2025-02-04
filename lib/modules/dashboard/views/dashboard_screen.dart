@@ -1,3 +1,4 @@
+import 'package:go_logistics_driver/modules/dashboard/views/widgets/wallet_widget.dart';
 import 'package:go_logistics_driver/utils/exports.dart';
 
 class DashboardScreen extends StatelessWidget {
@@ -93,6 +94,7 @@ class DashboardScreen extends StatelessWidget {
           ),
           body: Container(
             padding: EdgeInsets.symmetric(vertical: 5.sp, horizontal: 10.sp),
+            width: 1.sw,
             color: AppColors.backgroundColor,
             child: SingleChildScrollView(
               child: Column(
@@ -101,83 +103,28 @@ class DashboardScreen extends StatelessWidget {
                     height: 10.h,
                   ),
                   GetBuilder<WalletController>(builder: (walletController) {
-                    return Container(
-                      margin: EdgeInsets.symmetric(horizontal: 2.w),
-                      padding: EdgeInsets.symmetric(
-                          vertical: 18.sp, horizontal: 15.sp),
-                      decoration: BoxDecoration(
-                          color: AppColors.deepPrimaryColor,
-                          borderRadius: BorderRadius.circular(14.r)),
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    return SingleChildScrollView(
+                      scrollDirection: Axis.horizontal,
+                      child: Row(
                         children: [
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.start,
-                            children: [
-                              customText("Go-wallet balance",
-                                  color: AppColors.whiteColor,
-                                  fontWeight: FontWeight.w500,
-                                  fontSize: 14.sp,
-                                  overflow: TextOverflow.visible),
-                              SizedBox(
-                                width: 10.w,
-                              ),
-                              InkWell(
-                                highlightColor: AppColors.transparent,
-                                onTap: () {
-                                  walletController
-                                      .toggleWalletBalanceVisibility();
-                                },
-                                child: Icon(
-                                  walletController.walletBalanceVisibility
-                                      ? Icons.visibility_off
-                                      : Icons.visibility,
-                                  color: AppColors.whiteColor,
-                                  size: 18.sp,
-                                ),
-                              ),
-                            ],
+                          WalletWidget(
+                            balance: walletController
+                                    .walletBalanceData?.availableBalance ??
+                                "0.0",
+                            title: "Available balance",
+                            canWithdraw: true,
                           ),
-                          SizedBox(
-                            height: 20.h,
+                          WalletWidget(
+                            balance: walletController
+                                    .walletBalanceData?.pendingBalance ??
+                                "0.0",
+                            title: "Pending balance",
                           ),
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              customText(
-                                  walletController.walletBalanceVisibility
-                                      ? formatToCurrency(double.parse(
-                                          walletController
-                                                  .walletBalanceData?.balance ??
-                                              "0.0"))
-                                      : "*****",
-                                  color: AppColors.whiteColor,
-                                  fontWeight: FontWeight.w600,
-                                  fontFamily:
-                                      GoogleFonts.montserrat().fontFamily!,
-                                  fontSize: 24.sp,
-                                  overflow: TextOverflow.visible),
-                              CustomGreenTextButton(
-                                onPressed: () {
-                                  Get.toNamed(Routes.WITHDRAWAL_AMOUNT_SCREEN);
-                                },
-                                bgColor: AppColors.primaryColor,
-                                title: '',
-                                child: Center(
-                                    child: Row(
-                                  children: [
-                                    customText(
-                                      "Withdraw",
-                                      color: AppColors.whiteColor,
-                                      fontWeight: FontWeight.w500,
-                                      fontSize: 12.sp,
-                                    ),
-                                    SizedBox(width: 12.sp),
-                                    SvgPicture.asset(SvgAssets.downArrowIcon),
-                                  ],
-                                )),
-                              )
-                            ],
+                          WalletWidget(
+                            balance: walletController
+                                    .walletBalanceData?.availableBalance ??
+                                "0.0",
+                            title: "Bonus balance",
                           ),
                         ],
                       ),

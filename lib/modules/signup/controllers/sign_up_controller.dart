@@ -67,7 +67,7 @@ class SignUpController extends GetxController {
           message: response.message, isError: response.status != "success");
       setLoadingState(false);
       if (response.status == "success") {
-        Get.offAndToNamed(Routes.SIGN_IN);
+        Get.offAllNamed(Routes.SIGN_IN);
       }
     }
   }

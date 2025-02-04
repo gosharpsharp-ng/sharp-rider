@@ -13,7 +13,7 @@ class AddVehicleScreen extends StatelessWidget {
           appBar: defaultAppBar(
             implyLeading: true,
             bgColor: AppColors.backgroundColor,
-            title: "Add Vehicle",
+            title: "Add Bike",
             centerTitle: false,
           ),
           body: Container(
@@ -61,21 +61,22 @@ class AddVehicleScreen extends StatelessWidget {
                             color: AppColors.primaryColor,
                           ),
                         ),
-                      ),  CustomRoundedInputField(
-                        title: "Brand",
-                        label: "Toyota",
-                        showLabel: true,
-                        hasTitle: true,
-                        controller: settingsController.vehicleBrandController,
                       ),
-                      CustomRoundedInputField(
-                        title: "Vehicle model",
-                        label: "Corolla",
-                        showLabel: true,
-                        // readOnly: !settingsController.isProfileEditable,
-                        hasTitle: true,
-                        controller: settingsController.vehicleModelController,
-                      ),
+                      // CustomRoundedInputField(
+                      //   title: "Brand",
+                      //   label: "Toyota",
+                      //   showLabel: true,
+                      //   hasTitle: true,
+                      //   controller: settingsController.vehicleBrandController,
+                      // ),
+                      // CustomRoundedInputField(
+                      //   title: "Vehicle model",
+                      //   label: "Corolla",
+                      //   showLabel: true,
+                      //   // readOnly: !settingsController.isProfileEditable,
+                      //   hasTitle: true,
+                      //   controller: settingsController.vehicleModelController,
+                      // ),
                       CustomRoundedInputField(
                         title: "Registration number",
                         label: "12X45YX",
@@ -84,14 +85,14 @@ class AddVehicleScreen extends StatelessWidget {
                         controller: settingsController.vehicleRegNumController,
                         // controller: signInProvider.emailController,
                       ),
-                      CustomRoundedInputField(
-                        title: "Year",
-                        label: "2022",
-                        showLabel: true,
-                        hasTitle: true,
-                        keyboardType: TextInputType.number,
-                        controller: settingsController.vehicleYearController,
-                      ),
+                      // CustomRoundedInputField(
+                      //   title: "Year",
+                      //   label: "2022",
+                      //   showLabel: true,
+                      //   hasTitle: true,
+                      //   keyboardType: TextInputType.number,
+                      //   controller: settingsController.vehicleYearController,
+                      // ),
                     ],
                   ),
                   SizedBox(

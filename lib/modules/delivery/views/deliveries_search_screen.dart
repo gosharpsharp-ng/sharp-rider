@@ -31,7 +31,7 @@ class SearchDeliveriesScreen extends StatelessWidget {
                       child: SvgPicture.asset(
                         SvgAssets.searchIcon,
                       )),
-                  suffixWidget: CustomGreenTextButton(
+                  suffixWidget: CustomColouredTextButton(
                     title: "Go",
                     isLoading: ordersController.searchingDeliveries,
                     onPressed: () {

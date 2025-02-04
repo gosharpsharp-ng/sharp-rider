@@ -5,7 +5,10 @@ part 'wallet_balance_data_model.g.dart';
 @JsonSerializable()
 class WalletBalanceDataModel {
   final int id;
-  final String balance;
+  @JsonKey(name: 'available_balance')
+  final String availableBalance;
+  @JsonKey(name: 'pending_balance')
+  final String pendingBalance;
   @JsonKey(name: 'bonus_balance')
   final String bonusBalance;
   @JsonKey(name: 'currency_id')
@@ -19,7 +22,8 @@ class WalletBalanceDataModel {
 
   WalletBalanceDataModel({
     required this.id,
-    required this.balance,
+    required this.availableBalance,
+    required this.pendingBalance,
     required this.bonusBalance,
     this.currencyId,
     required this.userId,

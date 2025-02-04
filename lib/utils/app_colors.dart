@@ -33,7 +33,7 @@ class AppColors{
   Color(0xFFFFF7E5); //    // For text on Confirmed
 
   static const lightGreenColor = Color(0xFFE5F5E5); // For Paid & Delivered
-  static const greenColor = Color(0xFF4CAF50); // For text on Paid & Delivered
+  static const greenColor = Color(0XFF47862D); // For text on Paid & Delivered
   // For text on Assigned
 
   static const lightPurpleColor = Color(0xFFEDE5FF); // For Enroute

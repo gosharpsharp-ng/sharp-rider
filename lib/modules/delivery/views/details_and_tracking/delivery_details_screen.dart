@@ -1,4 +1,4 @@
-import 'package:go_logistics_driver/modules/orders/views/widgets/delivery_item_accordion.dart';
+
 import 'package:go_logistics_driver/utils/exports.dart';
 
 class DeliveryDetailsScreen extends StatelessWidget {
@@ -29,7 +29,7 @@ class DeliveryDetailsScreen extends StatelessWidget {
                           .contains(ordersController.selectedDelivery!.status)
                       ? CustomButton(
                           onPressed: () async {
-                            final serviceManager = Get.find<ServiceManager>();
+                            final serviceManager = Get.find<DeliveryNotificationServiceManager>();
                             if (Get.isRegistered<LocationService>()) {
                               await Get.find<LocationService>()
                                   .joinParcelTrackingRoom(
@@ -40,9 +40,9 @@ class DeliveryDetailsScreen extends StatelessWidget {
                                   .startEmittingParcelLocation(
                                       deliveryModel:
                                           ordersController.selectedDelivery!);
-                              Get.find<LocationService>()
-                                  .listenForParcelLocationUpdate(
-                                      roomId: "rider_tracking");
+                              // Get.find<LocationService>()
+                              //     .listenForParcelLocationUpdate(
+                              //         roomId: "rider_tracking");
                             } else {
                               await serviceManager.initializeServices(
                                   ordersController
@@ -56,9 +56,9 @@ class DeliveryDetailsScreen extends StatelessWidget {
                                   .startEmittingParcelLocation(
                                       deliveryModel:
                                           ordersController.selectedDelivery!);
-                              Get.find<LocationService>()
-                                  .listenForParcelLocationUpdate(
-                                      roomId: "rider_tracking");
+                              // Get.find<LocationService>()
+                              //     .listenForParcelLocationUpdate(
+                              //         roomId: "rider_tracking");
                             }
                             Get.toNamed(Routes.DELIVERY_TRACKING_SCREEN);
                             if (['delivered', 'rejected', 'canceled'].contains(

@@ -1,30 +1,41 @@
 import 'package:go_logistics_driver/utils/exports.dart';
 
+final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await GetStorage.init();
   await ScreenUtil.ensureScreenSize();
-  Get.put(ServiceManager());
+  Get.put(DeliveryNotificationServiceManager());
   SystemChrome.setPreferredOrientations([
     DeviceOrientation.portraitUp,
   ]);
   setupServiceLocator();
-  runApp(const GoSharpDriver());
+  //  1.1.2: set navigator key to ZegoUIKitPrebuiltCallInvitationService
+  ZegoUIKitPrebuiltCallInvitationService().setNavigatorKey(navigatorKey);
+
+  // call the useSystemCallingUI
+  ZegoUIKit().initLog().then((value) {
+    ZegoUIKitPrebuiltCallInvitationService().useSystemCallingUI(
+      [ZegoUIKitSignalingPlugin()],
+    );
+    runApp(GoSharpDriver(navigatorKey: navigatorKey));
+  });
 }
 
 class GoSharpDriver extends StatelessWidget {
-  const GoSharpDriver({super.key});
+  final GlobalKey<NavigatorState> navigatorKey;
+  const GoSharpDriver({super.key, required this.navigatorKey});
 
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
     ScreenUtil.init(context);
-
     return GetMaterialApp(
       debugShowCheckedModeBanner: false,
-      title: 'GoSharpSharp Driver',
+      title: 'GoRider',
       initialRoute: AppPages.INITIAL,
       getPages: AppPages.routes,
+      navigatorKey: navigatorKey,
     );
   }
 }

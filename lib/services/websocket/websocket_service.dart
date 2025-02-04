@@ -1,8 +1,6 @@
 import 'dart:developer';
-
 import 'package:geolocator/geolocator.dart';
 import 'package:socket_io_client/socket_io_client.dart' as IO;
-
 import '../../utils/exports.dart';
 
 class SocketService extends GetxService {
@@ -11,6 +9,8 @@ class SocketService extends GetxService {
   late IO.Socket socket;
   final isConnected = false.obs;
   late UserProfile _userProfile;
+  final Set<String> _joinedRooms = {}; // Track joined rooms
+  bool _hasJoinedRiderRoom = false;
 
   Future<SocketService> init(UserProfile profile) async {
     _userProfile = profile;
@@ -35,60 +35,62 @@ class SocketService extends GetxService {
   void _setupSocketListeners() {
     socket
       ..onConnect((_) {
-        print('Socket Connected');
+        log('Socket Connected');
+
         isConnected.value = true;
+       // Ensure rider rejoin
+        if( isConnected.value == true){
+          _rejoinRooms();
+          if (!_hasJoinedRiderRoom) joinRiderRoom();
+          startListeningAndEmitting();
+        }
       })
       ..onDisconnect((_) {
-        print('Socket Disconnected');
+        log('Socket Disconnected');
         isConnected.value = false;
       })
       ..onReconnect((_) {
         log('Socket Reconnected');
         isConnected.value = true;
+        _rejoinRooms();
+        if (!_hasJoinedRiderRoom) joinRiderRoom();
       })
       ..onError((error) => log('Socket Error: $error'))
       ..onConnectError((error) => log('Socket Connect Error: $error'));
   }
 
-  void emitLocation(Position position) {
+  void joinRiderRoom() {
     if (isConnected.value) {
-      dynamic data = {
-        'location': {
-          'lon': position.latitude,
-          'lat': position.longitude,
-        },
-        'user_id': _userProfile.id,
-        'name': "${_userProfile.fname} ${_userProfile.lname}"
-      };
-      socket.emit('rider_connect', data);
+      joinRoom(roomId: _userProfile.vehicle?.courierType.name??"");
+      log("******************************************************************Socket Connection********************************************************************");
+     log("Room ID: ${ _userProfile.vehicle?.courierType.name??""}");
+      log("**************************************************************************************************************************************");
+      _hasJoinedRiderRoom = true;
     }
   }
 
-  void emitLocationUpdate(Position position) {
-    if (isConnected.value) {
-      dynamic data = {
-        'lon': position.latitude,
-        'lat': position.longitude,
-      };
-      socket.emit('rider_connect', data);
-    }
+   listenForDeliveries(Function(dynamic) onNewDelivery) {
+    socket.on('shipment_events', onNewDelivery);
   }
 
-  void emitParcelRiderLocationUpdate(LatLng position,
-      {required DeliveryModel deliveryModel, required double locationDegrees}) {
+  void emitRiderLocationUpdateByCurrierType(Position position) {
     if (isConnected.value) {
       dynamic data = {
-        'room': deliveryModel.trackingId,
-        'event': 'rider_tracking',
+        'room': _userProfile.vehicle?.courierType.name??"",
+        'event': 'rider_location',
         'data': {
-          'lon': position.longitude,
-          'lat': position.latitude,
-          'degrees': locationDegrees
+          'location': {
+            'lon': position.latitude,
+            'lat': position.longitude,
+          },
+          'user_id': _userProfile.id,
+          'name': "${_userProfile.fname} ${_userProfile.lname}"
         }
       };
       socket.emit('broadcast_to_room', data);
     }
   }
+
   void emitParcelRiderLocationUpdateOnce(LatLng position,
       {required DeliveryModel deliveryModel, required double locationDegrees}) {
     if (isConnected.value) {
@@ -105,62 +107,70 @@ class SocketService extends GetxService {
       socket.emit('broadcast_to_room', data);
     }
   }
+  void emitParcelRiderLocationUpdate(LatLng position,
+      {required DeliveryModel deliveryModel, required double locationDegrees}) {
+    if (isConnected.value) {
+      dynamic data = {
+        'room': deliveryModel.trackingId,
+        'event': 'rider_tracking',
+        'data': {
+          'lon': position.longitude,
+          'lat': position.latitude,
+          'status': deliveryModel.status,
+          'degrees': locationDegrees,
+          'user_id': _userProfile.id,
+          'name': "${_userProfile.fname} ${_userProfile.lname}",
+        }
+      };
+      socket.emit('broadcast_to_room', data);
+    }
+  }
+startListeningAndEmitting()async{
+  if(Get.isRegistered<LocationService>()){
+    Get.find<LocationService>().init();
 
+  }else{
+    await Get.putAsync(() => LocationService().init());
+    Get.find<LocationService>().init();
+  }
+}
   void listenForParcelLocationUpdate(
       {required String roomId, required Function(dynamic) onLocationUpdate}) {
     socket.on(roomId, onLocationUpdate);
   }
 
-  void joinTrackingRoom(
-      {required String trackingId, required String msg}) async {
+  void joinRoom({required String roomId}) {
     if (isConnected.value) {
-      socket.emit(msg, trackingId);
+      socket.emit('join_room', roomId);
+      _joinedRooms.add(roomId);
     }
   }
 
-  void leaveTrackingRoom(
-      {required String trackingId, required String msg}) async {
+  void leaveRoom({required String roomId}) {
     if (isConnected.value) {
-      socket.emit(msg, trackingId);
+      socket.emit('leave_room', roomId);
+      _joinedRooms.remove(roomId);
     }
   }
 
-  void emitParcelStatusUpdate(
-      {required String status, required String trackingId}) {
-    if (isConnected.value) {
-      dynamic data = {
-        'status': status,
-      };
-      socket.emit(trackingId, data);
+  void _rejoinRooms() {
+    for (var room in _joinedRooms) {
+      socket.emit('join_room', room);
     }
   }
 
-  void listenForDeliveries(Function(dynamic) onNewDelivery) {
-    socket.on('shipment_events', onNewDelivery);
-  }
-
-  void listenToDeliveries(Function(dynamic) onNewOrder) {
-    socket.on('update_location', onNewOrder);
-  }
-
-  void acceptOrder(String deliveryId) {
-    socket.emit('shipment', {'orderId': deliveryId});
-  }
-
-  void rejectOrder(String orderId) {
-    socket.emit('rejectOrder', {'orderId': orderId});
-  }
-
-  void updateLocationDuringParcelDelivery(
-      String trackingId, Position position) {
-    socket.emit(trackingId, {
-      'lon': position.latitude,
-      'lat': position.longitude,
-    });
+  void disconnectAndLeaveRooms() {
+    for (var room in _joinedRooms) {
+      socket.emit('leave_room', room);
+    }
+    _joinedRooms.clear();
+    _hasJoinedRiderRoom = false;
+    socket.disconnect();
   }
 
   @override
   void onClose() {
+    disconnectAndLeaveRooms();
     socket.dispose();
     super.onClose();
   }

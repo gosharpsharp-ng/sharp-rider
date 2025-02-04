@@ -1,4 +1,3 @@
-
 import 'package:go_logistics_driver/utils/exports.dart';
 
 class VehicleAndLicenseDetailsScreen extends StatelessWidget {
@@ -10,7 +9,7 @@ class VehicleAndLicenseDetailsScreen extends StatelessWidget {
       return Scaffold(
         appBar: defaultAppBar(
           bgColor: AppColors.backgroundColor,
-          title: "Vehicle details",
+          title: "Bike information",
         ),
         backgroundColor: AppColors.backgroundColor,
         body: Container(
@@ -32,26 +31,25 @@ class VehicleAndLicenseDetailsScreen extends StatelessWidget {
                     mainAxisAlignment: MainAxisAlignment.start,
                     children: [
                       TitleSectionBox(
-                        title: "Vehicle Details",
+                        title: "Bike Details",
                         backgroundColor: AppColors.backgroundColor,
                         children: [
                           VehicleDetailItem(
-                            title: "Brand",
-                            value: settingsController.vehicleModel?.brand ?? "",
-                          ),
-                          VehicleDetailItem(
-                            title: "Model",
-                            value: settingsController.vehicleModel?.model ?? "",
+                            title: "Bike Type",
+                            value: settingsController
+                                    .userProfile?.vehicle?.courierType.name ??
+                                "",
                           ),
                           VehicleDetailItem(
                             title: "Registration Number",
-                            value:
-                                settingsController.vehicleModel?.regNum ?? "",
+                            value: settingsController
+                                    .userProfile?.vehicle?.regNum ??
+                                "",
                           ),
                           VehicleDetailItem(
-                            title: "Year",
-                            value: settingsController.vehicleModel?.year
-                                    .toString() ??
+                            title: "Status",
+                            value: settingsController
+                                    .userProfile?.vehicle?.status ??
                                 "",
                           ),
                         ],
@@ -59,22 +57,46 @@ class VehicleAndLicenseDetailsScreen extends StatelessWidget {
                       TitleSectionBox(
                         title: "License Details",
                         backgroundColor: AppColors.backgroundColor,
-                        children:  settingsController.vehicleLicense==null?[]:[
-                          VehicleDetailItem(
-                            title: "Number",
-                            value: settingsController.vehicleLicense?.number ?? "",
-                          ),
-                          VehicleDetailItem(
-                            title: "Issue Date",
-                            value: settingsController.vehicleLicense?.issuedAt ?? "",
-                          ),
-                          VehicleDetailItem(
-                            title: "Expiry Date",
-                            value:
-                            settingsController.vehicleLicense?.expiryDate ?? "",
-                          ),
-                        
-                        ],
+                        children: settingsController.vehicleLicense == null
+                            ? [
+                                SizedBox(
+                                  height: 5.sp,
+                                ),
+                                InkWell(
+                                  onTap: () {
+                                    Get.toNamed(Routes.ADD_LICENSE_SCREEN);
+                                  },
+                                  highlightColor: AppColors.transparent,
+                                  splashColor: AppColors.transparent,
+                                  child: customText("Add your license",
+                                      color: AppColors.greenColor,
+                                      fontSize: 16.sp,
+                                      fontWeight: FontWeight.w600),
+                                ),
+                                SizedBox(
+                                  height: 5.sp,
+                                ),
+                              ]
+                            : [
+                                VehicleDetailItem(
+                                  title: "Number",
+                                  value: settingsController
+                                          .vehicleLicense?.number ??
+                                      "",
+                                ),
+                                VehicleDetailItem(
+                                  title: "Issue Date",
+                                  value: settingsController
+                                          .vehicleLicense?.issuedAt ??
+                                      "",
+                                ),
+                                VehicleDetailItem(
+                                  title: "Expiry Date",
+                                  value: settingsController
+                                          .vehicleLicense?.expiryDate ??
+                                      "",
+                                ),
+                              ],
                       ),
                     ],
                   ),

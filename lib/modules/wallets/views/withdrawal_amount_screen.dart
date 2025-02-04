@@ -56,8 +56,8 @@ class WithdrawalAmountScreen extends StatelessWidget {
                           double numericValue = double.parse(cleanedValue);
                           if (numericValue <
                               double.parse(walletController
-                                  .walletBalanceData!.balance)) {
-                            return 'Amount must be equal or less than ${walletController.walletBalanceData!.balance}';
+                                  .walletBalanceData!.availableBalance)) {
+                            return 'Amount must be equal or less than ${walletController.walletBalanceData!.availableBalance}';
                           }
                           return null;
                         },

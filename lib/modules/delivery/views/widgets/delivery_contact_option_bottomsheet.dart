@@ -1,0 +1,117 @@
+import 'package:go_logistics_driver/utils/exports.dart';
+
+class DeliveryContactOptionBottomSheet extends StatelessWidget {
+  const DeliveryContactOptionBottomSheet({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return GetBuilder<DeliveriesController>(builder: (ordersController) {
+      return Container(
+        width: 1.sw,
+        padding: EdgeInsets.only(
+            left: 15.sp, right: 15.sp, top: 10.sp, bottom: 40.sp),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.start,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            SizedBox(
+              height: 5.h,
+            ),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                customText(
+                  "Contact options",
+                  overflow: TextOverflow.visible,
+                  textAlign: TextAlign.start,
+                  color: AppColors.blackColor,
+                  fontSize: 25.sp,
+                  fontWeight: FontWeight.w700,
+                ),
+                InkWell(
+                  onTap: () {
+                    Get.back();
+                  },
+                  child: Icon(
+                    Icons.close,
+                    size: 25.sp,
+                    color: Colors.black,
+                  ),
+                )
+              ],
+            ),
+            SizedBox(
+              height: 5.h,
+            ),
+            customText("Your network provider might charge you for this",
+                overflow: TextOverflow.visible,
+                color: AppColors.blackColor,
+                textAlign: TextAlign.start,
+                fontSize: 16.sp,
+                fontWeight: FontWeight.normal),
+            SizedBox(
+              height: 20.h,
+            ),
+            Row(
+              children: [
+                ZegoSendCallInvitationButton(
+                  isVideoCall: false,
+                  buttonSize: Size(35.sp, 35.sp),
+                  iconSize: Size(35.sp, 35.sp),
+                  invitees: [
+                    ZegoUIKitUser(
+                      id: ordersController.selectedDelivery?.sender?.id
+                              .toString() ??
+                          "",
+                      name:
+                          "Client: ${ordersController.selectedDelivery?.sender?.firstName ?? ""} ${ordersController.selectedDelivery?.sender?.lastName ?? ""}",
+                    ),
+                  ],
+                ),
+                SizedBox(
+                  width: 25.sp,
+                ),
+                customText("Call in-app",
+                    fontSize: 18.sp,
+                    fontWeight: FontWeight.w600,
+                    color: AppColors.blackColor),
+              ],
+            ),
+            SizedBox(
+              height: 5.h,
+            ),
+            Divider(),
+            SizedBox(
+              height: 5.h,
+            ),
+            Container(
+              child: InkWell(
+                onTap: () {
+                  makePhoneCall(
+                      ordersController.selectedDelivery?.sender?.phone ?? "");
+                },
+                child: Row(
+                  children: [
+                    SvgPicture.asset(
+                      SvgAssets.callIcon,
+                      height: 35.sp,
+                      width: 35.sp,
+                    ),
+                    SizedBox(
+                      width: 25.sp,
+                    ),
+                    customText("Call by phone",
+                        fontSize: 18.sp,
+                        fontWeight: FontWeight.w600,
+                        color: AppColors.blackColor,),
+                  ],
+                ),
+              ),
+            ),
+          ],
+        ),
+      );
+    });
+  }
+}

@@ -79,6 +79,7 @@ class SignUpScreen extends GetView<SignUpController> {
                           showLabel: true,
                           isRequired: true,
                           useCustomValidator: true,
+                          keyboardType: TextInputType.emailAddress,
                           hasTitle: true,
                           controller: signUpController.emailController,
                           validator: (value) {
@@ -233,7 +234,7 @@ class SignUpScreen extends GetView<SignUpController> {
                             ),
                             InkWell(
                               onTap: () {
-                                Get.toNamed(Routes.SIGN_IN);
+                                Get.offAndToNamed(Routes.SIGN_IN);
                               },
                               child: customText("Login",
                                   color: AppColors.primaryColor,

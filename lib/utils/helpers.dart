@@ -2,15 +2,14 @@ import 'dart:convert';
 import 'dart:developer';
 import 'dart:io';
 import 'dart:math' as math;
-import 'dart:ui';
 import 'package:geolocator/geolocator.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:flutter/cupertino.dart';
-import 'package:go_logistics_driver/models/direction_details_Info.dart';
 import 'package:image_cropper/image_cropper.dart';
 import 'package:intl/intl.dart';
 import 'package:go_logistics_driver/utils/exports.dart';
 import 'package:cloudinary/cloudinary.dart';
+import 'package:webview_flutter/webview_flutter.dart';
 
 showAnyBottomSheet({required Widget child, bool isControlled = true}) {
   Get.bottomSheet(
@@ -26,48 +25,128 @@ showAnyBottomSheet({required Widget child, bool isControlled = true}) {
   );
 }
 
+Future showAddBikeDialog() async {
+
+
+  await Get.dialog(
+    GetBuilder<SettingsController>(builder: (settingsController) {
+        return AlertDialog(
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(12),
+          ),
+          title: customText("Add Your Bike to Start Receiving Orders",
+              overflow: TextOverflow.visible,
+              textAlign: TextAlign.center,
+              fontWeight: FontWeight.bold, fontSize: 18.sp),
+          content: customText(
+            "You haven't added your bike type yet! Please update it to start receiving orders. Thank you!",
+            textAlign: TextAlign.center,
+            overflow: TextOverflow.visible,
+            fontSize: 16.sp,
+          ),
+          actions: [
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              children: [
+                InkWell(
+                  onTap: () {
+                    Get.back();
+                  },
+                  child: customText("Cancel",
+                      fontWeight: FontWeight.w500,
+                      fontSize: 12.sp,
+                      color: AppColors.obscureTextColor),
+                ),
+                ElevatedButton(
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: AppColors.greenColor,
+                  ),
+                  onPressed: ()  {
+                    settingsController.getCourierTypes();
+                    Get.offNamed(Routes.ADD_VEHICLE_SCREEN);
+                                },
+                  child: customText("Add Vehicle", color: AppColors.whiteColor),
+                ),
+              ],
+            ),
+          ],
+        );
+      }
+    ),
+  );
+
+}
+
 Future<bool> showLocationPermissionDialog() async {
   bool isGranted = false;
 
-  await Get.defaultDialog(
-    title: "Enable Location",
-    cancelTextColor: AppColors.redColor,
-    buttonColor: AppColors.primaryColor,
-    middleText:
+  await Get.dialog(
+    AlertDialog(
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(12),
+      ),
+      title: customText("Enable Location",
+          fontWeight: FontWeight.bold, fontSize: 18.sp),
+      content: customText(
         "To go online, please enable location services and allow permissions.",
-    textConfirm: "Enable",
-    textCancel: "Cancel",
-    contentPadding: EdgeInsets.symmetric(vertical: 14.sp, horizontal: 8.sp),
-    onConfirm: () async {
-      // Request location permission
-      LocationPermission permission = await Geolocator.requestPermission();
+        textAlign: TextAlign.center,
+        overflow: TextOverflow.visible,
+        fontSize: 16.sp,
+      ),
+      actions: [
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+          children: [
+            InkWell(
+              onTap: () {
+                isGranted = false;
+                Get.back();
+              },
+              child: customText("Cancel",
+                  fontWeight: FontWeight.w500,
+                  fontSize: 12.sp,
+                  color: AppColors.obscureTextColor),
+            ),
+            ElevatedButton(
+              style: ElevatedButton.styleFrom(
+                backgroundColor: AppColors.greenColor,
+              ),
+              onPressed: () async {
+                // Request location permission
+                LocationPermission permission =
+                    await Geolocator.requestPermission();
 
-      if (permission == LocationPermission.deniedForever) {
-        // Open settings if permanently denied
-        await Geolocator.openAppSettings();
-      } else if (permission == LocationPermission.denied) {
-        isGranted = false;
-      } else {
-        // Check if location is enabled
-        bool isLocationEnabled = await Geolocator.isLocationServiceEnabled();
-        if (!isLocationEnabled) {
-          await Geolocator.openLocationSettings();
-        }
+                if (permission == LocationPermission.deniedForever) {
+                  // Open settings if permanently denied
+                  await Geolocator.openAppSettings();
+                } else if (permission == LocationPermission.denied) {
+                  isGranted = false;
+                } else {
+                  // Check if location is enabled
+                  bool isLocationEnabled =
+                      await Geolocator.isLocationServiceEnabled();
+                  if (!isLocationEnabled) {
+                    await Geolocator.openLocationSettings();
+                  }
 
-        // Wait and recheck if location is now enabled
-        await Future.delayed(Duration(seconds: 3));
-        isLocationEnabled = await Geolocator.isLocationServiceEnabled();
+                  // Wait and recheck if location is now enabled
+                  await Future.delayed(Duration(seconds: 3));
+                  isLocationEnabled =
+                      await Geolocator.isLocationServiceEnabled();
 
-        if (isLocationEnabled) {
-          isGranted = true;
-        }
-      }
+                  if (isLocationEnabled) {
+                    isGranted = true;
+                  }
+                }
 
-      Get.back(); // Close dialog
-    },
-    onCancel: () {
-      isGranted = false;
-    },
+                Get.back(); // Close dialog
+              },
+              child: customText("Enable", color: AppColors.whiteColor),
+            ),
+          ],
+        ),
+      ],
+    ),
   );
 
   return isGranted;
@@ -912,7 +991,81 @@ void openGoogleMaps(String destination) async {
     throw 'Could not launch $url';
   }
 }
+void showWebViewDialog(
+    BuildContext context, {
+      required WebViewController controller,
+      required String url,
+      String title = "WebView Dialog",
+      VoidCallback? onDialogClosed,
+    }) {
+  showGeneralDialog(
+    context: context,
+    barrierDismissible: true,
+    barrierLabel: MaterialLocalizations.of(context).modalBarrierDismissLabel,
+    pageBuilder: (BuildContext context, Animation<double> animation,
+        Animation<double> secondaryAnimation) {
+      controller.loadRequest(Uri.parse(url));
+      return WillPopScope(
+        onWillPop: () async {
+          if (onDialogClosed != null) {
+            onDialogClosed();
+          }
+          onDialogClosed!();
+          return true;
+        },
+        child: Scaffold(
+          appBar: AppBar(
+            title: customText(title),
+            leading: IconButton(
+              icon: const Icon(Icons.close),
+              onPressed: () {
+                Navigator.of(context).pop();
+                if (onDialogClosed != null) {
+                  onDialogClosed();
+                }
+              },
+            ),
+          ),
+          body: WebViewWidget(
+            controller: controller,
+          ),
+        ),
+      );
+    },
+  );
+}
+WebViewController createWebViewController({required Function successCallback}) {
+  final WebViewController controller = WebViewController();
 
+  controller
+    ..setJavaScriptMode(JavaScriptMode.unrestricted)
+    ..setBackgroundColor(const Color(0x00000000))
+    ..setNavigationDelegate(
+      NavigationDelegate(onPageFinished: (String url) {
+        // Inject JavaScript to focus on an input field
+        controller.runJavaScript('document.querySelector("input").focus();');
+        if (url.contains("https://www.youtube.com")) {
+          Get.back();
+        }
+      }, onNavigationRequest: (NavigationRequest request) {
+        if (request.url.startsWith('https://www.youtube.com/')) {
+          return NavigationDecision.prevent;
+        }
+        if (request.url.startsWith('https://www.youtube.com')) {
+          Get.back();
+          return NavigationDecision.prevent;
+        }
+        return NavigationDecision.navigate;
+      }, onUrlChange: (UrlChange? urlChange) {
+        if (urlChange!.url != null &&
+            urlChange.url!.contains("https://logistics.gosharpsharp.com")) {
+          successCallback();
+        }
+      }),
+    );
+
+  return controller;
+}
 double calculateLocationDegrees(LatLng startPoint, LatLng endPoint) {
   final double startLat = toRadians(startPoint.latitude);
   final double startLng = toRadians(startPoint.longitude);
