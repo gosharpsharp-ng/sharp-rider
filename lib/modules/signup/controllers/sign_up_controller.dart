@@ -75,8 +75,9 @@ class SignUpController extends GetxController {
   sendOtp() async {
     setIsResendingOTPState(true);
     dynamic data = {
-      'login': filledPhoneNumber?.completeNumber ?? '',
+      'login': emailController.text,
     };
+    print("data");
     APIResponse response = await authService.sendOtp(data);
     showToast(message: response.message, isError: response.status != "success");
     setIsResendingOTPState(false);

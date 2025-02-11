@@ -213,8 +213,11 @@ class WalletController extends GetxController {
           message: response.message, isError: response.status != "success");
       setLoadingState(false);
       if (response.status == "success") {
+        filterBanks("");
+        banksFilterController.clear();
         clearImputedBankFields();
         getPayoutBankAccount();
+        Navigator.pop(Get.context!);
       }
     }
   }

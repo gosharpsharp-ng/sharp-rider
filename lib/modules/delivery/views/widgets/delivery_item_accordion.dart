@@ -39,7 +39,7 @@ class DeliveryItemAccordion extends StatelessWidget {
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   customText(shipmentItemData.name,
-                      fontWeight: FontWeight.w500, fontSize: 14.sp),
+                      fontWeight: FontWeight.w500, fontSize: 16.sp),
                 ],
               ),
             ),

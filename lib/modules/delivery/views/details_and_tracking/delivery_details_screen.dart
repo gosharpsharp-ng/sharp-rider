@@ -206,16 +206,22 @@ class DeliveryDetailsScreen extends StatelessWidget {
                       SectionBox(
                         backgroundColor: AppColors.backgroundColor,
                         children: [
-                          CopyAbleAndClickAbleOrderSummaryDetailItem(
+                          // CopyAbleAndClickAbleOrderSummaryDetailItem(
+                          //   title: "Tracking ID",
+                          //   onCopy: () {},
+                          //   onClick: () {
+                          //     // Get.to(const OrderTrackingScreen());
+                          //   },
+                          //   clickableTitle: "Track",
+                          //   value:
+                          //       ordersController.selectedDelivery?.trackingId ??
+                          //           "",
+                          // ),
+                          DeliverySummaryDetailItem(
                             title: "Tracking ID",
-                            onCopy: () {},
-                            onClick: () {
-                              // Get.to(const OrderTrackingScreen());
-                            },
-                            clickableTitle: "Track",
-                            value:
-                                ordersController.selectedDelivery?.trackingId ??
-                                    "",
+                            value: ordersController
+                                .selectedDelivery?.trackingId ??
+                                "",
                           ),
                           // ClickAbleOrderSummaryDetailItem(
                           //   title: "Invoice number",

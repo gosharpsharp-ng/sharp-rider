@@ -101,8 +101,10 @@ class AddVehicleScreen extends StatelessWidget {
                   Padding(
                     padding: EdgeInsets.symmetric(horizontal: 20.sp),
                     child: CustomButton(
-                      onPressed: () {
-                        settingsController.addVehicleInfo();
+                      onPressed: () async {
+                       await settingsController.addVehicleInfo();
+
+
                       },
                       isBusy: settingsController.isLoadingVehicle,
                       title: "Save",

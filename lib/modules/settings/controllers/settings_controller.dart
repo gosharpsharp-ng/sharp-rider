@@ -27,7 +27,7 @@ class SettingsController extends GetxController {
     setLoadingState(false);
     if (response.status == "success") {
       userProfile = UserProfile.fromJson(response.data);
-      reactiveUserProfile.value=UserProfile.fromJson(response.data);
+      reactiveUserProfile.value = UserProfile.fromJson(response.data);
       update();
       ZegoUIKitPrebuiltCallInvitationService().init(
         appID: int.parse(Secret.zegoCloudAppID),
@@ -317,6 +317,7 @@ class SettingsController extends GetxController {
       if (response.status == "success") {
         getProfile();
         clearVehicleTextFields();
+        Navigator.pop(Get.context!);
       }
     }
   }
@@ -425,7 +426,8 @@ class SettingsController extends GetxController {
 
   logout() async {
     GetStorage getStorage = GetStorage();
-    DeliveryNotificationServiceManager serviceManager = DeliveryNotificationServiceManager();
+    DeliveryNotificationServiceManager serviceManager =
+        DeliveryNotificationServiceManager();
     serviceManager.disposeServices();
     getStorage.remove('token');
     Get.offAllNamed(Routes.SIGN_IN);
