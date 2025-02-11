@@ -10,6 +10,7 @@ class DeliveryModel {
   @JsonKey(name: 'tracking_id')
   final String trackingId;
   final String? status;
+  final String cost;
   @JsonKey(name: 'origin_location')
   final ShipmentLocation originLocation;
   @JsonKey(name: 'destination_location')
@@ -41,6 +42,7 @@ class DeliveryModel {
     required this.rider,
     required this.items,
     required this.distance,
+    required this.cost,
     required this.courierTypePrices,
     required this.createdAt,
     required this.updatedAt,

@@ -27,6 +27,7 @@ DeliveryModel _$DeliveryModelFromJson(Map<String, dynamic> json) =>
           .map((e) => Item.fromJson(e as Map<String, dynamic>))
           .toList(),
       distance: DeliveryModel._parseDistance(json['distance']),
+      cost: json['cost'] as String,
       courierTypePrices: (json['courier_type_prices'] as List<dynamic>?)
           ?.map((e) => CourierTypePrice.fromJson(e as Map<String, dynamic>))
           .toList(),
@@ -41,6 +42,7 @@ Map<String, dynamic> _$DeliveryModelToJson(DeliveryModel instance) =>
       'user_id': instance.userId,
       'tracking_id': instance.trackingId,
       'status': instance.status,
+      'cost': instance.cost,
       'origin_location': instance.originLocation,
       'destination_location': instance.destinationLocation,
       'receiver': instance.receiver,

@@ -20,12 +20,14 @@ class SettingsController extends GetxController {
   }
 
   UserProfile? userProfile;
+  var reactiveUserProfile = Rxn<UserProfile>();
   getProfile() async {
     setLoadingState(true);
     APIResponse response = await profileService.getProfile();
     setLoadingState(false);
     if (response.status == "success") {
       userProfile = UserProfile.fromJson(response.data);
+      reactiveUserProfile.value=UserProfile.fromJson(response.data);
       update();
       ZegoUIKitPrebuiltCallInvitationService().init(
         appID: int.parse(Secret.zegoCloudAppID),
@@ -39,7 +41,7 @@ class SettingsController extends GetxController {
               showFullScreen: true,
             ),
             iOSNotificationConfig:
-                ZegoCallIOSNotificationConfig(appName: "GoSharpSharp")),
+                ZegoCallIOSNotificationConfig(appName: "gosharpsharp_mobile")),
       );
       setProfileFields();
     } else {
@@ -314,7 +316,6 @@ class SettingsController extends GetxController {
           message: response.message, isError: response.status != "success");
       if (response.status == "success") {
         getProfile();
-        getMyVehicle();
         clearVehicleTextFields();
       }
     }

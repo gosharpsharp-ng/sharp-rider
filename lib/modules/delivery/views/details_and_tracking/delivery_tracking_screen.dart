@@ -595,6 +595,8 @@ class _DeliveryTrackingScreenState extends State<DeliveryTrackingScreen> {
                                               padding:
                                                   EdgeInsets.only(right: 5.sp),
                                               child: InkWell(
+                                                highlightColor: AppColors.transparent,
+                                                  splashColor: AppColors.transparent,
                                                   onTap: () {
                                                     showAnyBottomSheet(
                                                         isControlled: false,

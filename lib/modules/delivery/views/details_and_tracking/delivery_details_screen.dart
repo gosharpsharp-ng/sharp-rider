@@ -1,4 +1,3 @@
-
 import 'package:go_logistics_driver/utils/exports.dart';
 
 class DeliveryDetailsScreen extends StatelessWidget {
@@ -29,7 +28,8 @@ class DeliveryDetailsScreen extends StatelessWidget {
                           .contains(ordersController.selectedDelivery!.status)
                       ? CustomButton(
                           onPressed: () async {
-                            final serviceManager = Get.find<DeliveryNotificationServiceManager>();
+                            final serviceManager =
+                                Get.find<DeliveryNotificationServiceManager>();
                             if (Get.isRegistered<LocationService>()) {
                               await Get.find<LocationService>()
                                   .joinParcelTrackingRoom(
@@ -159,6 +159,7 @@ class DeliveryDetailsScreen extends StatelessWidget {
                           ),
                           DeliverySummaryDetailItem(
                             title: "Sender's phone",
+                            isPhone: true,
                             value: ordersController
                                     .selectedDelivery?.sender?.phone ??
                                 "",
@@ -229,10 +230,12 @@ class DeliveryDetailsScreen extends StatelessWidget {
                             value:
                                 ordersController.selectedDelivery?.status ?? "",
                           ),
-                          const DeliverySummaryDetailItem(
+                          DeliverySummaryDetailItem(
                               title: "Total amount",
-                              // value: formatToCurrency(double.parse(ordersController.selectedShipment?. ?? "")),
-                              value: ""),
+                              isCurrency: true,
+                              value: formatToCurrency(double.parse(
+                                  ordersController.selectedDelivery?.cost ??
+                                      "0.0"))),
                         ],
                       ),
                     ],

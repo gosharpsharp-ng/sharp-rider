@@ -60,8 +60,8 @@ class DeliveriesController extends GetxController {
   bool isOnline = false;
 
   Future<void> toggleOnlineStatus() async {
-    if (settingsController.userProfile != null) {
-      if (settingsController.userProfile!.vehicle != null) {
+    if (settingsController.reactiveUserProfile.value != null) {
+      if (settingsController.reactiveUserProfile.value?.vehicle != null) {
         isOnline = !isOnline;
 
         if (isOnline) {
@@ -78,8 +78,8 @@ class DeliveriesController extends GetxController {
           }
 
           try {
-            await serviceManager
-                .initializeServices(settingsController.userProfile!);
+            await serviceManager.initializeServices(
+                settingsController.reactiveUserProfile.value!);
             showToast(
               message: "You're online",
               isError: false,

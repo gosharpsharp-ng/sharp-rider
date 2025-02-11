@@ -202,29 +202,32 @@ class DashboardScreen extends StatelessWidget {
                               fontSize: 12.sp,
                               textAlign: TextAlign.center,
                               overflow: TextOverflow.visible),
-                          Container(
-                            width: 1.sw,
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                customText(
-                                    ordersController.isOnline
-                                        ? 'Go Offline'
-                                        : 'Go Online',
-                                    fontWeight: FontWeight.w600,
-                                    fontSize: 20.sp),
-                                SizedBox(
-                                    width:
-                                        10.sp), // Space between text and switch
-                                Switch(
-                                  activeColor: AppColors.greenColor,
-                                  value: ordersController.isOnline,
-                                  onChanged: (value) {
-                                    ordersController.toggleOnlineStatus();
-                                  },
+                          GetBuilder<SettingsController>(builder: (settingsController) {
+                              return Container(
+                                width: 1.sw,
+                                child: Row(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    customText(
+                                        ordersController.isOnline
+                                            ? 'Go Offline'
+                                            : 'Go Online',
+                                        fontWeight: FontWeight.w600,
+                                        fontSize: 20.sp),
+                                    SizedBox(
+                                        width:
+                                            10.sp), // Space between text and switch
+                                    Switch(
+                                      activeColor: AppColors.greenColor,
+                                      value: ordersController.isOnline,
+                                      onChanged: (value) {
+                                        ordersController.toggleOnlineStatus();
+                                      },
+                                    ),
+                                  ],
                                 ),
-                              ],
-                            ),
+                              );
+                            }
                           ),
                         ],
                       ),

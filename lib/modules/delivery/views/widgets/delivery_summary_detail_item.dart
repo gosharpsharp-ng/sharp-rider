@@ -5,11 +5,17 @@ class DeliverySummaryDetailItem extends StatelessWidget {
   final String value;
   final String titleIconAsset;
   final bool isVertical;
+  final bool isCurrency;
+  final bool isPhone;
+  final bool isReceiverPhone;
   const DeliverySummaryDetailItem(
       {super.key,
       this.title = "",
       this.value = "",
       this.isVertical = true,
+      this.isCurrency = false,
+      this.isReceiverPhone = false,
+      this.isPhone = false,
       this.titleIconAsset = ""});
 
   @override
@@ -44,12 +50,40 @@ class DeliverySummaryDetailItem extends StatelessWidget {
                 SizedBox(
                   height: 8.h,
                 ),
-                customText(
-                  value,
-                  color: AppColors.blackColor,
-                  fontSize: 15.sp,
-                  fontWeight: FontWeight.w500,
-                  overflow: TextOverflow.visible,
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Expanded(
+                      child: customText(
+                        value,
+                        color: AppColors.blackColor,
+                        fontSize: 15.sp,
+                        fontFamily: isCurrency?GoogleFonts.montserrat().fontFamily! :'Satoshi',
+                        fontWeight: FontWeight.w500,
+                        overflow: TextOverflow.visible,
+                      ),
+                    ),
+                    Visibility(
+                      visible: isPhone,
+                      child: Container(
+                        padding:
+                        EdgeInsets.only(right: 5.sp),
+                        child: InkWell(
+                          highlightColor: AppColors.transparent,
+                          splashColor: AppColors.transparent,
+                          onTap: () {
+                            showAnyBottomSheet(
+                                isControlled: false,
+                                child:
+                                const DeliveryContactOptionBottomSheet());
+                          },
+                          child: SvgPicture.asset(
+                            SvgAssets.callIcon,
+                            height: 25.sp,
+                            width: 25.sp,
+                          ),),),
+                    )
+                  ],
                 ),
               ],
             )
@@ -76,6 +110,7 @@ class DeliverySummaryDetailItem extends StatelessWidget {
                   value,
                   color: AppColors.blackColor,
                   fontSize: 15.sp,
+                  fontFamily: isCurrency?GoogleFonts.montserrat().fontFamily! :'Satoshi',
                   fontWeight: FontWeight.w500,
                   overflow: TextOverflow.visible,
                 ),
