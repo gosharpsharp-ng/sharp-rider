@@ -42,6 +42,7 @@ abstract class Routes {
   static const NOTIFICATIONS_HOME = _Paths.NOTIFICATIONS_HOME;
   static const NOTIFICATIONS_DETAILS = _Paths.NOTIFICATIONS_DETAILS;
   static const RATINGS_AND_REVIEWS_HOME = _Paths.RATINGS_AND_REVIEWS_HOME;
+  static const RIDER_PERFORMANCE_SCREEN = _Paths.RIDER_PERFORMANCE_SCREEN;
   static const SETTINGS_HOME_SCREEN = _Paths.SETTINGS_HOME_SCREEN;
   static const PROFILE_SETTINGS_SCREEN = _Paths.PROFILE_SETTINGS_SCREEN;
   static const EDIT_PROFILE_SCREEN = _Paths.EDIT_PROFILE_SCREEN;
@@ -107,6 +108,7 @@ abstract class _Paths {
   static const ADD_LICENSE_SCREEN = '/add_license_screen';
   static const UPDATE_LICENSE_SCREEN = '/update_license_screen';
   static const VEHICLE_AND_LICENSE_DETAILS_SCREEN = '/vehicle_and_license_details_screen';
+  static const RIDER_PERFORMANCE_SCREEN = '/rider_performance_screen';
   static const FAQS_SCREEN = '/faqs_screen';
 
   static const WALLETS_HOME_SCREEN = '/wallets_home_screen';

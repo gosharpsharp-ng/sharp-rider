@@ -80,6 +80,10 @@ class AppPages {
       name: _Paths.DELIVERIES_HOME,
       page: () => const DeliveriesHistoryScreen(),
       binding: DeliveriesBindings(),
+    ), GetPage(
+      name: _Paths.RIDER_PERFORMANCE_SCREEN,
+      page: () => const PerformanceScreen(),
+      binding: DeliveriesBindings(),
     ),
     GetPage(
       name: _Paths.DELIVERY_DETAILS,

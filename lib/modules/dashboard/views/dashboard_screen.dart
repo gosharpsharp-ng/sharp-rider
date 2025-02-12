@@ -111,18 +111,18 @@ class DashboardScreen extends StatelessWidget {
                             balance: walletController
                                     .walletBalanceData?.availableBalance ??
                                 "0.0",
-                            title: "Available balance",
+                            title: "Wallet balance",
                             canWithdraw: true,
                           ),
                           WalletWidget(
                             balance: walletController
                                     .walletBalanceData?.pendingBalance ??
                                 "0.0",
-                            title: "Pending balance",
+                            title: "Company commission",
                           ),
                           WalletWidget(
                             balance: walletController
-                                    .walletBalanceData?.availableBalance ??
+                                    .walletBalanceData?.bonusBalance ??
                                 "0.0",
                             title: "Bonus balance",
                           ),

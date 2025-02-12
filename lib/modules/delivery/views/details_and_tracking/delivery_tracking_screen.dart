@@ -210,21 +210,21 @@ class _DeliveryTrackingScreenState extends State<DeliveryTrackingScreen> {
                 ),
               ),
               DraggableScrollableSheet(
-                initialChildSize:
-                    deliveriesController.selectedDelivery!.status!.toLowerCase() ==
-                            'delivered'
-                        ? 0.31
-                        : 0.35,
-                minChildSize:
-                    deliveriesController.selectedDelivery!.status!.toLowerCase() ==
-                            'delivered'
-                        ? 0.31
-                        : 0.31,
-                maxChildSize:
-                    deliveriesController.selectedDelivery!.status!.toLowerCase() ==
-                            'delivered'
-                        ? 0.50
-                        : 0.65,
+                initialChildSize: deliveriesController.selectedDelivery!.status!
+                            .toLowerCase() ==
+                        'delivered'
+                    ? 0.31
+                    : 0.35,
+                minChildSize: deliveriesController.selectedDelivery!.status!
+                            .toLowerCase() ==
+                        'delivered'
+                    ? 0.31
+                    : 0.31,
+                maxChildSize: deliveriesController.selectedDelivery!.status!
+                            .toLowerCase() ==
+                        'delivered'
+                    ? 0.50
+                    : 0.65,
                 expand: true,
                 controller: draggableScrollableController,
                 builder: (context, scrollController) {
@@ -353,11 +353,10 @@ class _DeliveryTrackingScreenState extends State<DeliveryTrackingScreen> {
                                                       },
                                                       isBusy: deliveriesController
                                                           .updatingDeliveryStatus,
-                                                      title:
-                                                          "Click here if you've picked the item",
+                                                      title: "Pick up item",
                                                       width: 1.sw,
-                                                      backgroundColor: AppColors
-                                                          .primaryColor,
+                                                      backgroundColor:
+                                                          AppColors.greenColor,
                                                       fontColor:
                                                           AppColors.whiteColor,
                                                     )
@@ -376,12 +375,11 @@ class _DeliveryTrackingScreenState extends State<DeliveryTrackingScreen> {
                                                           },
                                                           isBusy: deliveriesController
                                                               .updatingDeliveryStatus,
-                                                          title:
-                                                              "Click here if you've delivered the item",
+                                                          title: "Deliver Item",
                                                           width: 1.sw,
                                                           backgroundColor:
                                                               AppColors
-                                                                  .primaryColor,
+                                                                  .greenColor,
                                                           fontColor: AppColors
                                                               .whiteColor,
                                                         )
@@ -521,6 +519,24 @@ class _DeliveryTrackingScreenState extends State<DeliveryTrackingScreen> {
                                     ],
                                   ),
                                 ),
+                                Row(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    customText(
+                                      ['accepted'].contains(ordersController
+                                              .selectedDelivery!.status)
+                                          ? "Head to pick-up location"
+                                          : ['picked'].contains(ordersController
+                                                  .selectedDelivery!.status)
+                                              ? "Head to delivery location"
+                                              : "",
+                                      color: AppColors.primaryColor,
+                                      fontSize: 15.sp,
+                                      fontWeight: FontWeight.normal,
+                                      overflow: TextOverflow.visible,
+                                    )
+                                  ],
+                                ),
                                 Container(
                                   padding: EdgeInsets.symmetric(
                                       horizontal: 10.sp, vertical: 5.sp),
@@ -592,39 +608,121 @@ class _DeliveryTrackingScreenState extends State<DeliveryTrackingScreen> {
                                             ),
                                           ),
                                           Container(
-                                              padding:
-                                                  EdgeInsets.only(right: 5.sp),
-                                              child: InkWell(
-                                                highlightColor: AppColors.transparent,
-                                                  splashColor: AppColors.transparent,
-                                                  onTap: () {
-                                                    showAnyBottomSheet(
-                                                        isControlled: false,
-                                                        child:
-                                                            const DeliveryContactOptionBottomSheet());
-                                                  },
-                                                  child: SvgPicture.asset(
-                                                    SvgAssets.callIcon,
-                                                    height: 25.sp,
-                                                    width: 25.sp,
-                                                  ),),)
+                                            padding:
+                                                EdgeInsets.only(right: 5.sp),
+                                            child: InkWell(
+                                              highlightColor:
+                                                  AppColors.transparent,
+                                              splashColor:
+                                                  AppColors.transparent,
+                                              onTap: () {
+                                                showAnyBottomSheet(
+                                                    isControlled: false,
+                                                    child:
+                                                        const DeliveryContactOptionBottomSheet());
+                                              },
+                                              child: SvgPicture.asset(
+                                                SvgAssets.callIcon,
+                                                height: 25.sp,
+                                                width: 25.sp,
+                                              ),
+                                            ),
+                                          )
                                         ],
                                       ),
-                                      SizedBox(height: 8.h,),
-                                      PhoneNumberWidget(
-                                          title: "Call receiver",
-                                          phoneNumber: deliveriesController
-                                                  .selectedDelivery
-                                                  ?.receiver
-                                                  .phone ??
-                                              "",
-                                          callAction: () {
-                                            makePhoneCall(deliveriesController
-                                                    .selectedDelivery
-                                                    ?.receiver
-                                                    .phone ??
-                                                "");
-                                          }),
+                                      SizedBox(
+                                        height: 8.h,
+                                      ),
+                                      // PhoneNumberWidget(
+                                      //     title: "Call receiver",
+                                      //     phoneNumber: deliveriesController
+                                      //             .selectedDelivery
+                                      //             ?.receiver
+                                      //             .phone ??
+                                      //         "",
+                                      //     callAction: () {
+                                      //       makePhoneCall(deliveriesController
+                                      //               .selectedDelivery
+                                      //               ?.receiver
+                                      //               .phone ??
+                                      //           "");
+                                      //     }),
+                                      Row(
+                                        children: [
+                                          CircleAvatar(
+                                            radius: 20.r,
+                                            backgroundColor:
+                                                AppColors.backgroundColor,
+                                            child: customText(
+                                              deliveriesController
+                                                      .selectedDelivery
+                                                      ?.receiver
+                                                      .name ??
+                                                  "",
+                                              fontSize: 8.sp,
+                                            ),
+                                          ),
+                                          SizedBox(
+                                            width: 10.w,
+                                          ),
+                                          Expanded(
+                                            child: Column(
+                                              crossAxisAlignment:
+                                                  CrossAxisAlignment.start,
+                                              children: [
+                                                customText(
+                                                  deliveriesController
+                                                          .selectedDelivery
+                                                          ?.receiver
+                                                          .name ??
+                                                      "",
+                                                  color: AppColors.blackColor,
+                                                  fontSize: 16.sp,
+                                                  fontWeight: FontWeight.w500,
+                                                  overflow:
+                                                      TextOverflow.visible,
+                                                ),
+                                                SizedBox(
+                                                  height: 5.h,
+                                                ),
+                                                customText(
+                                                  "Receiver",
+                                                  color: AppColors
+                                                      .obscureTextColor,
+                                                  fontSize: 12.sp,
+                                                  fontWeight: FontWeight.normal,
+                                                  overflow:
+                                                      TextOverflow.visible,
+                                                ),
+                                              ],
+                                            ),
+                                          ),
+                                          Container(
+                                            padding:
+                                                EdgeInsets.only(right: 5.sp),
+                                            child: InkWell(
+                                              highlightColor:
+                                                  AppColors.transparent,
+                                              splashColor:
+                                                  AppColors.transparent,
+                                              onTap: () {
+                                                makePhoneCall(
+                                                    deliveriesController
+                                                            .selectedDelivery
+                                                            ?.receiver
+                                                            .phone ??
+                                                        "");
+                                              },
+                                              child: SvgPicture.asset(
+                                                SvgAssets.callIcon,
+                                                height: 25.sp,
+                                                width: 25.sp,
+                                              ),
+                                            ),
+                                          )
+                                        ],
+                                      ),
+
                                       SizedBox(
                                         height: 10.h,
                                       ),

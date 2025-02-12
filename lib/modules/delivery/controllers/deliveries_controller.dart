@@ -358,14 +358,13 @@ class DeliveriesController extends GetxController {
     // Call the API
     APIResponse response = await deliveryService.updateDeliveryStatus(data);
     // Handle response
-
+    acceptingDelivery = false;
+    update();
     if (response.status == "success") {
       showToast(
         message: response.message,
         isError: response.status != "success",
       );
-      acceptingDelivery = false;
-      update();
       selectedDelivery = DeliveryModel.fromJson(response.data);
       await getDelivery();
       if (Get.isRegistered<LocationService>()) {
@@ -469,6 +468,7 @@ class DeliveriesController extends GetxController {
     );
 
     if (response.status == "success") {
+
       if (Get.isRegistered<LocationService>()) {
         await getDelivery();
         await Get.find<LocationService>().joinParcelTrackingRoom(
@@ -489,6 +489,10 @@ class DeliveriesController extends GetxController {
       if (status == 'deliver') {
         await Get.find<LocationService>().leaveParcelTrackingRoom(
             trackingId: selectedDelivery?.trackingId ?? "");
+        Get.find<WalletController>().getWalletBalance();
+        getRiderStats();
+        Navigator.pop(Get.context!);
+        Get.offAndToNamed(Routes.RIDER_PERFORMANCE_SCREEN);
       }
       selectedDelivery = DeliveryModel.fromJson(response.data);
       if (['picked'].contains(selectedDelivery!.status)) {

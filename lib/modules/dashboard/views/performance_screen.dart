@@ -104,7 +104,7 @@ class PerformanceScreen extends StatelessWidget {
                         ),
                         customText(
                             formatToCurrency(double.parse(ordersController
-                                        .riderStatsModel?.totalDistance
+                                        .riderStatsModel?.totalEarnings
                                         .toString() ??
                                     "0") ??
                                 0),
