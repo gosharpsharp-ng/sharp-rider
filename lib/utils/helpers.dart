@@ -1168,3 +1168,21 @@ void makePhoneCall(String phoneNumber) async {
     print('Could not launch $url');
   }
 }
+
+showAdminApprovalDialog() async {
+  bool isGranted = false;
+
+  await Get.defaultDialog(
+    title: "See Admin",
+    middleText:
+    "To go online, admin needs to approve your account",
+    textConfirm: "Ok",
+    textCancel: "",
+    onConfirm: () async {
+      Get.back(); // Close dialog
+    },
+    onCancel: () {
+    Get.back();
+    },
+  );
+}

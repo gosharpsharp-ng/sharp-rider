@@ -62,42 +62,48 @@ class DeliveriesController extends GetxController {
   Future<void> toggleOnlineStatus() async {
     if (settingsController.reactiveUserProfile.value != null) {
       if (settingsController.reactiveUserProfile.value?.vehicle != null) {
-        isOnline = !isOnline;
+        if (settingsController.reactiveUserProfile.value?.hasVerifiedVehicle ==
+            true) {
+          isOnline = !isOnline;
 
-        if (isOnline) {
-          bool isLocationEnabled = await Geolocator.isLocationServiceEnabled();
-          LocationPermission permission = await Geolocator.checkPermission();
+          if (isOnline) {
+            bool isLocationEnabled = await Geolocator
+                .isLocationServiceEnabled();
+            LocationPermission permission = await Geolocator.checkPermission();
 
-          if (!isLocationEnabled || permission == LocationPermission.denied) {
-            bool granted = await showLocationPermissionDialog();
-            if (!granted) {
-              isOnline = false; // Revert status
-              update();
-              return;
+            if (!isLocationEnabled || permission == LocationPermission.denied) {
+              bool granted = await showLocationPermissionDialog();
+              if (!granted) {
+                isOnline = false; // Revert status
+                update();
+                return;
+              }
             }
-          }
 
-          try {
-            await serviceManager.initializeServices(
-                settingsController.reactiveUserProfile.value!);
+            try {
+              await serviceManager.initializeServices(
+                  settingsController.reactiveUserProfile.value!);
+              showToast(
+                message: "You're online",
+                isError: false,
+              );
+            } catch (e) {
+              showToast(
+                message: "Failed to initialize services: ${e.toString()}",
+                isError: true,
+              );
+            }
+          } else {
+            await serviceManager.disposeServices();
             showToast(
-              message: "You're online",
+              message: "You're offline",
               isError: false,
             );
-          } catch (e) {
-            showToast(
-              message: "Failed to initialize services: ${e.toString()}",
-              isError: true,
-            );
           }
-        } else {
-          await serviceManager.disposeServices();
-          showToast(
-            message: "You're offline",
-            isError: false,
-          );
+          update();
+        }else{
+          showAdminApprovalDialog();
         }
-        update();
       } else {
         showAddBikeDialog();
       }

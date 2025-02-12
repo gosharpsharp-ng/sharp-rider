@@ -5,7 +5,7 @@ description: "Join GoRider to earn by delivering parcels quickly and efficiently
 publish_to: 'none' # Remove this line if you wish to publish to pub.dev
 
 
-version: 1.0.0+7
+version: 1.0.0+8
 
 environment:
   sdk: '>=3.4.4 <4.0.0'
