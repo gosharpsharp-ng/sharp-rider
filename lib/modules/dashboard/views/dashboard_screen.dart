@@ -158,6 +158,8 @@ class DashboardScreen extends StatelessWidget {
                           child: QuickDashboardLinkItem(
                             assetIconUrl: SvgAssets.bikeIcon,
                             onPressed: () {
+                              Get.find<DeliveriesController>().getRiderStats();
+                              Get.find<DeliveriesController>().getRiderRatingStats();
                               Get.to(const PerformanceScreen());
                             },
                             title: "Ride performance",

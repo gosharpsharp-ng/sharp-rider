@@ -491,6 +491,7 @@ class DeliveriesController extends GetxController {
             trackingId: selectedDelivery?.trackingId ?? "");
         Get.find<WalletController>().getWalletBalance();
         getRiderStats();
+        getRiderRatingStats();
         Navigator.pop(Get.context!);
         Get.offAndToNamed(Routes.RIDER_PERFORMANCE_SCREEN);
       }
