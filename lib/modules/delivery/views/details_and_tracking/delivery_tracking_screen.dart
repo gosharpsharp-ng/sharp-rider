@@ -356,9 +356,11 @@ class _DeliveryTrackingScreenState extends State<DeliveryTrackingScreen> {
                                                       title: "Pick up item",
                                                       width: 1.sw,
                                                       backgroundColor:
+                                                          AppColors.transparent,
+                                                      borderColor:
                                                           AppColors.greenColor,
                                                       fontColor:
-                                                          AppColors.whiteColor,
+                                                          AppColors.greenColor,
                                                     )
                                                   : deliveriesController
                                                               .selectedDelivery!
@@ -379,9 +381,11 @@ class _DeliveryTrackingScreenState extends State<DeliveryTrackingScreen> {
                                                           width: 1.sw,
                                                           backgroundColor:
                                                               AppColors
-                                                                  .greenColor,
+                                                                  .transparent,
+                                                          borderColor: AppColors
+                                                              .greenColor,
                                                           fontColor: AppColors
-                                                              .whiteColor,
+                                                              .greenColor,
                                                         )
                                                       : const SizedBox.shrink(),
                                             ),

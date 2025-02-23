@@ -45,7 +45,7 @@ class DeliveryNotificationService extends GetxService {
               currentLatLng, originLatLng);
 
       if (!_isDialogShowing) {
-        FlutterRingtonePlayer().playNotification();
+        FlutterRingtonePlayer().playRingtone();
         showDeliveryDialog(
             shipment: delivery,
             riderToSenderDirectionDetails: riderToSenderDirectionDetails,
@@ -269,6 +269,7 @@ class DeliveryNotificationService extends GetxService {
                                 onTap: () {
                                   Get.back();
                                   _isDialogShowing = false;
+                                  FlutterRingtonePlayer().stop();
                                 },
                                 child: Container(
                                     margin:
@@ -283,6 +284,7 @@ class DeliveryNotificationService extends GetxService {
                           Expanded(
                             child: CustomButton(
                               onPressed: () async {
+                                FlutterRingtonePlayer().stop();
                                 await deliveriesController.acceptDelivery(
                                   context,
                                   trackingId: shipment.trackingId,
