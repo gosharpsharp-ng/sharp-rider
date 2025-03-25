@@ -1,5 +1,3 @@
-
-
 import '../../../utils/exports.dart';
 
 class AppNavigationBinding extends Bindings {
@@ -19,6 +17,9 @@ class AppNavigationBinding extends Bindings {
     );
     Get.put(
       SettingsController(),
+    );
+    Get.put(
+      NotificationsController(),
     );
   }
 }

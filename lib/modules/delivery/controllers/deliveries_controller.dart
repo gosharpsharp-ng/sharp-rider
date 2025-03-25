@@ -62,13 +62,13 @@ class DeliveriesController extends GetxController {
   Future<void> toggleOnlineStatus() async {
     if (settingsController.reactiveUserProfile.value != null) {
       if (settingsController.reactiveUserProfile.value?.vehicle != null) {
+        await Get.find<SettingsController>().getProfile();
         if (settingsController.reactiveUserProfile.value?.hasVerifiedVehicle ==
             true) {
           isOnline = !isOnline;
-
           if (isOnline) {
-            bool isLocationEnabled = await Geolocator
-                .isLocationServiceEnabled();
+            bool isLocationEnabled =
+                await Geolocator.isLocationServiceEnabled();
             LocationPermission permission = await Geolocator.checkPermission();
 
             if (!isLocationEnabled || permission == LocationPermission.denied) {
@@ -101,7 +101,7 @@ class DeliveriesController extends GetxController {
             );
           }
           update();
-        }else{
+        } else {
           showAdminApprovalDialog();
         }
       } else {
@@ -474,7 +474,6 @@ class DeliveriesController extends GetxController {
     );
 
     if (response.status == "success") {
-
       if (Get.isRegistered<LocationService>()) {
         await getDelivery();
         await Get.find<LocationService>().joinParcelTrackingRoom(

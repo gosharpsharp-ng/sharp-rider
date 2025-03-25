@@ -5,7 +5,8 @@ class NotificationDetailsScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return GetBuilder<SettingsController>(builder: (settingsController) {
+    return GetBuilder<NotificationsController>(
+        builder: (notificationsController) {
       return Scaffold(
         backgroundColor: AppColors.backgroundColor,
         appBar: defaultAppBar(
@@ -22,7 +23,8 @@ class NotificationDetailsScreen extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                customText(settingsController.selectedNotification?.title ?? "",
+                customText(
+                    notificationsController.selectedNotification?.title ?? "",
                     color: AppColors.blackColor,
                     fontWeight: FontWeight.w500,
                     fontSize: 20.sp,
@@ -31,7 +33,7 @@ class NotificationDetailsScreen extends StatelessWidget {
                   height: 10.sp,
                 ),
                 customText(
-                    settingsController.selectedNotification?.message ?? "",
+                    notificationsController.selectedNotification?.message ?? "",
                     color: AppColors.blackColor,
                     fontWeight: FontWeight.normal,
                     fontSize: 15.sp,

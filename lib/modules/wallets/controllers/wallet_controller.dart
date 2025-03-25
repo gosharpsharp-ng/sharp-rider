@@ -9,15 +9,59 @@ class WalletController extends GetxController {
     update();
   }
 
+  final ScrollController transactionsScrollController = ScrollController();
+  bool fetchingTransactions = false;
+
+  void _transactionsScrollListener() {
+    if (transactionsScrollController.position.pixels >=
+        transactionsScrollController.position.maxScrollExtent - 100) {
+      getTransactions(isLoadMore: true);
+    }
+  }
+
+  int transactionsPageSize = 15;
+  int totalTransactions = 0;
+  int currentTransactionsPage = 1;
   List<Transaction> transactions = [];
-  getAllTransactions() async {
-    setLoadingState(true);
-    APIResponse response = await walletService.getAllTransactions();
-    setLoadingState(false);
+
+  setTotalTransactions(int val) {
+    totalTransactions = val;
+    update();
+  }
+
+  getTransactions({bool isLoadMore = false}) async {
+    if (fetchingTransactions ||
+        (isLoadMore && transactions.length >= totalTransactions)) return;
+
+    fetchingTransactions = true;
+    update();
+
+    if (!isLoadMore) {
+      transactions.clear(); // Clear only when not loading more
+      currentTransactionsPage = 1;
+    }
+
+    dynamic data = {
+      "page": currentTransactionsPage,
+      "per_page": transactionsPageSize,
+    };
+
+    APIResponse response = await walletService.getAllTransactions(data);
+    fetchingTransactions = false;
+
     if (response.status == "success") {
-      transactions = (response.data['data'] as List)
+      List<Transaction> newTransactions = (response.data['data'] as List)
           .map((tr) => Transaction.fromJson(tr))
           .toList();
+
+      if (isLoadMore) {
+        transactions.addAll(newTransactions);
+      } else {
+        transactions = newTransactions;
+      }
+
+      setTotalTransactions(response.data['total']);
+      currentTransactionsPage++; // Increment for next load more
       update();
     } else {
       showToast(
@@ -172,7 +216,7 @@ class WalletController extends GetxController {
     update();
     if (response.status == "success") {
       if (response.data.toString().isNotEmpty) {
-            payoutBankAccount = BankAccount.fromJson(response.data);
+        payoutBankAccount = BankAccount.fromJson(response.data);
         update();
       }
     }
@@ -230,9 +274,10 @@ class WalletController extends GetxController {
       walletBalanceVisibility = getStorage.read("walletBalanceVisibility");
     }
     update();
+    transactionsScrollController.addListener(_transactionsScrollListener);
     getWalletBalance();
     getPayoutBankAccount();
-    getAllTransactions();
+    getTransactions();
   }
 
   // @override

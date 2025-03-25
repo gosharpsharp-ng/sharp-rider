@@ -6,6 +6,7 @@ class ProfileService extends CoreService {
   Future<APIResponse> getProfile() async {
     return await fetch("/me");
   }
+
   Future<APIResponse> getCourierTypes() async {
     return await fetch("/courier-types");
   }
@@ -14,12 +15,15 @@ class ProfileService extends CoreService {
     return await formUpdate("/me", data);
   }
 
-  Future<APIResponse> getNotifications() async {
-    return await fetch("/me/notifications");
+  Future<APIResponse> getNotifications(dynamic data) async {
+    return await fetch(
+        "/me/notifications?page=${data['page']}&per_page=${data['per_page']}");
   }
-Future<APIResponse> getRiderStats() async {
+
+  Future<APIResponse> getRiderStats() async {
     return await fetch("/me/stats");
   }
+
   Future<APIResponse> getRiderRatingStats() async {
     return await fetch("/me/rate-stats");
   }

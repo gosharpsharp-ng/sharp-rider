@@ -124,37 +124,6 @@ class SettingsController extends GetxController {
     update();
   }
 
-  List<NotificationModel> notifications = [];
-  NotificationModel? selectedNotification;
-  setSelectedNotification(NotificationModel nt) {
-    selectedNotification = nt;
-    getNotifications();
-    update();
-  }
-
-  getSingleNotification() async {
-    dynamic data = {
-      "id": selectedNotification!.id,
-    };
-    APIResponse response = await profileService.getNotificationById(data);
-    selectedNotification = NotificationModel.fromJson(response.data[data]);
-    if (response.status == "success") {
-      setSelectedNotification(NotificationModel.fromJson(response.data[data]));
-    }
-  }
-
-  getNotifications() async {
-    setLoadingNotificationState(true);
-    APIResponse response = await profileService.getNotifications();
-    setLoadingNotificationState(false);
-    if (response.status == "success") {
-      notifications = (response.data['data'] as List)
-          .map((nf) => NotificationModel.fromJson(nf))
-          .toList();
-      update();
-    }
-  }
-
   final profileUpdateFormKey = GlobalKey<FormState>();
   TextEditingController fNameController = TextEditingController();
   TextEditingController lNameController = TextEditingController();
@@ -420,6 +389,7 @@ class SettingsController extends GetxController {
         clearLicenseTextFields();
         getMyVehicleLicense();
         getProfile();
+        Navigator.pop(Get.context!);
       }
     }
   }

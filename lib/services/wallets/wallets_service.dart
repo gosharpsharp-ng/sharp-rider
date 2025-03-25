@@ -3,8 +3,9 @@ import 'package:go_logistics_driver/utils/exports.dart';
 class WalletsService extends CoreService {
   Future<WalletsService> init() async => this;
 
-  Future<APIResponse> getAllTransactions() async {
-    return await fetch("/me/transactions");
+  Future<APIResponse> getAllTransactions(dynamic data) async {
+    return await fetch(
+        "/me/transactions?page=${data['page']}&per_page=${data['per_page']}");
   }
 
   Future<APIResponse> getSingleTransaction(dynamic data) async {

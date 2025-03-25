@@ -29,7 +29,9 @@ class GoSharpDriver extends StatelessWidget {
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
-    ScreenUtil.init(context);
+    ScreenUtil.init(context,
+        designSize: Size(MediaQuery.sizeOf(context).width,
+            MediaQuery.sizeOf(context).height));
     return GetMaterialApp(
       debugShowCheckedModeBanner: false,
       title: 'GoRider',

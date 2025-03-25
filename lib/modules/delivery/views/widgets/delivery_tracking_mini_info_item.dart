@@ -21,7 +21,7 @@ class DeliveryTrackingMiniInfoItem extends StatelessWidget {
         isStatus
             ? Container(
                 decoration: BoxDecoration(
-                  color:getStatusColor(value),
+                  color: getStatusColor(value),
                   borderRadius: BorderRadius.circular(
                     8.r,
                   ),

@@ -26,55 +26,52 @@ showAnyBottomSheet({required Widget child, bool isControlled = true}) {
 }
 
 Future showAddBikeDialog() async {
-
-
   await Get.dialog(
     GetBuilder<SettingsController>(builder: (settingsController) {
-        return AlertDialog(
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(12),
-          ),
-          title: customText("Add Your Bike to Start Receiving Orders",
-              overflow: TextOverflow.visible,
-              textAlign: TextAlign.center,
-              fontWeight: FontWeight.bold, fontSize: 18.sp),
-          content: customText(
-            "You haven't added your bike type yet! Please update it to start receiving orders. Thank you!",
-            textAlign: TextAlign.center,
+      return AlertDialog(
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(12),
+        ),
+        title: customText("Add Your Bike to Start Receiving Orders",
             overflow: TextOverflow.visible,
-            fontSize: 16.sp,
+            textAlign: TextAlign.center,
+            fontWeight: FontWeight.bold,
+            fontSize: 18.sp),
+        content: customText(
+          "You haven't added your bike type yet! Please update it to start receiving orders. Thank you!",
+          textAlign: TextAlign.center,
+          overflow: TextOverflow.visible,
+          fontSize: 16.sp,
+        ),
+        actions: [
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+            children: [
+              InkWell(
+                onTap: () {
+                  Get.back();
+                },
+                child: customText("Cancel",
+                    fontWeight: FontWeight.w500,
+                    fontSize: 12.sp,
+                    color: AppColors.obscureTextColor),
+              ),
+              ElevatedButton(
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: AppColors.greenColor,
+                ),
+                onPressed: () {
+                  settingsController.getCourierTypes();
+                  Get.offNamed(Routes.ADD_VEHICLE_SCREEN);
+                },
+                child: customText("Add Vehicle", color: AppColors.whiteColor),
+              ),
+            ],
           ),
-          actions: [
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-              children: [
-                InkWell(
-                  onTap: () {
-                    Get.back();
-                  },
-                  child: customText("Cancel",
-                      fontWeight: FontWeight.w500,
-                      fontSize: 12.sp,
-                      color: AppColors.obscureTextColor),
-                ),
-                ElevatedButton(
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: AppColors.greenColor,
-                  ),
-                  onPressed: ()  {
-                    settingsController.getCourierTypes();
-                    Get.offNamed(Routes.ADD_VEHICLE_SCREEN);
-                                },
-                  child: customText("Add Vehicle", color: AppColors.whiteColor),
-                ),
-              ],
-            ),
-          ],
-        );
-      }
-    ),
+        ],
+      );
+    }),
   );
-
 }
 
 Future<bool> showLocationPermissionDialog() async {
@@ -935,7 +932,6 @@ Future<DirectionDetailsInfo> obtainOriginToDestinationDirectionDetails(
   // Construct Google Maps API URL
   String googleMapsUrl =
       "https://maps.googleapis.com/maps/api/directions/json?origin=${originPosition.latitude},${originPosition.longitude}&destination=${destinationPosition.latitude},${destinationPosition.longitude}&mode=driving&key=${Secret.apiKey}";
-
   try {
     // Make the HTTP request
     var response = await Dio().get(googleMapsUrl);
@@ -964,7 +960,6 @@ Future<DirectionDetailsInfo> obtainOriginToDestinationDirectionDetails(
   } catch (e) {
     print("Error fetching directions: $e");
   }
-
   return DirectionDetailsInfo();
 }
 
@@ -991,13 +986,14 @@ void openGoogleMaps(String destination) async {
     throw 'Could not launch $url';
   }
 }
+
 void showWebViewDialog(
-    BuildContext context, {
-      required WebViewController controller,
-      required String url,
-      String title = "WebView Dialog",
-      VoidCallback? onDialogClosed,
-    }) {
+  BuildContext context, {
+  required WebViewController controller,
+  required String url,
+  String title = "WebView Dialog",
+  VoidCallback? onDialogClosed,
+}) {
   showGeneralDialog(
     context: context,
     barrierDismissible: true,
@@ -1034,6 +1030,7 @@ void showWebViewDialog(
     },
   );
 }
+
 WebViewController createWebViewController({required Function successCallback}) {
   final WebViewController controller = WebViewController();
 
@@ -1066,6 +1063,7 @@ WebViewController createWebViewController({required Function successCallback}) {
 
   return controller;
 }
+
 double calculateLocationDegrees(LatLng startPoint, LatLng endPoint) {
   final double startLat = toRadians(startPoint.latitude);
   final double startLng = toRadians(startPoint.longitude);
@@ -1170,19 +1168,39 @@ void makePhoneCall(String phoneNumber) async {
 }
 
 showAdminApprovalDialog() async {
-  bool isGranted = false;
-
   await Get.defaultDialog(
-    title: "See Admin",
+    title: "Approval Required",
+    titleStyle: TextStyle(
+      fontSize: 20.sp,
+      fontWeight: FontWeight.bold,
+      color: Colors.black87,
+    ),
     middleText:
-    "To go online, admin needs to approve your account",
-    textConfirm: "Ok",
-    textCancel: "",
-    onConfirm: () async {
-      Get.back(); // Close dialog
-    },
-    onCancel: () {
-    Get.back();
-    },
+        "An admin needs to approve your account before you can go online.",
+    middleTextStyle: TextStyle(
+      fontSize: 16.sp,
+      color: Colors.black54,
+    ),
+    backgroundColor: Colors.white,
+    radius: 10.r,
+    barrierDismissible: false,
+    confirm: ElevatedButton(
+      onPressed: () {
+        Get.back();
+      },
+      style: ElevatedButton.styleFrom(
+        backgroundColor: AppColors.primaryColor,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(8),
+        ),
+        padding: EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+      ),
+      child: customText(
+        "OK",
+        fontSize: 16,
+        fontWeight: FontWeight.bold,
+        color: Colors.white,
+      ),
+    ),
   );
 }

@@ -1,5 +1,3 @@
-
-
 import 'package:go_logistics_driver/utils/exports.dart';
 
 class TransactionsScreen extends StatelessWidget {
@@ -14,11 +12,11 @@ class TransactionsScreen extends StatelessWidget {
           title: "Transactions",
         ),
         backgroundColor: AppColors.backgroundColor,
-        body:  RefreshIndicator(
-          color: AppColors.primaryColor,
-          onRefresh: ()async{
-            walletController.getAllTransactions();
-
+        body: RefreshIndicator(
+          backgroundColor: AppColors.primaryColor,
+          color: AppColors.whiteColor,
+          onRefresh: () async {
+            walletController.getTransactions();
           },
           child: Container(
             padding: EdgeInsets.symmetric(horizontal: 8.sp, vertical: 12.sp),
@@ -42,17 +40,40 @@ class TransactionsScreen extends StatelessWidget {
                 ),
               ),
               child: SingleChildScrollView(
+                controller: walletController.transactionsScrollController,
                 child: Column(
                   children: [
                     ...List.generate(
                       walletController.transactions.length,
-                          (i) => TransactionItem(
+                      (i) => TransactionItem(
                         onTap: () {
                           walletController.setSelectedTransaction(
                               walletController.transactions[i]);
                           Get.toNamed(Routes.TRANSACTION_DETAILS_SCREEN);
                         },
                         transaction: walletController.transactions[i],
+                      ),
+                    ),
+                    Visibility(
+                      visible: walletController.fetchingTransactions &&
+                          walletController.transactions.isNotEmpty,
+                      child: Center(
+                        child: Padding(
+                          padding: const EdgeInsets.all(8.0),
+                          child: customText("Loading more...",
+                              color: AppColors.blueColor),
+                        ),
+                      ),
+                    ),
+                    Visibility(
+                      visible: walletController.transactions ==
+                          walletController.totalTransactions,
+                      child: Center(
+                        child: Padding(
+                          padding: const EdgeInsets.all(8.0),
+                          child: customText("No more data to load",
+                              color: AppColors.blueColor),
+                        ),
                       ),
                     ),
                   ],
@@ -65,4 +86,3 @@ class TransactionsScreen extends StatelessWidget {
     });
   }
 }
-
