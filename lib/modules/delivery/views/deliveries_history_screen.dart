@@ -89,7 +89,7 @@ class DeliveriesHistoryScreen extends StatelessWidget {
                   ordersController.allDeliveries.isEmpty
                       ? Container(
                           width: 1.sw,
-                          height: 1.sh * 0.6,
+                          height: 1.sh * 0.674,
                           child: Column(
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
@@ -101,17 +101,48 @@ class DeliveriesHistoryScreen extends StatelessWidget {
                             ],
                           ),
                         )
-                      : Column(
-                          children: List.generate(
-                            ordersController.allDeliveries.length,
-                            (i) => DeliveryItemWidget(
-                              onSelected: () {
-                                ordersController.setSelectedDelivery(
-                                    ordersController.allDeliveries[i]);
-                                Get.toNamed(Routes.DELIVERY_DETAILS);
-                              },
-                              shipment: ordersController.allDeliveries[i],
-                            ),
+                      : Container(
+                          width: 1.sw,
+                          height: 1.sh * 0.674,
+                          child: SingleChildScrollView(
+                            controller:
+                                ordersController.deliveriesScrollController,
+                            child: Column(children: [
+                              ...List.generate(
+                                ordersController.allDeliveries.length,
+                                (i) => DeliveryItemWidget(
+                                  onSelected: () {
+                                    ordersController.setSelectedDelivery(
+                                        ordersController.allDeliveries[i]);
+                                    Get.toNamed(Routes.DELIVERY_DETAILS);
+                                  },
+                                  shipment: ordersController.allDeliveries[i],
+                                ),
+                              ),
+                              Visibility(
+                                visible: ordersController.fetchingDeliveries &&
+                                    ordersController.allDeliveries.isNotEmpty,
+                                child: Center(
+                                  child: Padding(
+                                    padding: const EdgeInsets.all(8.0),
+                                    child: customText("Loading more...",
+                                        color: AppColors.blueColor),
+                                  ),
+                                ),
+                              ),
+                              Visibility(
+                                visible:
+                                    ordersController.allDeliveries.length ==
+                                        ordersController.totalDeliveries,
+                                child: Center(
+                                  child: Padding(
+                                    padding: const EdgeInsets.all(8.0),
+                                    child: customText("No more data to load",
+                                        color: AppColors.blueColor),
+                                  ),
+                                ),
+                              ),
+                            ]),
                           ),
                         ),
                   SizedBox(

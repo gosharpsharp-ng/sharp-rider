@@ -5,6 +5,7 @@ void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await GetStorage.init();
   await ScreenUtil.ensureScreenSize();
+  await Get.putAsync(() => AuthProvider().init());
   Get.put(DeliveryNotificationServiceManager());
   SystemChrome.setPreferredOrientations([
     DeviceOrientation.portraitUp,

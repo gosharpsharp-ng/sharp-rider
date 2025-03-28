@@ -8,8 +8,10 @@ class DeliveryService extends CoreService {
         "/shipments/${data['tracking_id'].toString()}?action=${data['action']}",
         null);
   }
-  Future<APIResponse> getAllDeliveries() async {
-    return await fetch("/shipments");
+
+  Future<APIResponse> getAllDeliveries(dynamic data) async {
+    return await fetch(
+        "/shipments?page=${data['page']}&per_page=${data['per_page']}");
   }
 
   Future<APIResponse> getDelivery(dynamic data) async {
@@ -19,6 +21,7 @@ class DeliveryService extends CoreService {
   Future<APIResponse> getRider(dynamic data) async {
     return await send("/api/auth/password-reset", data);
   }
+
   Future<APIResponse> searchDeliveries(dynamic data) async {
     return await fetch("/shipments?search=${data['search']}");
   }

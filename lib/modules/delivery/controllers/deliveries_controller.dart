@@ -17,23 +17,64 @@ class DeliveriesController extends GetxController {
   String? distanceToDestination;
   String? durationToDestination;
   bool fetchingDeliveries = false;
-  Future<void> fetchDeliveries() async {
+  final ScrollController deliveriesScrollController = ScrollController();
+
+  void _deliveriesScrollListener() {
+    if (deliveriesScrollController.position.pixels >=
+        deliveriesScrollController.position.maxScrollExtent - 100) {
+      fetchDeliveries(isLoadMore: true);
+    }
+  }
+
+  int deliveriesPageSize = 15;
+  int totalDeliveries = 0;
+  int currentDeliveriesPage = 1;
+
+  setTotalDeliveries(int val) {
+    totalDeliveries = val;
+    update();
+  }
+
+  fetchDeliveries({bool isLoadMore = false}) async {
+    if (fetchingDeliveries ||
+        (isLoadMore && allDeliveries.length >= totalDeliveries)) return;
+
     fetchingDeliveries = true;
     update();
 
-    APIResponse response = await deliveryService.getAllDeliveries();
-    // Handle response
+    if (!isLoadMore) {
+      allDeliveries.clear(); // Clear only when not loading more
+      currentDeliveriesPage = 1;
+    }
 
+    dynamic data = {
+      "page": currentDeliveriesPage,
+      "per_page": deliveriesPageSize,
+    };
+    final getStorage = GetStorage();
+    APIResponse response = await deliveryService.getAllDeliveries(data);
     fetchingDeliveries = false;
-    update();
+
     if (response.status == "success") {
-      allDeliveries = (response.data as List)
+      List<DeliveryModel> newDeliveries = (response.data['data'] as List)
           .map((sh) => DeliveryModel.fromJson(sh))
           .toList();
+
+      if (isLoadMore) {
+        allDeliveries.addAll(newDeliveries);
+      } else {
+        allDeliveries = newDeliveries;
+      }
+
+      setTotalDeliveries(response.data['total']);
+      currentDeliveriesPage++; // Increment for next load more
       update();
+    } else {
+      if (getStorage.read("token") != null) {
+        showToast(
+            message: response.message, isError: response.status != "success");
+      }
     }
-    getRiderStats();
-    getRiderRatingStats();
   }
 
   Future<void> getDelivery() async {
@@ -427,31 +468,77 @@ class DeliveriesController extends GetxController {
   resetDeliveriesSearchFields() {
     searchQueryController.clear();
     deliverySearchResults.clear();
+    searchDeliveriesPageSize = 15;
+    currentSearchDeliveriesPage = 1;
+    totalSearchDeliveries = 0;
     update();
   }
 
-  List<DeliveryModel> deliverySearchResults = [];
-  TextEditingController searchQueryController = TextEditingController();
+  final ScrollController searchDeliveriesScrollController = ScrollController();
   bool searchingDeliveries = false;
-  searchDeliveries() async {
-    if (deliveriesSearchFormKey.currentState!.validate()) {
-      dynamic data = {'search': searchQueryController.text};
-      searchingDeliveries = true;
-      update();
-      APIResponse response = await deliveryService.searchDeliveries(data);
-      searchingDeliveries = false;
-      update();
-      if (response.status == "success") {
-        deliverySearchResults = (response.data as List)
-            .map((sh) => DeliveryModel.fromJson(sh))
-            .toList();
-        update();
+
+  void _searchDeliveriesScrollListener() {
+    if (searchDeliveriesScrollController.position.pixels >=
+        searchDeliveriesScrollController.position.maxScrollExtent - 100) {
+      searchDeliveries(isLoadMore: true);
+    }
+  }
+
+  int searchDeliveriesPageSize = 15;
+  int totalSearchDeliveries = 0;
+  int currentSearchDeliveriesPage = 1;
+  List<DeliveryModel> deliverySearchResults = [];
+
+  TextEditingController searchQueryController = TextEditingController();
+
+  setTotalSearchDeliveries(int val) {
+    totalSearchDeliveries = val;
+    update();
+  }
+
+  searchDeliveries({bool isLoadMore = false}) async {
+    if (searchingDeliveries ||
+        (isLoadMore && deliverySearchResults.length >= totalSearchDeliveries))
+      return;
+
+    if (!deliveriesSearchFormKey.currentState!.validate()) return;
+
+    searchingDeliveries = true;
+    update();
+
+    if (!isLoadMore) {
+      deliverySearchResults.clear(); // Clear only when not loading more
+      currentSearchDeliveriesPage = 1;
+    }
+
+    dynamic data = {
+      'search': searchQueryController.text,
+      "page": currentSearchDeliveriesPage,
+      "per_page": searchDeliveriesPageSize,
+    };
+
+    APIResponse response = await deliveryService.searchDeliveries(data);
+    searchingDeliveries = false;
+
+    if (response.status == "success") {
+      List<DeliveryModel> newResults = (response.data['data'] as List)
+          .map((sh) => DeliveryModel.fromJson(sh))
+          .toList();
+
+      if (isLoadMore) {
+        deliverySearchResults.addAll(newResults);
       } else {
-        showToast(
-          message: response.message,
-          isError: response.status != "success",
-        );
+        deliverySearchResults = newResults;
       }
+
+      setTotalSearchDeliveries(response.data['total']);
+      currentSearchDeliveriesPage++; // Increment for next load more
+      update();
+    } else {
+      showToast(
+        message: response.message,
+        isError: response.status != "success",
+      );
     }
   }
 
@@ -553,6 +640,9 @@ class DeliveriesController extends GetxController {
   @override
   void onReady() {
     super.onReady();
+    deliveriesScrollController.addListener(_deliveriesScrollListener);
+    searchDeliveriesScrollController
+        .addListener(_searchDeliveriesScrollListener);
     fetchDeliveries();
     getBikeIcon();
   }

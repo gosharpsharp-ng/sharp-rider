@@ -16,7 +16,7 @@ export 'package:get_it/get_it.dart';
 export 'package:go_logistics_driver/utils/secret.dart';
 export 'package:go_logistics_driver/utils/widgets/custom_button.dart';
 export 'package:google_maps_flutter/google_maps_flutter.dart';
-
+export 'package:go_logistics_driver/providers/auth_provider.dart';
 export 'package:go_logistics_driver/services/core_service.dart';
 export 'package:go_logistics_driver/services/models/api_response.dart';
 export 'package:go_logistics_driver/services/auth/auth_service.dart';

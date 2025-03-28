@@ -45,8 +45,10 @@ class SettingsController extends GetxController {
       );
       setProfileFields();
     } else {
-      showToast(
-          message: response.message, isError: response.status != "success");
+      if (getStorage.read('token') != null) {
+        showToast(
+            message: response.message, isError: response.status != "success");
+      }
     }
   }
 
@@ -267,6 +269,7 @@ class SettingsController extends GetxController {
   TextEditingController vehicleModelController = TextEditingController();
   TextEditingController vehicleRegNumController = TextEditingController();
   TextEditingController vehicleYearController = TextEditingController();
+  final getStorage = GetStorage();
   addVehicleInfo() async {
     if (vehicleFormKey.currentState!.validate()) {
       setLoadingVehicleState(true);
@@ -281,12 +284,19 @@ class SettingsController extends GetxController {
       APIResponse response = await profileService.addVehicle(data);
 
       setLoadingVehicleState(false);
-      showToast(
-          message: response.message, isError: response.status != "success");
+
       if (response.status == "success") {
+        showToast(
+          message: response.message,
+        );
         getProfile();
         clearVehicleTextFields();
         Navigator.pop(Get.context!);
+      } else {
+        if (getStorage.read("token") != null) {
+          showToast(
+              message: response.message, isError: response.status != "success");
+        }
       }
     }
   }

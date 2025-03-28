@@ -250,3 +250,49 @@ class CustomColouredTextButton extends StatelessWidget {
     );
   }
 }
+
+class CustomGreenTextButton extends StatelessWidget {
+  final String title;
+  final Function onPressed;
+  final Color bgColor;
+  final bool isLoading;
+  const CustomGreenTextButton(
+      {super.key,
+      required this.onPressed,
+      required this.title,
+      this.bgColor = AppColors.primaryColor,
+      this.isLoading = false});
+
+  @override
+  Widget build(BuildContext context) {
+    return InkWell(
+      onTap: () {
+        onPressed();
+      },
+      child: Container(
+        padding: EdgeInsets.symmetric(horizontal: 14.sp, vertical: 8.sp),
+        margin: EdgeInsets.all(5.sp),
+        decoration: BoxDecoration(
+          color: bgColor,
+          borderRadius: BorderRadius.circular(40.r),
+        ),
+        child: Center(
+            child: isLoading
+                ? SizedBox(
+                    height: 15.sp,
+                    width: 15.sp,
+                    child: CircularProgressIndicator(
+                      color: AppColors.whiteColor,
+                      strokeWidth: 1.5.sp,
+                    ),
+                  )
+                : customText(
+                    title,
+                    color: AppColors.whiteColor,
+                    fontWeight: FontWeight.w500,
+                    fontSize: 15.sp,
+                  )),
+      ),
+    );
+  }
+}

@@ -51,34 +51,66 @@ class SearchDeliveriesScreen extends StatelessWidget {
                 ),
                 ordersController.deliverySearchResults.isEmpty
                     ? Container(
-                  width: 1.sw,
-                  height: 1.sh * 0.6,
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      customText(
-                        ordersController.searchingDeliveries
-                            ? "Loading..."
-                            : "Enter your search query above",
+                        width: 1.sw,
+                        height: 1.sh * 0.85,
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            customText(
+                              ordersController.searchingDeliveries
+                                  ? "Loading..."
+                                  : "Enter your search query above",
+                            ),
+                          ],
+                        ),
+                      )
+                    : Container(
+                        width: 1.sw,
+                        height: 1.sh * 0.85,
+                        child: SingleChildScrollView(
+                          controller:
+                              ordersController.searchDeliveriesScrollController,
+                          child: Column(children: [
+                            ...List.generate(
+                              ordersController.deliverySearchResults.length,
+                              (i) => DeliveryItemWidget(
+                                onSelected: () {
+                                  Get.back();
+                                  ordersController.setSelectedDelivery(
+                                      ordersController
+                                          .deliverySearchResults[i]);
+                                  Get.toNamed(Routes.DELIVERY_DETAILS);
+                                },
+                                shipment:
+                                    ordersController.deliverySearchResults[i],
+                              ),
+                            ),
+                            Visibility(
+                              visible: ordersController.searchingDeliveries &&
+                                  ordersController
+                                      .deliverySearchResults.isNotEmpty,
+                              child: Center(
+                                child: Padding(
+                                  padding: const EdgeInsets.all(8.0),
+                                  child: customText("Loading more...",
+                                      color: AppColors.blueColor),
+                                ),
+                              ),
+                            ),
+                            Visibility(
+                              visible: ordersController.allDeliveries.length ==
+                                  ordersController.totalDeliveries,
+                              child: Center(
+                                child: Padding(
+                                  padding: const EdgeInsets.all(8.0),
+                                  child: customText("No more data to load",
+                                      color: AppColors.blueColor),
+                                ),
+                              ),
+                            ),
+                          ]),
+                        ),
                       ),
-                    ],
-                  ),
-                )
-                    : Column(
-                  children: List.generate(
-                    ordersController.deliverySearchResults.length,
-                        (i) => DeliveryItemWidget(
-                      onSelected: () {
-                        Get.back();
-                        ordersController.setSelectedDelivery(
-                            ordersController.deliverySearchResults[i]);
-                        Get.toNamed(
-                            Routes.DELIVERY_DETAILS);
-                      },
-                      shipment: ordersController.deliverySearchResults[i],
-                    ),
-                  ),
-                ),
                 SizedBox(
                   height: 3.h,
                 ),

@@ -64,8 +64,10 @@ class WalletController extends GetxController {
       currentTransactionsPage++; // Increment for next load more
       update();
     } else {
-      showToast(
-          message: response.message, isError: response.status != "success");
+      if (getStorage.read("token") != null) {
+        showToast(
+            message: response.message, isError: response.status != "success");
+      }
     }
   }
 
@@ -114,13 +116,18 @@ class WalletController extends GetxController {
         'amount': stripCurrencyFormat(amountEntryController.text),
       };
       APIResponse response = await walletService.withdrawFromWallet(data);
-      showToast(
-          message: response.message, isError: response.status != "success");
+
       setLoadingState(false);
       if (response.status == "success") {
+        showToast(message: response.message);
         amountEntryController.clear();
         getWalletBalance();
         update();
+      } else {
+        if (getStorage.read("token") != null) {
+          showToast(
+              message: response.message, isError: response.status != "success");
+        }
       }
     }
   }
@@ -218,6 +225,11 @@ class WalletController extends GetxController {
       if (response.data.toString().isNotEmpty) {
         payoutBankAccount = BankAccount.fromJson(response.data);
         update();
+      } else {
+        if (getStorage.read("token") != null) {
+          showToast(
+              message: response.message, isError: response.status != "success");
+        }
       }
     }
   }

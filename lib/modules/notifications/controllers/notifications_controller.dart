@@ -41,6 +41,7 @@ class NotificationsController extends GetxController {
     update();
   }
 
+  final getStorage = GetStorage();
   getNotifications({bool isLoadMore = false}) async {
     if (fetchingNotifications ||
         (isLoadMore && notifications.length >= totalNotifications)) return;
@@ -76,8 +77,10 @@ class NotificationsController extends GetxController {
       currentNotificationsPage++; // Increment for next load more
       update();
     } else {
-      showToast(
-          message: response.message, isError: response.status != "success");
+      if (getStorage.read('token') != null) {
+        showToast(
+            message: response.message, isError: response.status != "success");
+      }
     }
   }
 
