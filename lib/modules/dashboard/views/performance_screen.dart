@@ -1,3 +1,4 @@
+import 'package:go_logistics_driver/modules/dashboard/views/widgets/delivery_history_widget.dart';
 import 'package:go_logistics_driver/utils/exports.dart';
 
 class PerformanceScreen extends StatelessWidget {
@@ -16,7 +17,7 @@ class PerformanceScreen extends StatelessWidget {
           appBar: defaultAppBar(
               title: "Performance", bgColor: AppColors.backgroundColor),
           body: Container(
-            padding: EdgeInsets.symmetric(vertical: 5.sp, horizontal: 3.sp),
+            padding: EdgeInsets.symmetric(vertical: 5.sp, horizontal: 8.w),
             height: 1.sh,
             width: 1.sw,
             color: AppColors.backgroundColor,
@@ -46,7 +47,7 @@ class PerformanceScreen extends StatelessWidget {
                             ),
                             title: "Total Orders",
                             value:
-                                "${ordersController.riderStatsModel?.totalOrders}",
+                                "${ordersController.riderStatsModel?.totalOrders ?? 0}",
                             iconColor: AppColors.foundationColor,
                             iconBoxColor: AppColors.foundationBgColor,
                           ),
@@ -56,7 +57,7 @@ class PerformanceScreen extends StatelessWidget {
                             assetIconUrl: SvgAssets.bikeIcon,
                             title: "Distance Traveled",
                             value:
-                                "${ordersController.riderStatsModel?.totalDistance}km",
+                                "${ordersController.riderStatsModel?.totalDistance ?? 0}km",
                             gradient: const LinearGradient(
                               colors: [
                                 Color(0xFFE3EDFF),
@@ -147,7 +148,9 @@ class PerformanceScreen extends StatelessWidget {
                           height: 10.h,
                         ),
                         RatingBarIndicator(
-                          rating:ordersController.riderRatingStatsModel?.averageRating??0.0,
+                          rating: ordersController
+                                  .riderRatingStatsModel?.averageRating ??
+                              0.0,
                           itemBuilder: (context, index) => Icon(
                             Icons.star,
                             color: Colors.amber,
@@ -160,7 +163,8 @@ class PerformanceScreen extends StatelessWidget {
                         Row(
                           mainAxisAlignment: MainAxisAlignment.end,
                           children: [
-                            customText("${ordersController.riderRatingStatsModel?.reviews.length??0}",
+                            customText(
+                                "${ordersController.riderRatingStatsModel?.reviews.length ?? 0}",
                                 color: AppColors.blackColor,
                                 fontWeight: FontWeight.w500,
                                 fontSize: 14.sp,
@@ -169,6 +173,51 @@ class PerformanceScreen extends StatelessWidget {
                         ),
                       ],
                     ),
+                  ),
+                  SizedBox(
+                    height: 5.h,
+                  ),
+                  Row(
+                    children: [
+                      Expanded(
+                        child: customText("Earnings History",
+                            fontWeight: FontWeight.w500,
+                            fontSize: 18.sp,
+                            color: AppColors.blackColor),
+                      ),
+                    ],
+                  ),
+                  SizedBox(
+                    height: 5.h,
+                  ),
+                  Column(
+                    children: [
+                      ordersController.riderStatsModel!.shipments.isEmpty
+                          ? SizedBox(
+                              width: 1.sw,
+                              height: 1.sh * 0.4,
+                              child: Column(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  customText(
+                                    ordersController.fetchingDeliveries
+                                        ? "Loading..."
+                                        : "You have not handled any delivery",
+                                  ),
+                                ],
+                              ),
+                            )
+                          : Column(children: [
+                              ...List.generate(
+                                ordersController
+                                    .riderStatsModel!.shipments.length,
+                                (i) => DeliveryHistoryWidget(
+                                  history: ordersController
+                                      .riderStatsModel!.shipments[i],
+                                ),
+                              ),
+                            ]),
+                    ],
                   ),
                   SizedBox(
                     height: 15.h,
