@@ -5,7 +5,7 @@
     <key>NSCameraUsageDescription</key>
     <string>We require camera access to connect</string>
     <key>NSMicrophoneUsageDescription</key>
-    <string>We require microphone access to connect</string>
+    <string>We need access to your microphone to facilitate voice communication with the client during the delivery process for updates or clarifications.</string>
 	<key>CFBundleDevelopmentRegion</key>
 	<string>$(DEVELOPMENT_LANGUAGE)</string>
 	<key>CFBundleDisplayName</key>
@@ -56,9 +56,9 @@
     <key>NSPhotoLibraryUsageDescription</key>
     <string>We need access to your photo library to select images for uploading.</string>
     <key>NSCameraUsageDescription</key>
-    <string>We need access to your camera to take pictures.</string>
+    <string>We need access to your camera to take pictures in order to update your avatar.</string>
     <key>NSMicrophoneUsageDescription</key>
-    <string>We need access to your microphone to record videos.</string>
+    <string>We need access to your microphone to facilitate voice communication with the client during the delivery process for updates or clarifications.</string>
 	<key>CADisableMinimumFrameDurationOnPhone</key>
 	<true/>
 	<key>UIApplicationSupportsIndirectInputEvents</key>
