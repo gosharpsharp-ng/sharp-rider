@@ -190,35 +190,38 @@ class PerformanceScreen extends StatelessWidget {
                   SizedBox(
                     height: 5.h,
                   ),
-                  Column(
-                    children: [
-                      ordersController.riderStatsModel!.shipments.isEmpty
-                          ? SizedBox(
-                              width: 1.sw,
-                              height: 1.sh * 0.4,
-                              child: Column(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: [
-                                  customText(
-                                    ordersController.fetchingDeliveries
-                                        ? "Loading..."
-                                        : "You have not handled any delivery",
-                                  ),
-                                ],
-                              ),
-                            )
-                          : Column(children: [
-                              ...List.generate(
-                                ordersController
-                                    .riderStatsModel!.shipments.length,
-                                (i) => DeliveryHistoryWidget(
-                                  history: ordersController
-                                      .riderStatsModel!.shipments[i],
-                                ),
-                              ),
-                            ]),
-                    ],
-                  ),
+                  ordersController.riderStatsModel != null
+                      ? Column(
+                          children: [
+                            ordersController.riderStatsModel!.shipments.isEmpty
+                                ? SizedBox(
+                                    width: 1.sw,
+                                    height: 1.sh * 0.4,
+                                    child: Column(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.center,
+                                      children: [
+                                        customText(
+                                          ordersController.fetchingDeliveries
+                                              ? "Loading..."
+                                              : "You have not handled any delivery",
+                                        ),
+                                      ],
+                                    ),
+                                  )
+                                : Column(children: [
+                                    ...List.generate(
+                                      ordersController
+                                          .riderStatsModel!.shipments.length,
+                                      (i) => DeliveryHistoryWidget(
+                                        history: ordersController
+                                            .riderStatsModel!.shipments[i],
+                                      ),
+                                    ),
+                                  ]),
+                          ],
+                        )
+                      : SizedBox.shrink(),
                   SizedBox(
                     height: 15.h,
                   ),

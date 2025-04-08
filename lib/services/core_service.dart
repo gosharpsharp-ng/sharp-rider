@@ -84,11 +84,6 @@ class CoreService extends GetConnect {
   ) async {
     try {
       final res = await _dio.post(url, data: payload);
-      print(
-          "****************************************************************************************************");
-      print("This is the response: ${res.data}");
-      print(
-          "****************************************************************************************************");
       if (res.statusCode == 200 || res.statusCode == 201) {
         return APIResponse.fromMap(res.data);
       }
