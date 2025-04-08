@@ -578,7 +578,7 @@ class DeliveriesController extends GetxController {
             .notifyUserOfDeliveryStatusWithLocationLocation(
                 deliveryModel: selectedDelivery!);
       }
-      if (status == 'deliver') {
+      if (status.toLowerCase() == 'deliver') {
         await Get.find<LocationService>().leaveParcelTrackingRoom(
             trackingId: selectedDelivery?.trackingId ?? "");
         Get.find<WalletController>().getWalletBalance();
