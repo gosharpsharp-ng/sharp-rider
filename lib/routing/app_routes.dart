@@ -49,16 +49,18 @@ abstract class Routes {
   static const CHANGE_PASSWORD_SCREEN = _Paths.CHANGE_PASSWORD_SCREEN;
   static const ADD_VEHICLE_SCREEN = _Paths.ADD_VEHICLE_SCREEN;
   static const UPDATE_VEHICLE_SCREEN = _Paths.UPDATE_VEHICLE_SCREEN;
-  static const ADD_LICENSE_SCREEN =_Paths.ADD_LICENSE_SCREEN;
+  static const ADD_LICENSE_SCREEN = _Paths.ADD_LICENSE_SCREEN;
   static const UPDATE_LICENSE_SCREEN = _Paths.UPDATE_LICENSE_SCREEN;
   static const FAQS_SCREEN = _Paths.FAQS_SCREEN;
   static const WALLETS_HOME_SCREEN = _Paths.WALLETS_HOME_SCREEN;
   static const TRANSACTIONS_SCREEN = _Paths.TRANSACTIONS_SCREEN;
   static const TRANSACTION_DETAILS_SCREEN = _Paths.TRANSACTION_DETAILS_SCREEN;
-  static const VEHICLE_AND_LICENSE_DETAILS_SCREEN = _Paths.VEHICLE_AND_LICENSE_DETAILS_SCREEN;
+  static const VEHICLE_AND_LICENSE_DETAILS_SCREEN =
+      _Paths.VEHICLE_AND_LICENSE_DETAILS_SCREEN;
   static const ADD_WITHDRAWAL_ACCOUNT_SCREEN =
       _Paths.ADD_WITHDRAWAL_ACCOUNT_SCREEN;
   static const WITHDRAWAL_AMOUNT_SCREEN = _Paths.WITHDRAWAL_AMOUNT_SCREEN;
+  static const DELETE_ACCOUNT_SCREEN = _Paths.DELETE_ACCOUNT_SCREEN;
 }
 
 abstract class _Paths {
@@ -86,14 +88,16 @@ abstract class _Paths {
 
   static const DELIVERIES_HOME = '/deliveries_home';
   static const DELIVERY_DETAILS = '/delivery_details';
-  static const DELIVERY_PRE_ACCEPTANCE_DETAILS = '/delivery_pre_acceptance_details';
+  static const DELIVERY_PRE_ACCEPTANCE_DETAILS =
+      '/delivery_pre_acceptance_details';
   static const DELIVERY_PACKAGE_INFORMATION_UPLOAD_SCREEN =
       '/delivery_package_information_upload_screen';
   static const DELIVERY_TRACKING_SCREEN = '/delivery_tracking_screen';
   static const DELIVERY_SEARCH_SCREEN = '/delivery_search_screen';
   static const DELIVERY_INVOICE_DETAILS = '/delivery_invoice_details';
   static const DELIVERY_ITEM_INPUT_SCREEN = '/delivery_item_input_screen';
-  static const DELIVERY_PAYMENT_OPTIONS_SCREEN = '/delivery_payment_options_screen';
+  static const DELIVERY_PAYMENT_OPTIONS_SCREEN =
+      '/delivery_payment_options_screen';
   static const DELIVERY_SUMMARY_SCREEN = '/delivery_summary_screen';
 
   static const NOTIFICATIONS_HOME = '/notifications_home';
@@ -107,10 +111,11 @@ abstract class _Paths {
   static const UPDATE_VEHICLE_SCREEN = '/update_vehicle_screen';
   static const ADD_LICENSE_SCREEN = '/add_license_screen';
   static const UPDATE_LICENSE_SCREEN = '/update_license_screen';
-  static const VEHICLE_AND_LICENSE_DETAILS_SCREEN = '/vehicle_and_license_details_screen';
+  static const VEHICLE_AND_LICENSE_DETAILS_SCREEN =
+      '/vehicle_and_license_details_screen';
   static const RIDER_PERFORMANCE_SCREEN = '/rider_performance_screen';
   static const FAQS_SCREEN = '/faqs_screen';
-
+  static const DELETE_ACCOUNT_SCREEN = '/delete_account_screen';
   static const WALLETS_HOME_SCREEN = '/wallets_home_screen';
   static const TRANSACTIONS_SCREEN = '/transactions_screen';
   static const TRANSACTION_DETAILS_SCREEN = '/transaction_details_screen';

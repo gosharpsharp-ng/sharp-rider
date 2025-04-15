@@ -414,6 +414,79 @@ class SettingsController extends GetxController {
     ZegoUIKitPrebuiltCallInvitationService().uninit();
   }
 
+  bool deletePasswordVisibility = false;
+
+  toggleDeletePasswordVisibility() {
+    deletePasswordVisibility = !deletePasswordVisibility;
+    update();
+  }
+
+  bool deletingAccount = false;
+  final deleteAccountFormKey = GlobalKey<FormState>();
+  TextEditingController deletePasswordController = TextEditingController();
+  deleteAccount() async {
+    if (deleteAccountFormKey.currentState!.validate()) {
+      dynamic data = {"password": deletePasswordController.text};
+      APIResponse res = await profileService.deleteAccount(data);
+      if (res.status == "success") {
+        GetStorage getStorage = GetStorage();
+        getStorage.remove('token');
+        Get.offAllNamed(Routes.SIGN_IN);
+        DeliveryNotificationServiceManager serviceManager =
+            DeliveryNotificationServiceManager();
+        serviceManager.disposeServices();
+        ZegoUIKitPrebuiltCallInvitationService().uninit();
+      } else {
+        showToast(message: "could not delete your account", isError: true);
+      }
+    }
+  }
+
+  showAccountDeletionDialog() async {
+    await Get.dialog(
+      AlertDialog(
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(12),
+        ),
+        title: customText("Delete Account",
+            fontWeight: FontWeight.bold, fontSize: 18.sp),
+        content: customText(
+          "Are you sure you want to delete your account? This action is permanent and cannot be undone.",
+          textAlign: TextAlign.left,
+          overflow: TextOverflow.visible,
+          fontSize: 16.sp,
+        ),
+        actions: [
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+            children: [
+              Expanded(
+                child: InkWell(
+                  onTap: () {
+                    Get.back();
+                  },
+                  child: customText("Cancel",
+                      fontWeight: FontWeight.w500,
+                      fontSize: 18.sp,
+                      color: AppColors.obscureTextColor),
+                ),
+              ),
+              Expanded(
+                child: CustomButton(
+                  onPressed: () async {
+                    Get.back();
+                    Get.toNamed(Routes.DELETE_ACCOUNT_SCREEN); //  Close dialog
+                  },
+                  title: "Delete",
+                ),
+              ),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+
   @override
   void onInit() {
     super.onInit();

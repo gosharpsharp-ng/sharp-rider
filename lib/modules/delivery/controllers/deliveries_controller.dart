@@ -582,8 +582,8 @@ class DeliveriesController extends GetxController {
         await Get.find<LocationService>().leaveParcelTrackingRoom(
             trackingId: selectedDelivery?.trackingId ?? "");
         Get.find<WalletController>().getWalletBalance();
-        getRiderStats();
-        getRiderRatingStats();
+        await getRiderStats();
+        await getRiderRatingStats();
         Navigator.pop(Get.context!);
         Get.offAndToNamed(Routes.RIDER_PERFORMANCE_SCREEN);
       }

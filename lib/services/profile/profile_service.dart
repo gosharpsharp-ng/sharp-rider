@@ -51,4 +51,8 @@ class ProfileService extends CoreService {
   Future<APIResponse> changePassword(dynamic data) async {
     return await send("/auth/change-password", data);
   }
+
+  Future<APIResponse> deleteAccount(dynamic data) async {
+    return await send("/me/delete-account", data);
+  }
 }

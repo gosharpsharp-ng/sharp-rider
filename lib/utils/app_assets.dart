@@ -43,18 +43,23 @@ class SvgAssets {
   static const String inflowIcon = 'assets/svgs/inflow.svg';
   static const String outflowIcon = 'assets/svgs/outflow.svg';
   static const String inflowCircleIcon = 'assets/svgs/inflow_circle.svg';
-  static const String walletTransactionIcon = 'assets/svgs/wallet_transaction.svg';
-  static const String orderTransactionIcon = 'assets/svgs/order_transaction.svg';
+  static const String walletTransactionIcon =
+      'assets/svgs/wallet_transaction.svg';
+  static const String orderTransactionIcon =
+      'assets/svgs/order_transaction.svg';
   static const String outflowCircleIcon = 'assets/svgs/outflow_circle.svg';
   static const String calendarIcon = 'assets/svgs/calendar.svg';
   static const String shareIcon = 'assets/svgs/share.svg';
   static const String locationIcon = 'assets/svgs/location.svg';
   static const String notificationIcon = 'assets/svgs/notification.svg';
-  static const String readNotificationIcon = 'assets/svgs/read_notification.svg';
-  static const String unreadNotificationIcon = 'assets/svgs/unread_notification.svg';
+  static const String readNotificationIcon =
+      'assets/svgs/read_notification.svg';
+  static const String unreadNotificationIcon =
+      'assets/svgs/unread_notification.svg';
   static const String faqsIcon = 'assets/svgs/faqs.svg';
   static const String languageIcon = 'assets/svgs/language.svg';
   static const String logoutIcon = 'assets/svgs/logout.svg';
+  static const String deleteIcon = 'assets/svgs/delete.svg';
   static const String passwordChangeIcon = 'assets/svgs/password_change.svg';
   static const String profileIcon = 'assets/svgs/profile.svg';
   static const String securityIcon = 'assets/svgs/security.svg';
