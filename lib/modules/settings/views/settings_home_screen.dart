@@ -197,7 +197,7 @@ class SettingsHomeScreen extends StatelessWidget {
                   SettingsItem(
                     onPressed: () {
                       settingsController.deletePasswordController.clear();
-                      settingsController.deleteAccount();
+                      settingsController.showAccountDeletionDialog();
                     },
                     title: "Delete Account",
                     icon: SvgAssets.deleteIcon,

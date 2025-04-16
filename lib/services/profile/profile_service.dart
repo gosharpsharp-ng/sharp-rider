@@ -53,6 +53,6 @@ class ProfileService extends CoreService {
   }
 
   Future<APIResponse> deleteAccount(dynamic data) async {
-    return await send("/me/delete-account", data);
+    return await remove("/me", data);
   }
 }
