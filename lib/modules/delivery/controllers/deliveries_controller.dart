@@ -350,7 +350,7 @@ class DeliveriesController extends GetxController {
 
     Marker originMarker = Marker(
       markerId: MarkerId(settingsController.userProfile!.id.toString()),
-      infoWindow: InfoWindow(title: "You", snippet: "Origin"),
+      infoWindow: const InfoWindow(title: "You", snippet: "Origin"),
       position: LatLng(
         riderLatLng.latitude,
         riderLatLng.longitude,
@@ -427,6 +427,7 @@ class DeliveriesController extends GetxController {
             .initializeServices(settingsController.userProfile!);
         await Get.find<LocationService>().joinParcelTrackingRoom(
             trackingId: selectedDelivery?.trackingId ?? "");
+        await Get.find<SocketService>().updateRiderAvailabilityStatus("busy");
         Get.find<LocationService>()
             .notifyUserOfDeliveryStatusWithLocationLocation(
                 deliveryModel: selectedDelivery!);
@@ -530,9 +531,8 @@ class DeliveriesController extends GetxController {
       } else {
         deliverySearchResults = newResults;
       }
-
       setTotalSearchDeliveries(response.data['total']);
-      currentSearchDeliveriesPage++; // Increment for next load more
+      currentSearchDeliveriesPage++;
       update();
     } else {
       showToast(
@@ -563,11 +563,18 @@ class DeliveriesController extends GetxController {
     if (response.status == "success") {
       if (Get.isRegistered<LocationService>()) {
         await getDelivery();
-        await Get.find<LocationService>().joinParcelTrackingRoom(
-            trackingId: selectedDelivery?.trackingId ?? "");
+
+        if (status.toLowerCase() == "accept") {
+          await Get.find<LocationService>().joinParcelTrackingRoom(
+              trackingId: selectedDelivery?.trackingId ?? "");
+        }
+
         Get.find<LocationService>()
             .notifyUserOfDeliveryStatusWithLocationLocation(
                 deliveryModel: selectedDelivery!);
+        if (status.toLowerCase() == "deliver") {
+          await Get.find<SocketService>().updateRiderAvailabilityStatus("busy");
+        }
       } else {
         await serviceManager
             .initializeServices(settingsController.userProfile!);

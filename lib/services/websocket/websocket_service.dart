@@ -26,7 +26,7 @@ class SocketService extends GetxService {
             .setTransports(['websocket'])
             .enableAutoConnect()
             .enableReconnection()
-            .setReconnectionAttempts(5)
+            .setReconnectionAttempts(1000)
             .setReconnectionDelay(3000)
             .build());
     socket.connect();
@@ -38,11 +38,17 @@ class SocketService extends GetxService {
         log('Socket Connected');
 
         isConnected.value = true;
-       // Ensure rider rejoin
-        if( isConnected.value == true){
+        // Ensure rider rejoin
+        if (isConnected.value == true) {
           _rejoinRooms();
           if (!_hasJoinedRiderRoom) joinRiderRoom();
           startListeningAndEmitting();
+          riderConnect({
+            "riderId": "${_userProfile.id}",
+            "name": "${_userProfile.fname} ${_userProfile.lname}",
+            "courierType": _userProfile.vehicle?.courierType ?? "",
+            "status": "available"
+          });
         }
       })
       ..onDisconnect((_) {
@@ -54,6 +60,12 @@ class SocketService extends GetxService {
         isConnected.value = true;
         _rejoinRooms();
         if (!_hasJoinedRiderRoom) joinRiderRoom();
+        riderConnect({
+          "riderId": "${_userProfile.id}",
+          "name": "${_userProfile.fname} ${_userProfile.lname}",
+          "courierType": _userProfile.vehicle?.courierType ?? "",
+          "status": "available"
+        });
       })
       ..onError((error) => log('Socket Error: $error'))
       ..onConnectError((error) => log('Socket Connect Error: $error'));
@@ -61,22 +73,25 @@ class SocketService extends GetxService {
 
   void joinRiderRoom() {
     if (isConnected.value) {
-      joinRoom(roomId: _userProfile.vehicle?.courierType.name??"");
-      log("******************************************************************Socket Connection********************************************************************");
-     log("Room ID: ${ _userProfile.vehicle?.courierType.name??""}");
-      log("**************************************************************************************************************************************");
+      joinRoom(roomId: _userProfile.vehicle?.courierType.name ?? "");
       _hasJoinedRiderRoom = true;
+      riderConnect({
+        "riderId": "${_userProfile.id}",
+        "name": "${_userProfile.fname} ${_userProfile.lname}",
+        "courierType": _userProfile.vehicle?.courierType ?? "",
+        "status": "available"
+      });
     }
   }
 
-   listenForDeliveries(Function(dynamic) onNewDelivery) {
+  listenForDeliveries(Function(dynamic) onNewDelivery) {
     socket.on('shipment_events', onNewDelivery);
   }
 
   void emitRiderLocationUpdateByCurrierType(Position position) {
     if (isConnected.value) {
       dynamic data = {
-        'room': _userProfile.vehicle?.courierType.name??"",
+        'room': _userProfile.vehicle?.courierType.name ?? "",
         'event': 'rider_location',
         'data': {
           'location': {
@@ -107,6 +122,7 @@ class SocketService extends GetxService {
       socket.emit('broadcast_to_room', data);
     }
   }
+
   void emitParcelRiderLocationUpdate(LatLng position,
       {required DeliveryModel deliveryModel, required double locationDegrees}) {
     if (isConnected.value) {
@@ -125,15 +141,34 @@ class SocketService extends GetxService {
       socket.emit('broadcast_to_room', data);
     }
   }
-startListeningAndEmitting()async{
-  if(Get.isRegistered<LocationService>()){
-    Get.find<LocationService>().init();
 
-  }else{
-    await Get.putAsync(() => LocationService().init());
-    Get.find<LocationService>().init();
+  // Connect Rider to the riding list so clients can see
+  riderConnect(
+    Map<String, dynamic> data,
+  ) async {
+    if (isConnected.value) {
+      socket.emit("rider_connect", data);
+    }
   }
-}
+
+  // Update Rider's Availability Status
+  updateRiderAvailabilityStatus(
+    String status,
+  ) async {
+    if (isConnected.value) {
+      socket.emit("update_status", status);
+    }
+  }
+
+  startListeningAndEmitting() async {
+    if (Get.isRegistered<LocationService>()) {
+      Get.find<LocationService>().init();
+    } else {
+      await Get.putAsync(() => LocationService().init());
+      Get.find<LocationService>().init();
+    }
+  }
+
   void listenForParcelLocationUpdate(
       {required String roomId, required Function(dynamic) onLocationUpdate}) {
     socket.on(roomId, onLocationUpdate);
