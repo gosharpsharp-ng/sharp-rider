@@ -36,16 +36,18 @@
 	<true/>
 	<key>NSCameraUsageDescription</key>
 	<string>We need access to your camera to take pictures in order to update your avatar.</string>
-	<key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
-	<string>This app needs access to location when open and in the background.</string>
-	<key>NSLocationAlwaysUsageDescription</key>
-	<string>This app needs access to location when in the background.</string>
-	<key>NSLocationWhenInUseUsageDescription</key>
-	<string>This app needs access to location</string>
+<key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
+<string>This app needs access to your location to track the delivery in real-time, both when you're using the app and when it's in the background.</string>
+
+<key>NSLocationAlwaysUsageDescription</key>
+<string>This app needs access to your location when it's in the background to track the delivery status and update the rider's location.</string>
+
+<key>NSLocationWhenInUseUsageDescription</key>
+<string>This app needs access to your location while you're using the app to help track your delivery journey.</string>
 	<key>NSMicrophoneUsageDescription</key>
 	<string>We need access to your microphone to facilitate voice communication with the client during the delivery process for updates or clarifications.</string>
 	<key>NSPhotoLibraryUsageDescription</key>
-	<string>We need access to your photo library to select images for uploading.</string>
+    <string>We need access to your photo library to allow you to select an image for updating your avatar.</string>
 	<key>UIApplicationSupportsIndirectInputEvents</key>
 	<true/>
 	<key>UIBackgroundModes</key>
