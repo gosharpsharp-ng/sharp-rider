@@ -85,24 +85,23 @@ class OnboardingScreen extends StatelessWidget {
             ),
             Container(
               width: 1.sw,
-              height: 1.sh * 0.57,
-              decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(15),
-                  image: DecorationImage(
-                      filterQuality: FilterQuality.low,
-                      image: AssetImage(
-                        PngAssets.onboardingImage2,
-                      ),
-                      fit: BoxFit.cover)),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.center,
                 mainAxisAlignment: MainAxisAlignment.start,
                 children: [
-                  // Container(
-                  //     decoration: BoxDecoration(
-                  //         borderRadius: BorderRadius.circular(25)),
-                  //     child: Image.asset(PngAssets.onboardingImage2,
-                  //         height: 1.sh * 0.57)),
+                  Container(
+                    width: 1.sw * 0.9,
+                    height: 1.sh * 0.57,
+                    decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(15),
+                        image: DecorationImage(
+                            filterQuality: FilterQuality.low,
+                            image: AssetImage(
+                              PngAssets.onboardingImage2,
+                            ),
+                            fit: BoxFit.cover)),
+                    child: SizedBox.shrink(),
+                  ),
                 ],
               ),
             ),
