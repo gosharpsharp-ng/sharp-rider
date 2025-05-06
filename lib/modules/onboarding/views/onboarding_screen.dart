@@ -95,6 +95,7 @@ class OnboardingScreen extends StatelessWidget {
                     decoration: BoxDecoration(
                         borderRadius: BorderRadius.circular(15),
                         image: DecorationImage(
+                            // colorFilter: ColorFilter.srgbToLinearGamma(),
                             filterQuality: FilterQuality.low,
                             image: AssetImage(
                               PngAssets.onboardingImage2,

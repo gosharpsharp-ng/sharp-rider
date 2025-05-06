@@ -63,7 +63,8 @@ class SocketService extends GetxService {
         riderConnect({
           "riderId": "${_userProfile.id}",
           "name": "${_userProfile.fname} ${_userProfile.lname}",
-          "courierType": _userProfile.vehicle?.courierType ?? "",
+          "courierType":
+              _userProfile.vehicle?.courierType ?? {"courierType": ""},
           "status": "available"
         });
       })
