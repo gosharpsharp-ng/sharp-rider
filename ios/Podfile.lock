@@ -251,48 +251,48 @@ EXTERNAL SOURCES:
     :path: ".symlinks/plugins/zego_zpns/ios"
 
 SPEC CHECKSUMS:
-  audio_session: 94075f61f538dbe8f90f0cee58af3f1837ba7d2b
-  audioplayers_darwin: ccf9c770ee768abb07e26d90af093f7bab1c12ab
-  connectivity_plus: 2256d3e20624a7749ed21653aafe291a46446fee
+  audio_session: 32a33910dd5bb35d54297e4b50006481071f196b
+  audioplayers_darwin: 877d9a4d06331c5c374595e46e16453ac7eafa40
+  connectivity_plus: 18382e7311ba19efcaee94442b23b32507b20695
   CryptoSwift: e64e11850ede528a02a0f3e768cec8e9d92ecb90
-  device_info_plus: 21fcca2080fbcd348be798aa36c3e5ed849eefbe
+  device_info_plus: bf2e3232933866d73fe290f2942f2156cdd10342
   DKImagePickerController: 946cec48c7873164274ecc4624d19e3da4c1ef3c
   DKPhotoGallery: b3834fecb755ee09a593d7c9e389d8b5d6deed60
-  file_picker: a0560bc09d61de87f12d246fc47d2119e6ef37be
+  file_picker: b159e0c068aef54932bb15dc9fd1571818edaf49
   Flutter: e0871f40cf51350855a761d2e70bf5af5b9b5de7
-  flutter_callkit_incoming_yoer: 83891ececea86d92a7430d1bae162b6c0934c954
-  flutter_logs: 30a36079651dcdfb260dbff875bf882bbbcaa22e
-  flutter_ringtone_player: a77c42464250845611eaa44c27e8714acc800138
-  flutter_volume_controller: c2be490cb0487e8b88d0d9fc2b7e1c139a4ebccb
-  geolocator_apple: 1560c3c875af2a412242c7a923e15d0d401966ff
+  flutter_callkit_incoming_yoer: a5936b9f065762a7b422594028d3a20901c88996
+  flutter_logs: 5d0dca26963e0f30b11a995a764744ef77d5d428
+  flutter_ringtone_player: 15eba85187230b87b2512f0e1b92225618bc03e7
+  flutter_volume_controller: e4d5832f08008180f76e30faf671ffd5a425e529
+  geolocator_apple: 9bcea1918ff7f0062d98345d238ae12718acfbc1
   Google-Maps-iOS-Utils: 66d6de12be1ce6d3742a54661e7a79cb317a9321
-  google_maps_flutter_ios: 0291eb2aa252298a769b04d075e4a9d747ff7264
+  google_maps_flutter_ios: e31555a04d1986ab130f2b9f24b6cdc861acc6d3
   GoogleMaps: 8939898920281c649150e0af74aa291c60f2e77d
-  image_cropper: 5f162dcf988100dc1513f9c6b7eb42cd6fbf9156
-  image_picker_ios: 7fe1ff8e34c1790d6fff70a32484959f563a928a
-  just_audio: 4e391f57b79cad2b0674030a00453ca5ce817eed
+  image_cropper: 37d40f62177c101ff4c164906d259ea2c3aa70cf
+  image_picker_ios: c560581cceedb403a6ff17f2f816d7fea1421fc1
+  just_audio: a42c63806f16995daf5b219ae1d679deb76e6a79
   Masonry: 678fab65091a9290e40e2832a55e7ab731aad201
-  native_device_orientation: e3580675687d5034770da198f6839ebf2122ef94
-  package_info_plus: af8e2ca6888548050f16fa2f1938db7b5a5df499
-  path_provider_foundation: 080d55be775b7414fd5a5ef3ac137b97b097e564
-  permission_handler_apple: 4ed2196e43d0651e8ff7ca3483a069d469701f2d
+  native_device_orientation: 348b10c346a60ebbc62fb235a4fdb5d1b61a8f55
+  package_info_plus: c0502532a26c7662a62a356cebe2692ec5fe4ec4
+  path_provider_foundation: 2b6b4c569c0fb62ec74538f866245ac84301af46
+  permission_handler_apple: 9878588469a2b0d0fc1e048d9f43605f92e6cec2
   SDWebImage: f84b0feeb08d2d11e6a9b843cb06d75ebf5b8868
-  shared_preferences_foundation: 9e1978ff2562383bd5676f64ec4e9aa8fa06a6f7
-  smart_auth: 33668081c5f646af84f10492a067d25fdcd16951
-  sqflite: c35dad70033b8862124f8337cc994a809fcd9fa3
+  shared_preferences_foundation: fcdcbc04712aee1108ac7fda236f363274528f78
+  smart_auth: 4bedbc118723912d0e45a07e8ab34039c19e04f2
+  sqflite: 673a0e54cc04b7d6dba8d24fb8095b31c3a99eec
   SwiftyGif: 706c60cf65fa2bc5ee0313beece843c8eb8194d4
   TOCropViewController: 80b8985ad794298fb69d3341de183f33d1853654
-  url_launcher_ios: 694010445543906933d732453a59da0a173ae33d
-  vibration: 8e2f50fc35bb736f9eecb7dd9f7047fbb6a6e888
-  wakelock_plus: 04623e3f525556020ebd4034310f20fe7fda8b49
-  webview_flutter_wkwebview: 1821ceac936eba6f7984d89a9f3bcb4dea99ebb2
-  zego_callkit: 8e3bc2e9fc6895cff1b27841b1de1100344d2613
-  zego_express_engine: cd1ba8f0b19260c544f03ccd5d705141efe52009
-  zego_uikit: 0843069d9d4d0e4845abf0ea9b24efa95c1760fa
-  zego_uikit_prebuilt_call: 7fe09774f68ec5344fd16378ff2d3bc2de36c6f8
-  zego_uikit_signaling_plugin: 89c53a021d449903c6e6a0642383bb7e5791e46e
-  zego_zim: 52cc084a83dc165903f1f7f90977825926d12bd2
-  zego_zpns: e2ef9b972e9b6be00b78b32b71c550c426584752
+  url_launcher_ios: 5334b05cef931de560670eeae103fd3e431ac3fe
+  vibration: 7d883d141656a1c1a6d8d238616b2042a51a1241
+  wakelock_plus: 373cfe59b235a6dd5837d0fb88791d2f13a90d56
+  webview_flutter_wkwebview: a4af96a051138e28e29f60101d094683b9f82188
+  zego_callkit: 72593f46ed01779c4cee6bc65d2e0e1cde86b42c
+  zego_express_engine: b2a09737ffc1cc32fb93ade14b6e593abae758f1
+  zego_uikit: 6ceebb00df6af92b2a7a16b15f98330035a5d911
+  zego_uikit_prebuilt_call: 13173d7a3c6dcc1695cbdff15d19463acd1ca39c
+  zego_uikit_signaling_plugin: 7fdfcd9f796b591c9cb8770609f4fa85178aa40e
+  zego_zim: cf219fc7c532d3f17ded0d379c2caa5b875f555a
+  zego_zpns: 282d9f9926ea5dff87efbafae8cf33fdada41f4f
   ZegoUIKitReport: a993f7ccc5d243998a7e601a60e16fcd6c084417
   ZIM: f3ac70a6ddf0e2b70f2a2de29048ab67ce2875f6
   ZIPFoundation: b8c29ea7ae353b309bc810586181fd073cb3312c
