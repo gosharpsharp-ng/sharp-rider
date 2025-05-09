@@ -68,6 +68,6 @@ flutter {
 }
 
 dependencies {
-    implementation 'com.google.android.material:material:1.5.0' // Use the latest version here
+    implementation 'com.google.android.material:material:1.12.0' // Use the latest version here
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlin_version"
 }

@@ -5,7 +5,7 @@ description: "Join GoRider to earn by delivering parcels quickly and efficiently
 publish_to: 'none' # Remove this line if you wish to publish to pub.dev
 
 
-version: 1.1.1+1
+version: 1.1.1+21
 
 environment:
   sdk: '>=3.4.4 <4.0.0'
@@ -25,6 +25,7 @@ dependencies:
   flutter_dotenv: ^5.1.0
   get_storage: ^2.1.1
   smooth_page_indicator: ^1.1.0
+  upgrader: ^11.3.2
   cached_network_image: ^3.4.0
   dotted_line: ^3.2.3
   flutter_rating_bar: ^4.0.1

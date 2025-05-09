@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:go_logistics_driver/utils/exports.dart';
 
 class CustomButton extends StatelessWidget {
@@ -28,7 +30,7 @@ class CustomButton extends StatelessWidget {
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: () {
-        isBusy ? print("Is Busy") : onPressed();
+        isBusy ? log("Is Busy") : onPressed();
       },
       child: Container(
         padding: EdgeInsets.symmetric(horizontal: 15.sp, vertical: 8.sp),
@@ -89,7 +91,7 @@ class CustomIconButton extends StatelessWidget {
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: () {
-        onPressed();
+        isBusy ? log("Busy") : onPressed();
       },
       child: Container(
         padding: EdgeInsets.symmetric(horizontal: 15.sp),

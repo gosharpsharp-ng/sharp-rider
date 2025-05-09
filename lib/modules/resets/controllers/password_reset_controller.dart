@@ -87,7 +87,7 @@ class PasswordResetController extends GetxController {
     }
   }
 
-  validDateOtpField() {
+  validateOtpField() {
     if (restPasswordOtpFormKey.currentState!.validate()) {
       Get.toNamed(Routes.RESET_PASSWORD_NEW_PASSWORD_SCREEN);
     }
@@ -117,10 +117,17 @@ class PasswordResetController extends GetxController {
         'password': newPasswordController.text,
       };
       APIResponse response = await authService.resetPassword(data);
+
       showToast(
           message: response.message, isError: response.status != "success");
       setLoadingState(false);
-      if (response.status == "success") {}
+      if (response.status == "success") {
+        otpController.clear();
+        newPasswordController.clear();
+        confirmPasswordController.clear();
+        loginController.clear();
+        Get.offAllNamed(Routes.SIGN_IN);
+      }
     }
   }
 }
