@@ -27,6 +27,13 @@ class DeliveryNotificationService extends GetxService {
     try {
       Position currentPosition = Get.find<LocationService>().currentPosition!;
       final parsedData = data is String ? jsonDecode(data) : data;
+
+      print(
+          "******************************************************************");
+      log(parsedData.toString());
+      print("***");
+      print(
+          "******************************************************************");
       final DeliveryNotificationModel delivery =
           DeliveryNotificationModel.fromJson(parsedData);
       var originLatLng = LatLng(double.parse(delivery.originLocation.latitude),

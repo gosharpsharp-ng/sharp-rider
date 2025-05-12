@@ -4,13 +4,14 @@ import 'package:flutter_polyline_points/flutter_polyline_points.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:go_logistics_driver/utils/exports.dart';
 
-class DeliveriesController extends GetxController {
+class DeliveriesController extends GetxController with WidgetsBindingObserver {
   final deliveryService = serviceLocator<DeliveryService>();
   final profileService = serviceLocator<ProfileService>();
   final sendingInfoFormKey = GlobalKey<FormState>();
   final deliveriesSearchFormKey = GlobalKey<FormState>();
   final itemDetailsFormKey = GlobalKey<FormState>();
   final serviceManager = Get.find<DeliveryNotificationServiceManager>();
+  final websocketService = Get.find<SocketService>();
   final settingsController = Get.find<SettingsController>();
 
   List<DeliveryModel> allDeliveries = [];
@@ -92,6 +93,7 @@ class DeliveriesController extends GetxController {
   }
 
   DeliveryModel? selectedDelivery;
+
   setSelectedDelivery(DeliveryModel sh) {
     selectedDelivery = sh;
 
@@ -392,6 +394,7 @@ class DeliveriesController extends GetxController {
 
   bool acceptingDelivery = false;
   bool acceptedDelivery = false;
+
   Future<void> acceptDelivery(BuildContext context,
       {required String trackingId}) async {
     acceptedDelivery = false;
@@ -455,6 +458,7 @@ class DeliveriesController extends GetxController {
   //   update();
   // }
   BitmapDescriptor? bikeMarkerIcon;
+
   getBikeIcon() async {
     var icon = await BitmapDescriptor.asset(
       const ImageConfiguration(),
@@ -543,6 +547,7 @@ class DeliveriesController extends GetxController {
   }
 
   bool updatingDeliveryStatus = false;
+
   Future<void> updateDeliveryStatus(BuildContext context,
       {required String status}) async {
     updatingDeliveryStatus = true;
@@ -621,6 +626,7 @@ class DeliveriesController extends GetxController {
   }
 
   RiderStatsModel? riderStatsModel;
+
   getRiderStats() async {
     APIResponse response = await profileService.getRiderStats();
     if (response.status == "success") {
@@ -633,6 +639,7 @@ class DeliveriesController extends GetxController {
   }
 
   ReviewModel? riderRatingStatsModel;
+
   getRiderRatingStats() async {
     APIResponse response = await profileService.getRiderRatingStats();
     if (response.status == "success") {
@@ -647,10 +654,28 @@ class DeliveriesController extends GetxController {
   @override
   void onReady() {
     super.onReady();
+    WidgetsBinding.instance.addObserver(this);
     deliveriesScrollController.addListener(_deliveriesScrollListener);
     searchDeliveriesScrollController
         .addListener(_searchDeliveriesScrollListener);
     fetchDeliveries();
     getBikeIcon();
+  }
+
+  @override
+  void onInit() {
+    WidgetsBinding.instance.addObserver(this); // Register observer
+    super.onInit();
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    if (state == AppLifecycleState.resumed) {
+      bool connected = websocketService.isConnected.value;
+      if (connected) {
+        isOnline = true;
+        update();
+      }
+    }
   }
 }
