@@ -11,7 +11,6 @@ class DeliveriesController extends GetxController with WidgetsBindingObserver {
   final deliveriesSearchFormKey = GlobalKey<FormState>();
   final itemDetailsFormKey = GlobalKey<FormState>();
   final serviceManager = Get.find<DeliveryNotificationServiceManager>();
-  final websocketService = Get.find<SocketService>();
   final settingsController = Get.find<SettingsController>();
 
   List<DeliveryModel> allDeliveries = [];
@@ -668,9 +667,15 @@ class DeliveriesController extends GetxController with WidgetsBindingObserver {
     super.onInit();
   }
 
-  @override
   void didChangeAppLifecycleState(AppLifecycleState state) {
     if (state == AppLifecycleState.resumed) {
+      // Check if SocketService is registered
+      if (!Get.isRegistered<SocketService>()) {
+        // Register or push the service to the stack
+        Get.put(SocketService());
+      }
+
+      final websocketService = Get.find<SocketService>();
       bool connected = websocketService.isConnected.value;
       if (connected) {
         isOnline = true;
