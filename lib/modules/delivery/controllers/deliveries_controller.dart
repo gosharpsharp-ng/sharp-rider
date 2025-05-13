@@ -667,12 +667,14 @@ class DeliveriesController extends GetxController with WidgetsBindingObserver {
     super.onInit();
   }
 
-  void didChangeAppLifecycleState(AppLifecycleState state) {
+  void didChangeAppLifecycleState(AppLifecycleState state) async {
     if (state == AppLifecycleState.resumed) {
       // Check if SocketService is registered
       if (!Get.isRegistered<SocketService>()) {
         // Register or push the service to the stack
-        Get.put(SocketService());
+        // Get.put(SocketService());
+        await serviceManager
+            .initializeServices(settingsController.reactiveUserProfile.value!);
       }
 
       final websocketService = Get.find<SocketService>();
