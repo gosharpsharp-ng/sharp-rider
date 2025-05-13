@@ -225,11 +225,11 @@ class WalletController extends GetxController {
       if (response.data.toString().isNotEmpty) {
         payoutBankAccount = BankAccount.fromJson(response.data);
         update();
-      } else {
-        if (getStorage.read("token") != null) {
-          showToast(
-              message: response.message, isError: response.status != "success");
-        }
+      }
+    } else {
+      if (getStorage.read("token") != null) {
+        showToast(
+            message: response.message, isError: response.status != "success");
       }
     }
   }
