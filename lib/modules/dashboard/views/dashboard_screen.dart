@@ -178,6 +178,8 @@ class DashboardScreen extends StatelessWidget {
                                 ),
                                 assetIconUrl: SvgAssets.walletIcon,
                                 onPressed: () {
+                                  Get.find<WalletController>()
+                                      .getTransactions();
                                   Get.to(const TransactionsScreen());
                                 },
                                 title: "Transaction history",

@@ -16,71 +16,58 @@ class TransactionsScreen extends StatelessWidget {
           backgroundColor: AppColors.primaryColor,
           color: AppColors.whiteColor,
           onRefresh: () async {
-            walletController.getTransactions();
+            await walletController.getTransactions();
           },
-          child: Container(
-            padding: EdgeInsets.symmetric(horizontal: 8.sp, vertical: 12.sp),
-            height: 1.sh,
-            width: 1.sw,
-            child: Visibility(
-              visible: walletController.transactions.isNotEmpty,
-              replacement: Visibility(
-                visible: walletController.isLoading &&
-                    walletController.transactions.isEmpty,
-                replacement: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
+          child: walletController.isLoading &&
+                  walletController.transactions.isEmpty
+              ? const Center(child: CircularProgressIndicator())
+              : ListView(
+                  controller: walletController.transactionsScrollController,
+                  padding:
+                      EdgeInsets.symmetric(horizontal: 8.sp, vertical: 12.sp),
                   children: [
-                    Center(
-                      child: customText("No transactions yet"),
-                    ),
-                  ],
-                ),
-                child: Center(
-                  child: customText("Loading...."),
-                ),
-              ),
-              child: SingleChildScrollView(
-                controller: walletController.transactionsScrollController,
-                child: Column(
-                  children: [
-                    ...List.generate(
-                      walletController.transactions.length,
-                      (i) => TransactionItem(
-                        onTap: () {
-                          walletController.setSelectedTransaction(
-                              walletController.transactions[i]);
-                          Get.toNamed(Routes.TRANSACTION_DETAILS_SCREEN);
-                        },
-                        transaction: walletController.transactions[i],
-                      ),
-                    ),
-                    Visibility(
-                      visible: walletController.fetchingTransactions &&
-                          walletController.transactions.isNotEmpty,
-                      child: Center(
-                        child: Padding(
-                          padding: const EdgeInsets.all(8.0),
-                          child: customText("Loading more...",
-                              color: AppColors.blueColor),
+                    if (walletController.transactions.isEmpty)
+                      SizedBox(
+                        height: 1.sh -
+                            kToolbarHeight -
+                            MediaQuery.of(context).padding.top,
+                        child: Center(
+                            child: walletController.fetchingTransactions
+                                ? customText("Loading...")
+                                : customText("No transactions yet")),
+                      )
+                    else ...[
+                      ...List.generate(
+                        walletController.transactions.length,
+                        (i) => TransactionItem(
+                          onTap: () {
+                            walletController.setSelectedTransaction(
+                                walletController.transactions[i]);
+                            Get.toNamed(Routes.TRANSACTION_DETAILS_SCREEN);
+                          },
+                          transaction: walletController.transactions[i],
                         ),
                       ),
-                    ),
-                    Visibility(
-                      visible: walletController.transactions ==
-                          walletController.totalTransactions,
-                      child: Center(
-                        child: Padding(
-                          padding: const EdgeInsets.all(8.0),
-                          child: customText("No more data to load",
-                              color: AppColors.blueColor),
+                      if (walletController.fetchingTransactions)
+                        Center(
+                          child: Padding(
+                            padding: const EdgeInsets.all(8.0),
+                            child: customText("Loading more...",
+                                color: AppColors.blueColor),
+                          ),
                         ),
-                      ),
-                    ),
+                      if (walletController.transactions.length >=
+                          walletController.totalTransactions)
+                        Center(
+                          child: Padding(
+                            padding: const EdgeInsets.all(8.0),
+                            child: customText("No more data to load",
+                                color: AppColors.blueColor),
+                          ),
+                        ),
+                    ]
                   ],
                 ),
-              ),
-            ),
-          ),
         ),
       );
     });
