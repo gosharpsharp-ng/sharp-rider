@@ -27,13 +27,6 @@ class DeliveryNotificationService extends GetxService {
     try {
       Position currentPosition = Get.find<LocationService>().currentPosition!;
       final parsedData = data is String ? jsonDecode(data) : data;
-
-      print(
-          "******************************************************************");
-      log(parsedData.toString());
-      print("***");
-      print(
-          "******************************************************************");
       final DeliveryNotificationModel delivery =
           DeliveryNotificationModel.fromJson(parsedData);
       var originLatLng = LatLng(double.parse(delivery.originLocation.latitude),
@@ -51,7 +44,10 @@ class DeliveryNotificationService extends GetxService {
           await obtainOriginToDestinationDirectionDetails(
               currentLatLng, originLatLng);
 
-      if (!_isDialogShowing) {
+      if (!_isDialogShowing &&
+          !(Get.find<DeliveriesController>()
+              .rejectedDeliveries
+              .contains(delivery.trackingId))) {
         FlutterRingtonePlayer().playRingtone();
         showDeliveryDialog(
             shipment: delivery,
@@ -274,6 +270,11 @@ class DeliveryNotificationService extends GetxService {
                                 splashColor: AppColors.transparent,
                                 highlightColor: AppColors.transparent,
                                 onTap: () {
+                                  deliveriesController.rejectedDeliveries
+                                      .add(shipment.trackingId);
+                                  deliveriesController.rejectDelivery(
+                                    trackingId: shipment.trackingId,
+                                  );
                                   Get.back();
                                   _isDialogShowing = false;
                                   FlutterRingtonePlayer().stop();

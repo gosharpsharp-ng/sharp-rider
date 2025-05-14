@@ -465,7 +465,7 @@ class SaveIcon extends StatelessWidget {
   }
 }
 
-showToast({String message = "", bool isError = false}) {
+showToast({String message = "", bool isError = false, int duration = 3}) {
   Get.snackbar(
     "",
     "",
@@ -492,7 +492,7 @@ showToast({String message = "", bool isError = false}) {
     ),
     borderRadius: 10.r,
     margin: EdgeInsets.only(left: 12.sp, top: 14.sp),
-    duration: const Duration(seconds: 3),
+    duration: Duration(seconds: duration),
   );
 }
 

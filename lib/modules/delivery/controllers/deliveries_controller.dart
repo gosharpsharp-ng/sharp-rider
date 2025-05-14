@@ -104,7 +104,10 @@ class DeliveriesController extends GetxController with WidgetsBindingObserver {
   Future<void> toggleOnlineStatus() async {
     if (settingsController.reactiveUserProfile.value != null) {
       if (settingsController.reactiveUserProfile.value?.vehicle != null) {
-        await Get.find<SettingsController>().getProfile();
+        if (settingsController.reactiveUserProfile.value?.hasVerifiedVehicle ==
+            false) {
+          await Get.find<SettingsController>().getProfile();
+        }
         if (settingsController.reactiveUserProfile.value?.hasVerifiedVehicle ==
             true) {
           isOnline = !isOnline;
@@ -137,10 +140,7 @@ class DeliveriesController extends GetxController with WidgetsBindingObserver {
             }
           } else {
             await serviceManager.disposeServices();
-            showToast(
-              message: "You're offline",
-              isError: false,
-            );
+            showToast(message: "You're offline", isError: false, duration: 1);
           }
           update();
         } else {
@@ -391,8 +391,19 @@ class DeliveriesController extends GetxController with WidgetsBindingObserver {
     update();
   }
 
+  List<String> rejectedDeliveries = [];
   bool acceptingDelivery = false;
   bool acceptedDelivery = false;
+
+  Future<void> rejectDelivery({required String trackingId}) async {
+    update();
+    final dynamic data = {
+      "tracking_id": trackingId,
+      "action": "reject",
+    };
+
+    deliveryService.updateDeliveryStatus(data);
+  }
 
   Future<void> acceptDelivery(BuildContext context,
       {required String trackingId}) async {
@@ -669,19 +680,24 @@ class DeliveriesController extends GetxController with WidgetsBindingObserver {
 
   void didChangeAppLifecycleState(AppLifecycleState state) async {
     if (state == AppLifecycleState.resumed) {
-      // Check if SocketService is registered
-      if (!Get.isRegistered<SocketService>()) {
-        // Register or push the service to the stack
-        // Get.put(SocketService());
-        await serviceManager
-            .initializeServices(settingsController.reactiveUserProfile.value!);
-      }
+      final userProfile = settingsController.reactiveUserProfile.value;
 
-      final websocketService = Get.find<SocketService>();
-      bool connected = websocketService.isConnected.value;
-      if (connected) {
-        isOnline = true;
-        update();
+      if (userProfile != null) {
+        // Check if SocketService is registered
+        if (!Get.isRegistered<SocketService>()) {
+          await serviceManager.initializeServices(userProfile);
+        }
+
+        final websocketService = Get.find<SocketService>();
+        bool connected = websocketService.isConnected.value;
+
+        if (connected && userProfile.hasVerifiedVehicle) {
+          isOnline = true;
+          update();
+        }
+      } else {
+        debugPrint(
+            'User profile is null on app resume — skipping socket initialization.');
       }
     }
   }
