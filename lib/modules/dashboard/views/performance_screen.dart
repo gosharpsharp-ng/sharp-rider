@@ -15,7 +15,11 @@ class PerformanceScreen extends StatelessWidget {
         backgroundColor: AppColors.backgroundColor,
         body: Scaffold(
           appBar: defaultAppBar(
-              title: "Performance", bgColor: AppColors.backgroundColor),
+              title: "Performance",
+              bgColor: AppColors.backgroundColor,
+              onPop: () {
+                Get.back();
+              }),
           body: Container(
             padding: EdgeInsets.symmetric(vertical: 5.sp, horizontal: 8.w),
             height: 1.sh,
