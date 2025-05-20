@@ -594,7 +594,6 @@ class DeliveriesController extends GetxController with WidgetsBindingObserver {
             .notifyUserOfDeliveryStatusWithLocationLocation(
                 deliveryModel: selectedDelivery!);
         if (status.toLowerCase() == "deliver") {
-          pickedDeliveries.clear();
           update();
           await Get.find<SocketService>().updateRiderAvailabilityStatus("busy");
         }
@@ -609,6 +608,8 @@ class DeliveriesController extends GetxController with WidgetsBindingObserver {
                 deliveryModel: selectedDelivery!);
       }
       if (status.toLowerCase() == 'deliver') {
+        pickedDeliveries.clear();
+        update();
         await Get.find<LocationService>().leaveParcelTrackingRoom(
             trackingId: selectedDelivery?.trackingId ?? "");
         Get.find<WalletController>().getWalletBalance();
