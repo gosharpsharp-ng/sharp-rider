@@ -19,10 +19,10 @@ class AuthenticationService extends CoreService {
     return await send("/auth/reset/password", data);
   }
 
-
   Future<APIResponse> verifyPhoneOtp(dynamic data) async {
     return await send("/auth/verify-phone", data);
   }
+
   Future<APIResponse> sendOtp(dynamic data) async {
     return await fetch("/auth/get-otp?login=${data['login']}");
   }

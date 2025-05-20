@@ -95,7 +95,10 @@ class DeliveriesController extends GetxController with WidgetsBindingObserver {
 
   setSelectedDelivery(DeliveryModel sh) {
     selectedDelivery = sh;
-
+    if (selectedDelivery?.status?.toLowerCase() != "delivered" &&
+        pickedDeliveries.isEmpty) {
+      pickedDeliveries.add(selectedDelivery!.trackingId);
+    }
     update();
   }
 
@@ -392,6 +395,7 @@ class DeliveriesController extends GetxController with WidgetsBindingObserver {
   }
 
   List<String> rejectedDeliveries = [];
+  List<String> pickedDeliveries = [];
   bool acceptingDelivery = false;
   bool acceptedDelivery = false;
 
@@ -421,6 +425,8 @@ class DeliveriesController extends GetxController with WidgetsBindingObserver {
     acceptingDelivery = false;
     update();
     if (response.status == "success") {
+      pickedDeliveries.add(selectedDelivery?.trackingId ?? "");
+      update();
       showToast(
         message: response.message,
         isError: response.status != "success",
@@ -588,6 +594,8 @@ class DeliveriesController extends GetxController with WidgetsBindingObserver {
             .notifyUserOfDeliveryStatusWithLocationLocation(
                 deliveryModel: selectedDelivery!);
         if (status.toLowerCase() == "deliver") {
+          pickedDeliveries.clear();
+          update();
           await Get.find<SocketService>().updateRiderAvailabilityStatus("busy");
         }
       } else {

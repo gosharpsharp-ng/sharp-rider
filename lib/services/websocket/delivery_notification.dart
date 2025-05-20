@@ -46,8 +46,11 @@ class DeliveryNotificationService extends GetxService {
 
       if (!_isDialogShowing &&
           !(Get.find<DeliveriesController>()
-              .rejectedDeliveries
-              .contains(delivery.trackingId))) {
+                  .rejectedDeliveries
+                  .contains(delivery.trackingId) &&
+              Get.find<DeliveriesController>()
+                  .pickedDeliveries
+                  .contains(delivery.trackingId))) {
         FlutterRingtonePlayer().playRingtone();
         showDeliveryDialog(
             shipment: delivery,
@@ -185,7 +188,6 @@ class DeliveryNotificationService extends GetxService {
                               dashGapLength: 3,
                               lineThickness: 2,
                               dashColor: AppColors.whiteColor,
-// lineLength: 150,
                             ),
                             SizedBox(
                               height: 10.h,

@@ -54,23 +54,30 @@ class LocationService extends GetxService {
   }
 
   void _startLocationTracking() async {
-    await joinRiderLocationUpdateRoom(courierType: 'express');
+    await joinRiderLocationUpdateRoom(
+        courierType: Get.find<DeliveriesController>()
+                .settingsController
+                .userProfile
+                ?.vehicle
+                ?.courierType
+                .name ??
+            "");
     // First, get the initial position
     Geolocator.getCurrentPosition(
       desiredAccuracy: LocationAccuracy.high,
     ).then((Position initialPosition) {
       currentPosition = initialPosition;
       // Send initial location if socket service is available
-        if(Get.isRegistered<SocketService>() && Get.find<SocketService>().isConnected.value==true ){
-          Get.find<SocketService>()
-              .emitRiderLocationUpdateByCurrierType(initialPosition);
-          _initialLocationSent = true;
-          Get.find<SocketService>().listenForDeliveries((data) {
-            Get.find<DeliveryNotificationService>().handleDeliveryNotification(data);
-          });
-        }
-
-
+      if (Get.isRegistered<SocketService>() &&
+          Get.find<SocketService>().isConnected.value == true) {
+        Get.find<SocketService>()
+            .emitRiderLocationUpdateByCurrierType(initialPosition);
+        _initialLocationSent = true;
+        Get.find<SocketService>().listenForDeliveries((data) {
+          Get.find<DeliveryNotificationService>()
+              .handleDeliveryNotification(data);
+        });
+      }
     }).catchError((error) {
       log('Error getting initial position: $error');
     });
@@ -94,7 +101,8 @@ class LocationService extends GetxService {
                 .emitRiderLocationUpdateByCurrierType(newPosition);
             _initialLocationSent = true;
             Get.find<SocketService>().listenForDeliveries((data) {
-              Get.find<DeliveryNotificationService>().handleDeliveryNotification(data);
+              Get.find<DeliveryNotificationService>()
+                  .handleDeliveryNotification(data);
             });
           } else {
             // Otherwise send location update

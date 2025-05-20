@@ -17,6 +17,12 @@ class CoreService extends GetConnect {
   Map<String, String> multipartHeaders = {};
 
   setConfig() {
+    // Setting timeouts (in milliseconds)
+    _dio.options.connectTimeout =
+        const Duration(seconds: 30); // Connection timeout
+    _dio.options.sendTimeout = const Duration(seconds: 30); // Send timeout
+    _dio.options.receiveTimeout =
+        const Duration(seconds: 30); // Receive timeout
     _dio.interceptors.add(
       dio_pack.InterceptorsWrapper(
         onRequest: (options, handler) {
@@ -33,6 +39,21 @@ class CoreService extends GetConnect {
           return handler.next(response);
         },
         onError: (DioException error, handler) {
+          if (error.type == DioExceptionType.connectionTimeout ||
+              error.type == DioExceptionType.sendTimeout ||
+              error.type == DioExceptionType.receiveTimeout) {
+            return handler.resolve(
+              dio_pack.Response(
+                requestOptions: error.requestOptions,
+                data: {
+                  'status': 'error',
+                  'data': 'Error',
+                  'message': 'Request timeout',
+                },
+                statusCode: 408, // Standard HTTP code for timeout
+              ),
+            );
+          }
           // Check for 401 Unauthorized
           if (error.response?.statusCode == 401) {
             if (Get.currentRoute != Routes.SIGN_IN) {
@@ -134,12 +155,6 @@ class CoreService extends GetConnect {
       }
     } on DioException catch (e) {
       if (e.response != null) {
-        // log(
-        //     "*****************************************************************************************888");
-        // log("URL: $url");
-        // log(e.response.toString());
-        // log(
-        //     "*****************************************************************************************888");
         return APIResponse.fromMap(e.response?.data);
       } else {
         return APIResponse(
