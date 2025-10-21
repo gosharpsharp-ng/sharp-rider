@@ -1,5 +1,5 @@
-import 'package:go_logistics_driver/modules/wallets/views/widgets/bank_selection_bottom_sheet.dart';
-import 'package:go_logistics_driver/utils/exports.dart';
+import 'package:gorider/modules/wallets/views/widgets/bank_selection_bottom_sheet.dart';
+import 'package:gorider/core/utils/exports.dart';
 
 class AddWithdrawalAccountScreen extends StatelessWidget {
   const AddWithdrawalAccountScreen({super.key});

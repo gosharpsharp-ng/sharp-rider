@@ -1,5 +1,5 @@
-import 'package:go_logistics_driver/modules/settings/views/widgets/vehicle_category_bottom_sheet.dart';
-import 'package:go_logistics_driver/utils/exports.dart';
+import 'package:gorider/modules/settings/views/widgets/vehicle_category_bottom_sheet.dart';
+import 'package:gorider/core/utils/exports.dart';
 
 class AddVehicleScreen extends StatelessWidget {
   const AddVehicleScreen({super.key});
@@ -36,7 +36,7 @@ class AddVehicleScreen extends StatelessWidget {
                         showLabel: true,
                         hasTitle: true,
                         onPressed: () {
-                          if(settingsController.courierTypes.isEmpty){
+                          if (settingsController.courierTypes.isEmpty) {
                             settingsController.getCourierTypes();
                           }
 
@@ -46,10 +46,10 @@ class AddVehicleScreen extends StatelessWidget {
                         isRequired: true,
                         readOnly: true,
                         controller:
-                        settingsController.vehicleCourierTypeController,
+                            settingsController.vehicleCourierTypeController,
                         suffixWidget: IconButton(
                           onPressed: () {
-                            if(settingsController.courierTypes.isEmpty){
+                            if (settingsController.courierTypes.isEmpty) {
                               settingsController.getCourierTypes();
                             }
                             showAnyBottomSheet(
@@ -102,9 +102,7 @@ class AddVehicleScreen extends StatelessWidget {
                     padding: EdgeInsets.symmetric(horizontal: 20.sp),
                     child: CustomButton(
                       onPressed: () async {
-                       await settingsController.addVehicleInfo();
-
-
+                        await settingsController.addVehicleInfo();
                       },
                       isBusy: settingsController.isLoadingVehicle,
                       title: "Save",

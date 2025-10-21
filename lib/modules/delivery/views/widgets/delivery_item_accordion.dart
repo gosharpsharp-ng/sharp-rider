@@ -1,4 +1,4 @@
-import 'package:go_logistics_driver/utils/exports.dart';
+import 'package:gorider/core/utils/exports.dart';
 
 class DeliveryItemAccordion extends StatelessWidget {
   final Item shipmentItemData;
@@ -44,16 +44,21 @@ class DeliveryItemAccordion extends StatelessWidget {
               ),
             ),
             children: [
-              if (shipmentItemData.image.length>1000) Container(
-                height: 150.h,
-                width: double.infinity,
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(8.r),
-                  image: DecorationImage(
-                      image: base64ToMemoryImage(shipmentItemData.image,),
-                      fit: BoxFit.cover),
-                ),
-              ) else SizedBox.shrink(),
+              if (shipmentItemData.image.length > 1000)
+                Container(
+                  height: 150.h,
+                  width: double.infinity,
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(8.r),
+                    image: DecorationImage(
+                        image: base64ToMemoryImage(
+                          shipmentItemData.image,
+                        ),
+                        fit: BoxFit.cover),
+                  ),
+                )
+              else
+                SizedBox.shrink(),
               SizedBox(
                 width: 1.sw,
                 child: Column(

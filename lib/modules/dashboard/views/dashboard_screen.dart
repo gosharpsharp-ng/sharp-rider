@@ -1,7 +1,7 @@
 import 'dart:io';
 
-import 'package:go_logistics_driver/modules/dashboard/views/widgets/wallet_widget.dart';
-import 'package:go_logistics_driver/utils/exports.dart';
+import 'package:gorider/modules/dashboard/views/widgets/wallet_widget.dart';
+import 'package:gorider/core/utils/exports.dart';
 import 'package:upgrader/upgrader.dart';
 
 class DashboardScreen extends StatelessWidget {

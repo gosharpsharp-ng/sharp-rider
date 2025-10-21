@@ -1,4 +1,4 @@
-import 'package:go_logistics_driver/utils/exports.dart';
+import 'package:gorider/core/utils/exports.dart';
 
 class PerformanceBox extends StatelessWidget {
   final String title;
@@ -14,8 +14,8 @@ class PerformanceBox extends StatelessWidget {
     this.value = "930",
     required this.gradient,
     this.assetIconUrl = SvgAssets.courierIcon,
-    this.iconBoxColor=AppColors.transparent,
-    this.iconColor=AppColors.secondaryColor,
+    this.iconBoxColor = AppColors.transparent,
+    this.iconColor = AppColors.secondaryColor,
   });
 
   @override
@@ -46,7 +46,8 @@ class PerformanceBox extends StatelessWidget {
                 ),
               ),
               Container(
-                decoration: BoxDecoration(shape: BoxShape.circle,color:iconBoxColor),
+                decoration:
+                    BoxDecoration(shape: BoxShape.circle, color: iconBoxColor),
                 padding: EdgeInsets.all(5.sp),
                 child: SvgPicture.asset(
                   assetIconUrl,

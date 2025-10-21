@@ -1,4 +1,4 @@
-import 'package:go_logistics_driver/utils/exports.dart';
+import 'package:gorider/core/utils/exports.dart';
 
 class FaqItem extends StatelessWidget {
   final String question;
@@ -10,7 +10,8 @@ class FaqItem extends StatelessWidget {
     return Container(
       decoration: BoxDecoration(
         border: Border(
-          bottom: BorderSide(color: Colors.grey.shade300, width: 0.2), // Add bottom border
+          bottom: BorderSide(
+              color: Colors.grey.shade300, width: 0.2), // Add bottom border
         ),
       ),
       child: Theme(

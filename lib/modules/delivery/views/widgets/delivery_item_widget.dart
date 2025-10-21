@@ -1,7 +1,8 @@
+import 'package:gorider/core/utils/exports.dart';
 
-import 'package:go_logistics_driver/utils/exports.dart';
 class DeliveryItemWidget extends StatelessWidget {
-  const DeliveryItemWidget({super.key, required this.onSelected, required this.shipment});
+  const DeliveryItemWidget(
+      {super.key, required this.onSelected, required this.shipment});
   final Function onSelected;
   final DeliveryModel shipment;
 
@@ -53,7 +54,7 @@ class DeliveryItemWidget extends StatelessWidget {
             ),
             Container(
               width: 1.sw,
-              height: 0.15 *1.sh,
+              height: 0.15 * 1.sh,
               child: Row(
                 children: [
                   Container(
@@ -134,7 +135,8 @@ class DeliveryItemWidget extends StatelessWidget {
             SizedBox(
               height: 8.sp,
             ),
-            customText("${formatDate( shipment.originLocation.createdAt)} ${formatTime( shipment.originLocation.createdAt)}",
+            customText(
+                "${formatDate(shipment.originLocation.createdAt)} ${formatTime(shipment.originLocation.createdAt)}",
                 fontSize: 12.sp,
                 color: AppColors.obscureTextColor,
                 overflow: TextOverflow.visible),

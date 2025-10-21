@@ -1,4 +1,4 @@
-import 'package:go_logistics_driver/utils/exports.dart';
+import 'package:gorider/core/utils/exports.dart';
 
 class SplashController extends GetxController {
   @override
@@ -28,8 +28,6 @@ class SplashController extends GetxController {
 
   // Method to initiate calls from the WalletController and ProfileController
   Future<void> _loadData() async {
-    Get.put(WalletController());
-    Get.put(DashboardController());
     Get.put(SettingsController());
     Get.put(DeliveriesController());
   }

@@ -1,5 +1,4 @@
-
-import 'package:go_logistics_driver/utils/exports.dart';
+import 'package:gorider/core/utils/exports.dart';
 
 class ProfileUpdateSuccessBottomSheet extends StatelessWidget {
   const ProfileUpdateSuccessBottomSheet({super.key});
@@ -14,16 +13,22 @@ class ProfileUpdateSuccessBottomSheet extends StatelessWidget {
         mainAxisAlignment: MainAxisAlignment.center,
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
-          SvgPicture.asset(SvgAssets.successIcon,height: 45.h,width: 45.h,),
+          SvgPicture.asset(
+            SvgAssets.successIcon,
+            height: 45.h,
+            width: 45.h,
+          ),
           SizedBox(
             height: 10.h,
           ),
-          customText("Profile update successfully",
+          customText(
+            "Profile update successfully",
             overflow: TextOverflow.visible,
             textAlign: TextAlign.center,
             color: AppColors.primaryColor,
             fontSize: 25.sp,
-            fontWeight: FontWeight.w700,),
+            fontWeight: FontWeight.w700,
+          ),
           SizedBox(
             height: 20.h,
           ),
@@ -41,7 +46,7 @@ class ProfileUpdateSuccessBottomSheet extends StatelessWidget {
             padding: const EdgeInsets.all(8.0),
             child: CustomButton(
               onPressed: () {
-             Get.back();
+                Get.back();
               },
               // isBusy: signInProvider.isLoading,
               title: "Back",
@@ -53,7 +58,6 @@ class ProfileUpdateSuccessBottomSheet extends StatelessWidget {
           SizedBox(
             height: 5.h,
           ),
-
         ],
       ),
     );

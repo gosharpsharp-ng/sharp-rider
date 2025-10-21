@@ -1,13 +1,10 @@
-
-
-import 'package:go_logistics_driver/utils/exports.dart';
-
+import 'package:gorider/core/utils/exports.dart';
 
 class PasswordResetBinding extends Bindings {
   @override
   void dependencies() {
     Get.lazyPut<PasswordResetController>(
-          () => PasswordResetController(),
+      () => PasswordResetController(),
     );
   }
 }

@@ -1,4 +1,4 @@
-import 'package:go_logistics_driver/utils/exports.dart';
+import 'package:gorider/core/utils/exports.dart';
 import 'package:intl_phone_field/phone_number.dart';
 
 class PasswordResetController extends GetxController {

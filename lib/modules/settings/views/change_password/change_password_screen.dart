@@ -1,4 +1,4 @@
-import 'package:go_logistics_driver/utils/exports.dart';
+import 'package:gorider/core/utils/exports.dart';
 
 class ChangePasswordScreen extends StatelessWidget {
   const ChangePasswordScreen({super.key});
@@ -37,7 +37,8 @@ class ChangePasswordScreen extends StatelessWidget {
                           label: "Enter your current password",
                           useCustomValidator: true,
                           showLabel: true,
-                          obscureText: !settingsController.oldPasswordVisibility,
+                          obscureText:
+                              !settingsController.oldPasswordVisibility,
                           hasTitle: true,
                           controller: settingsController.oldPasswordController,
                           suffixWidget: IconButton(
@@ -69,7 +70,8 @@ class ChangePasswordScreen extends StatelessWidget {
                           showLabel: true,
                           controller: settingsController.newPasswordController,
                           useCustomValidator: true,
-                          obscureText: !settingsController.newPasswordVisibility,
+                          obscureText:
+                              !settingsController.newPasswordVisibility,
                           suffixWidget: IconButton(
                             onPressed: () {
                               settingsController.toggleNewPasswordVisibility();
@@ -99,8 +101,9 @@ class ChangePasswordScreen extends StatelessWidget {
                           hasTitle: true,
                           useCustomValidator: true,
                           obscureText:
-                          !settingsController.confirmNewPasswordVisibility,
-                          controller: settingsController.confirmNewPasswordController,
+                              !settingsController.confirmNewPasswordVisibility,
+                          controller:
+                              settingsController.confirmNewPasswordController,
                           suffixWidget: IconButton(
                             onPressed: () {
                               settingsController
@@ -153,4 +156,3 @@ class ChangePasswordScreen extends StatelessWidget {
     });
   }
 }
-

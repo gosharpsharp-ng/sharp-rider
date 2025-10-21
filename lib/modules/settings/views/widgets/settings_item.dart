@@ -1,4 +1,4 @@
-import 'package:go_logistics_driver/utils/exports.dart';
+import 'package:gorider/core/utils/exports.dart';
 
 class SettingsItem extends StatelessWidget {
   final String icon;
@@ -8,11 +8,11 @@ class SettingsItem extends StatelessWidget {
   final Function onPressed;
   SettingsItem(
       {super.key,
-        this.title = "Edit Profile",
-        this.isShouting=false,
-        this.isLast=false,
-        this.icon = SvgAssets.editIcon,
-        required this.onPressed});
+      this.title = "Edit Profile",
+      this.isShouting = false,
+      this.isLast = false,
+      this.icon = SvgAssets.editIcon,
+      required this.onPressed});
 
   @override
   Widget build(BuildContext context) {
@@ -25,13 +25,14 @@ class SettingsItem extends StatelessWidget {
       child: Container(
         margin: EdgeInsets.only(bottom: 5.sp),
         padding: EdgeInsets.symmetric(vertical: 15.sp, horizontal: 10.sp),
-
         decoration: BoxDecoration(
           color: AppColors.whiteColor,
           border: Border(
             bottom: BorderSide(
-              color: isLast?AppColors.transparent:AppColors.obscureTextColor, // Set the border color
-              width: 0.09,        // Set the border thickness
+              color: isLast
+                  ? AppColors.transparent
+                  : AppColors.obscureTextColor, // Set the border color
+              width: 0.09, // Set the border thickness
             ),
           ),
         ),
@@ -40,7 +41,7 @@ class SettingsItem extends StatelessWidget {
           children: [
             SvgPicture.asset(
               icon,
-              color: isShouting?AppColors.redColor:AppColors.blackColor,
+              color: isShouting ? AppColors.redColor : AppColors.blackColor,
               height: 22.sp,
               width: 22.sp,
             ),
@@ -52,7 +53,7 @@ class SettingsItem extends StatelessWidget {
                 title,
                 fontWeight: FontWeight.normal,
                 fontSize: 16.sp,
-                color: isShouting?AppColors.redColor:AppColors.blackColor,
+                color: isShouting ? AppColors.redColor : AppColors.blackColor,
               ),
             ),
             const Icon(

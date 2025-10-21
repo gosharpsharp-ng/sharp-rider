@@ -1,4 +1,4 @@
-package com.driver.gologistics.go_logistics_driver
+package com.driver.gologistics.gorider
 
 import io.flutter.embedding.android.FlutterActivity
 

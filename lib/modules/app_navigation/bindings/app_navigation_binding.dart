@@ -1,4 +1,4 @@
-import '../../../utils/exports.dart';
+import 'package:gorider/core/utils/exports.dart';
 
 class AppNavigationBinding extends Bindings {
   @override

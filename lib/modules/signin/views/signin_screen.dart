@@ -1,4 +1,4 @@
-import 'package:go_logistics_driver/utils/exports.dart';
+import 'package:gorider/core/utils/exports.dart';
 
 import 'package:intl_phone_field/phone_number.dart';
 
@@ -24,8 +24,8 @@ class SignInScreen extends StatelessWidget {
               child: Column(
                 children: [
                   Container(
-                    padding: EdgeInsets.symmetric(
-                        horizontal: 10.sp, vertical: 0.sp),
+                    padding:
+                        EdgeInsets.symmetric(horizontal: 10.sp, vertical: 0.sp),
                     margin: EdgeInsets.only(left: 10.sp, right: 10.sp),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
@@ -37,8 +37,7 @@ class SignInScreen extends StatelessWidget {
                         SizedBox(
                           height: 5.sp,
                         ),
-                        customText(
-                            "Welcome back",
+                        customText("Welcome back",
                             color: AppColors.blackColor,
                             fontSize: 16.sp,
                             fontWeight: FontWeight.normal),
@@ -82,7 +81,6 @@ class SignInScreen extends StatelessWidget {
                         ),
                       ],
                     ),
-
                   ),
                   Container(
                     padding: EdgeInsets.symmetric(
@@ -108,71 +106,71 @@ class SignInScreen extends StatelessWidget {
 
                         signInController.signInWithEmail
                             ? CustomRoundedInputField(
-                          title: "Email",
-                          label: "meterme@gmail.com",
-                          showLabel: true,
-                          isRequired: true,
-                          useCustomValidator: true,
-                          hasTitle: true,
-                          keyboardType: TextInputType.emailAddress,
-                          controller: signInController.loginController,
-                          validator: (value) {
-                            if (value == null || value.isEmpty) {
-                              return 'Please enter an email';
-                            } else if (!validateEmail(value)) {
-                              return 'Please enter a valid email';
-                            }
-                            return null;
-                          },
-                        )
+                                title: "Email",
+                                label: "meterme@gmail.com",
+                                showLabel: true,
+                                isRequired: true,
+                                useCustomValidator: true,
+                                hasTitle: true,
+                                keyboardType: TextInputType.emailAddress,
+                                controller: signInController.loginController,
+                                validator: (value) {
+                                  if (value == null || value.isEmpty) {
+                                    return 'Please enter an email';
+                                  } else if (!validateEmail(value)) {
+                                    return 'Please enter a valid email';
+                                  }
+                                  return null;
+                                },
+                              )
                             : CustomRoundedPhoneInputField(
-                          title: "Phone number",
-                          label: "7061032122",
-                          onChanged: (PhoneNumber phone) {
-                            if (phone.number.isNotEmpty &&
-                                phone.number.startsWith('0')) {
-                              final updatedNumber = phone.number
-                                  .replaceFirst(RegExp(r'^0'), '');
-                              signInController.loginController.value =
-                                  TextEditingValue(
-                                    text: updatedNumber,
-                                    selection: TextSelection.collapsed(
-                                        offset: updatedNumber.length),
-                                  );
-                              signInController.setPhoneNumber(PhoneNumber(
-                                countryISOCode: phone.countryISOCode,
-                                countryCode: phone.countryCode,
-                                number: updatedNumber,
-                              ));
-                              signInController
-                                  .setFilledPhoneNumber(PhoneNumber(
-                                countryISOCode: phone.countryISOCode,
-                                countryCode: phone.countryCode,
-                                number: updatedNumber,
-                              ));
-                            } else {
-                              signInController
-                                  .setFilledPhoneNumber(phone);
-                            }
-                          },
-                          keyboardType: TextInputType.phone,
-                          validator: (phone) {
-                            if (phone == null ||
-                                phone.completeNumber.isEmpty) {
-                              return "Phone number is required";
-                            }
-                            // Regex: `+` followed by 1 to 3 digits (country code), then 10 digits (phone number)
-                            final regex = RegExp(r'^\+234[1-9]\d{9}$');
-                            if (!regex.hasMatch(phone.completeNumber)) {
-                              return "Phone number must be 10 digits long";
-                            }
+                                title: "Phone number",
+                                label: "7061032122",
+                                onChanged: (PhoneNumber phone) {
+                                  if (phone.number.isNotEmpty &&
+                                      phone.number.startsWith('0')) {
+                                    final updatedNumber = phone.number
+                                        .replaceFirst(RegExp(r'^0'), '');
+                                    signInController.loginController.value =
+                                        TextEditingValue(
+                                      text: updatedNumber,
+                                      selection: TextSelection.collapsed(
+                                          offset: updatedNumber.length),
+                                    );
+                                    signInController.setPhoneNumber(PhoneNumber(
+                                      countryISOCode: phone.countryISOCode,
+                                      countryCode: phone.countryCode,
+                                      number: updatedNumber,
+                                    ));
+                                    signInController
+                                        .setFilledPhoneNumber(PhoneNumber(
+                                      countryISOCode: phone.countryISOCode,
+                                      countryCode: phone.countryCode,
+                                      number: updatedNumber,
+                                    ));
+                                  } else {
+                                    signInController
+                                        .setFilledPhoneNumber(phone);
+                                  }
+                                },
+                                keyboardType: TextInputType.phone,
+                                validator: (phone) {
+                                  if (phone == null ||
+                                      phone.completeNumber.isEmpty) {
+                                    return "Phone number is required";
+                                  }
+                                  // Regex: `+` followed by 1 to 3 digits (country code), then 10 digits (phone number)
+                                  final regex = RegExp(r'^\+234[1-9]\d{9}$');
+                                  if (!regex.hasMatch(phone.completeNumber)) {
+                                    return "Phone number must be 10 digits long";
+                                  }
 
-                            return null; // Valid phone number
-                          },
-                          isPhone: true,
-                          hasTitle: true,
-                          controller: signInController.loginController,
-                        ),
+                                  return null; // Valid phone number
+                                },
+                                isPhone: true,
+                                hasTitle: true,
+                                controller: signInController.loginController,
+                              ),
                         SizedBox(
                           height: 10.sp,
                         ),
@@ -183,7 +181,7 @@ class SignInScreen extends StatelessWidget {
                           isRequired: true,
                           useCustomValidator: true,
                           obscureText:
-                          !signInController.signInPasswordVisibility,
+                              !signInController.signInPasswordVisibility,
                           hasTitle: true,
                           controller: signInController.passwordController,
                           validator: (value) {
@@ -276,9 +274,9 @@ class LoginTypeSelector extends StatelessWidget {
   final bool isSelected;
   const LoginTypeSelector(
       {super.key,
-        required this.title,
-        this.isSelected = false,
-        required this.onSelected});
+      required this.title,
+      this.isSelected = false,
+      required this.onSelected});
 
   @override
   Widget build(BuildContext context) {

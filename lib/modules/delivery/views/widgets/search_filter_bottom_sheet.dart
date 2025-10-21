@@ -1,4 +1,4 @@
-import 'package:go_logistics_driver/utils/exports.dart';
+import 'package:gorider/core/utils/exports.dart';
 
 class SearchFilterBottomSheet extends StatelessWidget {
   const SearchFilterBottomSheet({super.key});
@@ -42,7 +42,8 @@ class SearchFilterBottomSheet extends StatelessWidget {
                   ),
                 ),
                 // controller: signInProvider.emailController,
-              ),       ClickableCustomRoundedInputField(
+              ),
+              ClickableCustomRoundedInputField(
                 title: "City",
                 label: "Select",
                 showLabel: true,
@@ -57,7 +58,8 @@ class SearchFilterBottomSheet extends StatelessWidget {
                   ),
                 ),
                 // controller: signInProvider.emailController,
-              ),     ClickableCustomRoundedInputField(
+              ),
+              ClickableCustomRoundedInputField(
                 title: "Ride type",
                 label: "Select",
                 showLabel: true,

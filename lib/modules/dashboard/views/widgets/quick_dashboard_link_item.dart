@@ -1,4 +1,4 @@
-import 'package:go_logistics_driver/utils/exports.dart';
+import 'package:gorider/core/utils/exports.dart';
 
 class QuickDashboardLinkItem extends StatelessWidget {
   final Function onPressed;
@@ -27,7 +27,7 @@ class QuickDashboardLinkItem extends StatelessWidget {
         padding: EdgeInsets.symmetric(vertical: 18.sp, horizontal: 15.sp),
         width: 1.sw,
         decoration: BoxDecoration(
-         gradient: gradient,
+          gradient: gradient,
           borderRadius: BorderRadius.circular(14.r),
         ),
         child: Column(

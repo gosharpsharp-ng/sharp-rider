@@ -1,4 +1,4 @@
-import 'package:go_logistics_driver/utils/exports.dart';
+import 'package:gorider/core/utils/exports.dart';
 import 'package:lottie/lottie.dart';
 
 class SplashScreen extends StatelessWidget {
@@ -6,50 +6,55 @@ class SplashScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return GetBuilder<SplashController>(builder: (splashController) {
-      return Scaffold(
-        backgroundColor: AppColors.fadedPrimaryColor,
-        appBar: flatAppBar(
+    return GetBuilder<SplashController>(
+      builder: (splashController) {
+        return Scaffold(
+          backgroundColor: AppColors.fadedPrimaryColor,
+          appBar: flatAppBar(
             bgColor: AppColors.fadedPrimaryColor,
-            navigationColor: AppColors.fadedPrimaryColor),
-        body: SizedBox(
-          height: 1.sh,
-          width: 1.sw,
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: [
-              Flexible(
-                flex: 4,
-                child: SizedBox(
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    children: [
-                      Image.asset(PngAssets.goSharpSharpIcon),
-                      customText("GoRider",
-                          color: AppColors.blackColor,
-                          fontWeight: FontWeight.bold,
-                          fontSize: 30.sp,
-                          textAlign: TextAlign.center,
-                          overflow: TextOverflow.visible),
-                    ],
+            navigationColor: AppColors.fadedPrimaryColor,
+          ),
+          body: Container(
+            decoration: BoxDecoration(
+              image: DecorationImage(
+                image: AssetImage(PngAssets.lightWatermark),
+                fit: BoxFit.cover,
+              ),
+            ),
+            height: 1.sh,
+            width: 1.sw,
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                Flexible(
+                  flex: 4,
+                  child: SizedBox(
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        Image.asset(
+                          PngAssets.goSharpSharpTextLogo,
+                          height: 150.sp,
+                          width: 150.sp,
+                        ),
+                      ],
+                    ),
                   ),
                 ),
-              ),
-              Lottie.asset(
-                'assets/json/loading.json',
-                width: 40,
-                height: 40,
-                fit: BoxFit.fill,
-              ),
-              SizedBox(
-                height: 80.sp,
-              ),
-            ],
+                Lottie.asset(
+                  'assets/json/loading.json',
+                  width: 40,
+                  height: 40,
+                  fit: BoxFit.fill,
+                ),
+                SizedBox(height: 80.sp),
+              ],
+            ),
           ),
-        ),
-      );
-    });
+        );
+      },
+    );
   }
 }

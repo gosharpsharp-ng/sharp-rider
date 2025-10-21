@@ -1,4 +1,4 @@
-import 'package:go_logistics_driver/utils/exports.dart';
+import 'package:gorider/core/utils/exports.dart';
 
 class TransactionDetailSummaryItem extends StatelessWidget {
   final String title;
@@ -18,53 +18,54 @@ class TransactionDetailSummaryItem extends StatelessWidget {
           color: AppColors.whiteColor),
       child: isVertical
           ? Column(
-        mainAxisAlignment: MainAxisAlignment.start,
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          customText(title,
-              color: AppColors.obscureTextColor,
-              fontSize: 14.sp,
-              fontWeight: FontWeight.normal),
-          SizedBox(
-            height: 8.h,
-          ),
-          customText(
-            value,
-            color: AppColors.blackColor,
-            fontFamily: title == "Amount"
-                ? GoogleFonts.montserrat().fontFamily!
-                : "Satoshi",
-            fontSize: 14.sp,
-            fontWeight:
-            title == "Amount" ? FontWeight.w600 : FontWeight.w500,
-            overflow: TextOverflow.visible,
-          ),
-        ],
-      )
+              mainAxisAlignment: MainAxisAlignment.start,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                customText(title,
+                    color: AppColors.obscureTextColor,
+                    fontSize: 14.sp,
+                    fontWeight: FontWeight.normal),
+                SizedBox(
+                  height: 8.h,
+                ),
+                customText(
+                  value,
+                  color: AppColors.blackColor,
+                  fontFamily: title == "Amount"
+                      ? GoogleFonts.montserrat().fontFamily!
+                      : "Satoshi",
+                  fontSize: 14.sp,
+                  fontWeight:
+                      title == "Amount" ? FontWeight.w600 : FontWeight.w500,
+                  overflow: TextOverflow.visible,
+                ),
+              ],
+            )
           : Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          customText(title,
-              color: AppColors.obscureTextColor,
-              fontSize: 14.sp,
-              fontWeight: FontWeight.normal),
-          customText(
-            value,
-            color: AppColors.blackColor,
-            fontSize: 14.sp,
-            fontFamily: title == "Amount"
-                ? GoogleFonts.montserrat().fontFamily!
-                : "Satoshi",
-            fontWeight:
-            title == "Amount" ? FontWeight.w600 : FontWeight.w500,
-            overflow: TextOverflow.visible,
-          ),
-        ],
-      ),
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                customText(title,
+                    color: AppColors.obscureTextColor,
+                    fontSize: 14.sp,
+                    fontWeight: FontWeight.normal),
+                customText(
+                  value,
+                  color: AppColors.blackColor,
+                  fontSize: 14.sp,
+                  fontFamily: title == "Amount"
+                      ? GoogleFonts.montserrat().fontFamily!
+                      : "Satoshi",
+                  fontWeight:
+                      title == "Amount" ? FontWeight.w600 : FontWeight.w500,
+                  overflow: TextOverflow.visible,
+                ),
+              ],
+            ),
     );
   }
 }
+
 class TransactionDetailSummaryTypeItem extends StatelessWidget {
   final String title;
   final String value;
@@ -138,15 +139,16 @@ class TransactionDetailSummaryStatusItem extends StatelessWidget {
               fontWeight: FontWeight.normal),
           Container(
             decoration: BoxDecoration(
-                color: value.toLowerCase() == 'successful'
-                    ? AppColors.primaryColor.withOpacity(0.4)
-                    : value.toLowerCase() == 'pending'
-                        ? AppColors.deepAmberColor.withOpacity(0.4)
-                        : AppColors.redColor.withOpacity(0.4),
-                borderRadius: BorderRadius.circular(
-                  8.r,
-                ),),
-            padding: EdgeInsets.symmetric(horizontal: 8.w,vertical: 3.h),
+              color: value.toLowerCase() == 'successful'
+                  ? AppColors.primaryColor.withOpacity(0.4)
+                  : value.toLowerCase() == 'pending'
+                      ? AppColors.deepAmberColor.withOpacity(0.4)
+                      : AppColors.redColor.withOpacity(0.4),
+              borderRadius: BorderRadius.circular(
+                8.r,
+              ),
+            ),
+            padding: EdgeInsets.symmetric(horizontal: 8.w, vertical: 3.h),
             child: customText(
               value,
               color: value.toLowerCase() == 'successful'
