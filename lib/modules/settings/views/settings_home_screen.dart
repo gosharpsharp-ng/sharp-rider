@@ -1,4 +1,4 @@
-import 'package:go_logistics_driver/utils/exports.dart';
+import 'package:gorider/core/utils/exports.dart';
 import 'package:webview_flutter/webview_flutter.dart';
 
 class SettingsHomeScreen extends StatelessWidget {

@@ -1,5 +1,5 @@
-import 'package:go_logistics_driver/modules/wallets/views/widgets/bank_details_item.dart';
-import 'package:go_logistics_driver/utils/exports.dart';
+import 'package:gorider/modules/wallets/views/widgets/bank_details_item.dart';
+import 'package:gorider/core/utils/exports.dart';
 import 'package:intl/intl.dart';
 
 class WithdrawalAmountScreen extends StatelessWidget {

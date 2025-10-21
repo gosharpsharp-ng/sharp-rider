@@ -1,4 +1,4 @@
-import 'package:go_logistics_driver/utils/exports.dart';
+import 'package:gorider/core/utils/exports.dart';
 
 class DeliverySummaryDetailItem extends StatelessWidget {
   final String title;
@@ -38,7 +38,11 @@ class DeliverySummaryDetailItem extends StatelessWidget {
                       visible: titleIconAsset.length > 1,
                       child: Container(
                         margin: EdgeInsets.only(right: 5.sp),
-                        child: SvgPicture.asset(titleIconAsset,height: 15.sp,width: 15.sp,),
+                        child: SvgPicture.asset(
+                          titleIconAsset,
+                          height: 15.sp,
+                          width: 15.sp,
+                        ),
                       ),
                     ),
                     customText(title,
@@ -58,7 +62,9 @@ class DeliverySummaryDetailItem extends StatelessWidget {
                         value,
                         color: AppColors.blackColor,
                         fontSize: 15.sp,
-                        fontFamily: isCurrency?GoogleFonts.montserrat().fontFamily! :'Satoshi',
+                        fontFamily: isCurrency
+                            ? GoogleFonts.montserrat().fontFamily!
+                            : 'Satoshi',
                         fontWeight: FontWeight.w500,
                         overflow: TextOverflow.visible,
                       ),
@@ -66,8 +72,7 @@ class DeliverySummaryDetailItem extends StatelessWidget {
                     Visibility(
                       visible: isPhone,
                       child: Container(
-                        padding:
-                        EdgeInsets.only(right: 5.sp),
+                        padding: EdgeInsets.only(right: 5.sp),
                         child: InkWell(
                           highlightColor: AppColors.transparent,
                           splashColor: AppColors.transparent,
@@ -75,13 +80,15 @@ class DeliverySummaryDetailItem extends StatelessWidget {
                             showAnyBottomSheet(
                                 isControlled: false,
                                 child:
-                                const DeliveryContactOptionBottomSheet());
+                                    const DeliveryContactOptionBottomSheet());
                           },
                           child: SvgPicture.asset(
                             SvgAssets.callIcon,
                             height: 25.sp,
                             width: 25.sp,
-                          ),),),
+                          ),
+                        ),
+                      ),
                     )
                   ],
                 ),
@@ -97,7 +104,11 @@ class DeliverySummaryDetailItem extends StatelessWidget {
                       visible: titleIconAsset.length > 1,
                       child: Container(
                         margin: EdgeInsets.only(right: 5.sp),
-                        child: SvgPicture.asset(titleIconAsset,height: 15.sp,width: 15.sp,),
+                        child: SvgPicture.asset(
+                          titleIconAsset,
+                          height: 15.sp,
+                          width: 15.sp,
+                        ),
                       ),
                     ),
                     customText("$title:",
@@ -110,7 +121,9 @@ class DeliverySummaryDetailItem extends StatelessWidget {
                   value,
                   color: AppColors.blackColor,
                   fontSize: 15.sp,
-                  fontFamily: isCurrency?GoogleFonts.montserrat().fontFamily! :'Satoshi',
+                  fontFamily: isCurrency
+                      ? GoogleFonts.montserrat().fontFamily!
+                      : 'Satoshi',
                   fontWeight: FontWeight.w500,
                   overflow: TextOverflow.visible,
                 ),
@@ -158,7 +171,11 @@ class CopyAbleAndClickAbleOrderSummaryDetailItem extends StatelessWidget {
                       visible: titleIconAsset.length > 1,
                       child: Container(
                         margin: EdgeInsets.only(right: 5.sp),
-                        child: SvgPicture.asset(titleIconAsset,height: 15.sp,width: 15.sp,),
+                        child: SvgPicture.asset(
+                          titleIconAsset,
+                          height: 15.sp,
+                          width: 15.sp,
+                        ),
                       ),
                     ),
                     customText(title,

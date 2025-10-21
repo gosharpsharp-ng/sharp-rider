@@ -1,4 +1,4 @@
-import 'package:go_logistics_driver/utils/exports.dart';
+import 'package:gorider/core/utils/exports.dart';
 
 class SignUpOtpScreen extends StatelessWidget {
   SignUpOtpScreen({super.key});
@@ -23,7 +23,8 @@ class SignUpOtpScreen extends StatelessWidget {
                     width: 1.sw,
                     child: Row(
                       children: [
-                        customText("Enter the 4 digit OTP code sent to\n${signUpController.emailController.text} ",
+                        customText(
+                            "Enter the 4 digit OTP code sent to\n${signUpController.emailController.text} ",
                             fontWeight: FontWeight.w500,
                             fontSize: 14.sp,
                             color: AppColors.blackColor,
@@ -53,7 +54,7 @@ class SignUpOtpScreen extends StatelessWidget {
                         return null;
                       }
                     },
-                    onDone: (val){
+                    onDone: (val) {
                       signUpController.verifyOtp();
                     },
                   ),
@@ -63,7 +64,7 @@ class SignUpOtpScreen extends StatelessWidget {
                   InkWell(
                     onTap: () {
                       (signUpController.isResendingOtp ||
-                          signUpController.resendOTPAfter > 1)
+                              signUpController.resendOTPAfter > 1)
                           ? null
                           : signUpController.sendOtp();
                     },
@@ -71,8 +72,8 @@ class SignUpOtpScreen extends StatelessWidget {
                       signUpController.isResendingOtp
                           ? 'Loading...'
                           : (signUpController.resendOTPAfter > 1)
-                          ? "Resend OTP in ${signUpController.remainingTime}"
-                          : "Resend OTP",
+                              ? "Resend OTP in ${signUpController.remainingTime}"
+                              : "Resend OTP",
                       color: AppColors.primaryColor,
                       fontSize: 14.sp,
                       fontWeight: FontWeight.w700,

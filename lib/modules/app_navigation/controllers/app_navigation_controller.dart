@@ -3,7 +3,7 @@ import 'dart:developer';
 import 'package:geolocator/geolocator.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:socket_io_client/socket_io_client.dart' as socket_io;
-import 'package:go_logistics_driver/utils/exports.dart';
+import 'package:gorider/core/utils/exports.dart';
 
 class AppNavigationController extends GetxController {
   ValueNotifier<int> selectedIndex = ValueNotifier<int>(0);
@@ -40,7 +40,8 @@ class AppNavigationController extends GetxController {
         builder: (BuildContext context) {
           return AlertDialog(
             title: Text("Enable Location"),
-            content: Text("This app requires location services to function properly."),
+            content: Text(
+                "This app requires location services to function properly."),
             actions: [
               TextButton(
                 child: Text("Settings"),

@@ -1,6 +1,6 @@
 import 'dart:io';
-import 'package:go_logistics_driver/models/rider_stats_model.dart';
-import 'package:go_logistics_driver/utils/exports.dart';
+import 'package:gorider/core/models/rider_stats_model.dart';
+import 'package:gorider/core/utils/exports.dart';
 import 'package:intl/intl.dart';
 
 class SettingsController extends GetxController {

@@ -1,4 +1,5 @@
-import 'package:go_logistics_driver/utils/exports.dart';
+import 'package:gorider/core/utils/exports.dart';
+
 class NotificationItem extends StatelessWidget {
   final NotificationModel notification;
   final Function onTap;
@@ -43,7 +44,7 @@ class NotificationItem extends StatelessWidget {
                 child: Stack(
                   children: [
                     Visibility(
-                      visible:notification.status=="unread",
+                      visible: notification.status == "unread",
                       child: Positioned(
                           top: 0,
                           right: 0,

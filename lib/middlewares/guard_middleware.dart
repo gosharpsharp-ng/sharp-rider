@@ -1,6 +1,6 @@
-import 'package:go_logistics_driver/providers/auth_provider.dart';
+import 'package:gorider/providers/auth_provider.dart';
 
-import '../../utils/exports.dart';
+import 'package:gorider/core/utils/exports.dart';
 
 class AuthMiddleware extends GetMiddleware {
   final authService = Get.find<AuthProvider>();

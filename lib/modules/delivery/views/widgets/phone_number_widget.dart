@@ -1,4 +1,4 @@
-import 'package:go_logistics_driver/utils/exports.dart';
+import 'package:gorider/core/utils/exports.dart';
 
 class PhoneNumberWidget extends StatelessWidget {
   final String phoneNumber;

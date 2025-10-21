@@ -1,4 +1,4 @@
-import 'package:go_logistics_driver/utils/exports.dart';
+import 'package:gorider/core/utils/exports.dart';
 
 class BankSelectionBottomSheet extends StatelessWidget {
   const BankSelectionBottomSheet({super.key, required this.onBankSelected});
@@ -8,7 +8,8 @@ class BankSelectionBottomSheet extends StatelessWidget {
   Widget build(BuildContext context) {
     return GetBuilder<WalletController>(builder: (walletController) {
       return Container(
-        padding:  EdgeInsets.only(top: 20.sp,bottom: 12.sp, left: 14.sp,right: 14.sp),
+        padding: EdgeInsets.only(
+            top: 20.sp, bottom: 12.sp, left: 14.sp, right: 14.sp),
         decoration: BoxDecoration(
           borderRadius: BorderRadius.only(
             topLeft: Radius.circular(10.0.sp),
@@ -19,7 +20,6 @@ class BankSelectionBottomSheet extends StatelessWidget {
         child: Column(
           children: [
             Container(
-
               child: CustomOutlinedRoundedInputField(
                 labelColor: AppColors.blackColor,
                 cursorColor: AppColors.blackColor,
@@ -35,49 +35,53 @@ class BankSelectionBottomSheet extends StatelessWidget {
                 },
               ),
             ),
-            SizedBox(height: 10.h,),
+            SizedBox(
+              height: 10.h,
+            ),
             Container(
               height: 340.h,
               width: 1.sw,
-
               child: SingleChildScrollView(
                 child: Column(
-                  crossAxisAlignment:  walletController.filteredBanks.isEmpty?CrossAxisAlignment.center:CrossAxisAlignment.start,
+                  crossAxisAlignment: walletController.filteredBanks.isEmpty
+                      ? CrossAxisAlignment.center
+                      : CrossAxisAlignment.start,
                   mainAxisAlignment: walletController.filteredBanks.isEmpty
                       ? MainAxisAlignment.center
                       : MainAxisAlignment.start,
                   children: walletController.filteredBanks.isEmpty
                       ? [
-                    walletController.isLoadingBanks
-                        ? customText("Loading...",fontWeight: FontWeight.bold)
-                        : InkWell(
-                      onTap: () {
-                        walletController.getBankList();
-                      },
-                      child: Column(
-                        children: [
-                          customText("Reload"),
-                          const Icon(Icons.refresh)
-                        ],
-                      ),
-                    )
-                  ]
+                          walletController.isLoadingBanks
+                              ? customText("Loading...",
+                                  fontWeight: FontWeight.bold)
+                              : InkWell(
+                                  onTap: () {
+                                    walletController.getBankList();
+                                  },
+                                  child: Column(
+                                    children: [
+                                      customText("Reload"),
+                                      const Icon(Icons.refresh)
+                                    ],
+                                  ),
+                                )
+                        ]
                       : walletController.filteredBanks.map((bank) {
-                    return GestureDetector(
-                      onTap: () {
-                        Navigator.of(context).pop();
-                        onBankSelected(bank);
-                      },
-                      child: Padding(
-                        padding: EdgeInsets.symmetric(
-                            vertical: 8.0, horizontal: 5.sp),
-                        child: customText(bank.name,
-                            fontSize: 16.sp,
-                            fontWeight: FontWeight.w600,
-                            color: AppColors.blackColor),
-                      ),
-                    );
-                  }).toList(),
+                          return GestureDetector(
+                            onTap: () {
+                              Navigator.of(context).pop();
+                              onBankSelected(bank);
+                            },
+                            child: Padding(
+                              padding: EdgeInsets.symmetric(
+                                  vertical: 8.0, horizontal: 5.sp),
+                              child: customText(bank.name,
+                                  fontSize: 16.sp,
+                                  fontWeight: FontWeight.w600,
+                                  color: AppColors.blackColor),
+                            ),
+                          );
+                        }).toList(),
                 ),
               ),
             ),

@@ -1,4 +1,4 @@
-import 'package:go_logistics_driver/utils/exports.dart';
+import 'package:gorider/core/utils/exports.dart';
 
 class DeliveryInvoiceSummaryItem extends StatelessWidget {
   final String title;
@@ -18,42 +18,42 @@ class DeliveryInvoiceSummaryItem extends StatelessWidget {
           color: AppColors.whiteColor),
       child: isVertical
           ? Column(
-        mainAxisAlignment: MainAxisAlignment.start,
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          customText(title,
-              color: AppColors.obscureTextColor,
-              fontSize: 15.sp,
-              fontWeight: FontWeight.normal),
-          SizedBox(
-            height: 8.h,
-          ),
-          customText(
-            value,
-            color: AppColors.blackColor,
-            fontSize: 15.sp,
-            fontWeight: FontWeight.w500,
-            overflow: TextOverflow.visible,
-          ),
-        ],
-      )
+              mainAxisAlignment: MainAxisAlignment.start,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                customText(title,
+                    color: AppColors.obscureTextColor,
+                    fontSize: 15.sp,
+                    fontWeight: FontWeight.normal),
+                SizedBox(
+                  height: 8.h,
+                ),
+                customText(
+                  value,
+                  color: AppColors.blackColor,
+                  fontSize: 15.sp,
+                  fontWeight: FontWeight.w500,
+                  overflow: TextOverflow.visible,
+                ),
+              ],
+            )
           : Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          customText(title,
-              color: AppColors.obscureTextColor,
-              fontSize: 15.sp,
-              fontWeight: FontWeight.normal),
-          customText(
-            value,
-            color: AppColors.blackColor,
-            fontSize: 15.sp,
-            fontWeight: FontWeight.w500,
-            overflow: TextOverflow.visible,
-          ),
-        ],
-      ),
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                customText(title,
+                    color: AppColors.obscureTextColor,
+                    fontSize: 15.sp,
+                    fontWeight: FontWeight.normal),
+                customText(
+                  value,
+                  color: AppColors.blackColor,
+                  fontSize: 15.sp,
+                  fontWeight: FontWeight.w500,
+                  overflow: TextOverflow.visible,
+                ),
+              ],
+            ),
     );
   }
 }
@@ -76,57 +76,58 @@ class OrderInvoiceSummaryStatusItem extends StatelessWidget {
           color: AppColors.whiteColor),
       child: isVertical
           ? Column(
-        mainAxisAlignment: MainAxisAlignment.start,
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          customText(title,
-              color: AppColors.obscureTextColor,
-              fontSize: 15.sp,
-              fontWeight: FontWeight.normal),
-          SizedBox(
-            height: 8.h,
-          ),
-          customText(
-            value,
-            color: AppColors.blackColor,
-            fontSize: 15.sp,
-            fontWeight: FontWeight.w500,
-            overflow: TextOverflow.visible,
-          ),
-        ],
-      )
+              mainAxisAlignment: MainAxisAlignment.start,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                customText(title,
+                    color: AppColors.obscureTextColor,
+                    fontSize: 15.sp,
+                    fontWeight: FontWeight.normal),
+                SizedBox(
+                  height: 8.h,
+                ),
+                customText(
+                  value,
+                  color: AppColors.blackColor,
+                  fontSize: 15.sp,
+                  fontWeight: FontWeight.w500,
+                  overflow: TextOverflow.visible,
+                ),
+              ],
+            )
           : Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          customText(title,
-              color: AppColors.obscureTextColor,
-              fontSize: 15.sp,
-              fontWeight: FontWeight.normal),
-          Container(
-              decoration: BoxDecoration(
-                  color: value.toLowerCase() == 'delivered'
-                      ? AppColors.primaryColor.withOpacity(0.4)
-                      : value.toLowerCase() == 'in transit'
-                      ? AppColors.deepAmberColor.withOpacity(0.4)
-                      : AppColors.redColor.withOpacity(0.4),
-                  borderRadius: BorderRadius.circular(
-                    8.r,
-                  )),
-              padding: EdgeInsets.symmetric(vertical: 5.h, horizontal: 8.w),
-              child: customText(
-                value,
-                color: value.toLowerCase() == 'delivered'
-                    ? AppColors.primaryColor
-                    : value.toLowerCase() == 'in transit'
-                    ? AppColors.deepAmberColor
-                    : AppColors.redColor,
-                fontSize: 15.sp,
-                fontWeight: FontWeight.w500,
-                overflow: TextOverflow.visible,
-              )),
-        ],
-      ),
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                customText(title,
+                    color: AppColors.obscureTextColor,
+                    fontSize: 15.sp,
+                    fontWeight: FontWeight.normal),
+                Container(
+                    decoration: BoxDecoration(
+                        color: value.toLowerCase() == 'delivered'
+                            ? AppColors.primaryColor.withOpacity(0.4)
+                            : value.toLowerCase() == 'in transit'
+                                ? AppColors.deepAmberColor.withOpacity(0.4)
+                                : AppColors.redColor.withOpacity(0.4),
+                        borderRadius: BorderRadius.circular(
+                          8.r,
+                        )),
+                    padding:
+                        EdgeInsets.symmetric(vertical: 5.h, horizontal: 8.w),
+                    child: customText(
+                      value,
+                      color: value.toLowerCase() == 'delivered'
+                          ? AppColors.primaryColor
+                          : value.toLowerCase() == 'in transit'
+                              ? AppColors.deepAmberColor
+                              : AppColors.redColor,
+                      fontSize: 15.sp,
+                      fontWeight: FontWeight.w500,
+                      overflow: TextOverflow.visible,
+                    )),
+              ],
+            ),
     );
   }
 }

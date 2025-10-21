@@ -1,5 +1,4 @@
-
-import 'package:go_logistics_driver/utils/exports.dart';
+import 'package:gorider/core/utils/exports.dart';
 
 class DashboardBindings extends Bindings {
   @override

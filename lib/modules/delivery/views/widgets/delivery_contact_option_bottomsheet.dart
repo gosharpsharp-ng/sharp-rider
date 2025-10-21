@@ -1,4 +1,4 @@
-import 'package:go_logistics_driver/utils/exports.dart';
+import 'package:gorider/core/utils/exports.dart';
 
 class DeliveryContactOptionBottomSheet extends StatelessWidget {
   const DeliveryContactOptionBottomSheet({super.key});
@@ -101,10 +101,12 @@ class DeliveryContactOptionBottomSheet extends StatelessWidget {
                     SizedBox(
                       width: 25.sp,
                     ),
-                    customText("Call by phone",
-                        fontSize: 18.sp,
-                        fontWeight: FontWeight.w600,
-                        color: AppColors.blackColor,),
+                    customText(
+                      "Call by phone",
+                      fontSize: 18.sp,
+                      fontWeight: FontWeight.w600,
+                      color: AppColors.blackColor,
+                    ),
                   ],
                 ),
               ),

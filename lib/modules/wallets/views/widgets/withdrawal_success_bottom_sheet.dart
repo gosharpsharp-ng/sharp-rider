@@ -1,4 +1,4 @@
-import 'package:go_logistics_driver/utils/exports.dart';
+import 'package:gorider/core/utils/exports.dart';
 
 class WithdrawalSuccessBottomSheet extends StatelessWidget {
   const WithdrawalSuccessBottomSheet({super.key});

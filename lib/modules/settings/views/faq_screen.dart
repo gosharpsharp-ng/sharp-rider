@@ -1,5 +1,4 @@
-
-import 'package:go_logistics_driver/utils/exports.dart';
+import 'package:gorider/core/utils/exports.dart';
 
 class FaqScreen extends StatelessWidget {
   const FaqScreen({super.key});
@@ -33,7 +32,8 @@ class FaqScreen extends StatelessWidget {
                     "How can I update my profile or change my account settings?",
                 answer:
                     "After logging in, navigate to the 'Available tasks' section on the homepage. Select a task, review the requirements, and fill out the submission form with accurate details about the service. Ensure all mandatory fields are completed before submitting.",
-              ),    FaqItem(
+              ),
+              FaqItem(
                 question: "How do I earn rewards, and how can I redeem them?",
                 answer:
                     "After logging in, navigate to the 'Available tasks' section on the homepage. Select a task, review the requirements, and fill out the submission form with accurate details about the service. Ensure all mandatory fields are completed before submitting.",

@@ -1,4 +1,4 @@
-import 'package:go_logistics_driver/utils/exports.dart';
+import 'package:gorider/core/utils/exports.dart';
 
 class DeliveriesHistoryScreen extends StatelessWidget {
   const DeliveriesHistoryScreen({super.key});
@@ -28,7 +28,7 @@ class DeliveriesHistoryScreen extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  CustomOutlinedClickableRoundedInputField(
+                  ClickableCustomRoundedInputField(
                     label: "Enter tracking number e.g: Xd391B",
                     title: "Enter tracking number e.g: Xd391B",
                     isSearch: true,

@@ -1,4 +1,4 @@
-import 'package:go_logistics_driver/utils/exports.dart';
+import 'package:gorider/core/utils/exports.dart';
 import 'package:intl_phone_field/phone_number.dart';
 
 class SignInController extends GetxController {
@@ -49,7 +49,7 @@ class SignInController extends GetxController {
             ? loginController.text
             : filledPhoneNumber?.completeNumber ?? '',
         'password': passwordController.text,
-        "as_rider":true
+        "as_rider": true
       };
       APIResponse response = await authService.login(data);
       showToast(
@@ -58,7 +58,7 @@ class SignInController extends GetxController {
       if (response.status == "success") {
         loginController.clear();
         passwordController.clear();
-        filledPhoneNumber=null;
+        filledPhoneNumber = null;
         update();
         final getStorage = GetStorage();
         getStorage.write("token", response.data['access_token']);

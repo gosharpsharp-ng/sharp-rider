@@ -1,4 +1,4 @@
-import 'package:go_logistics_driver/utils/exports.dart';
+import 'package:gorider/core/utils/exports.dart';
 
 class DeliveryDetailsScreen extends StatelessWidget {
   const DeliveryDetailsScreen({super.key});
@@ -219,9 +219,9 @@ class DeliveryDetailsScreen extends StatelessWidget {
                           // ),
                           DeliverySummaryDetailItem(
                             title: "Tracking ID",
-                            value: ordersController
-                                .selectedDelivery?.trackingId ??
-                                "",
+                            value:
+                                ordersController.selectedDelivery?.trackingId ??
+                                    "",
                           ),
                           // ClickAbleOrderSummaryDetailItem(
                           //   title: "Invoice number",
