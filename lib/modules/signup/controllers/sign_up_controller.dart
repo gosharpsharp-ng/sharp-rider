@@ -142,15 +142,28 @@ class SignUpController extends GetxController {
     }
   }
 
-  Future<void> pickVehicleInteriorPhoto() async {
+  // Sharp-vendor pattern: Pick image from camera or gallery
+  Future<void> pickVehicleInteriorPhoto({required bool pickFromCamera}) async {
     try {
-      final XFile? image = await _picker.pickImage(
-        source: ImageSource.gallery,
-        imageQuality: 70,
-      );
-      if (image != null) {
-        vehicleInteriorPhoto = File(image.path);
-        vehicleInteriorPhotoBase64 = await _convertImageToBase64(image.path);
+      XFile? photo;
+      if (pickFromCamera) {
+        photo = await _picker.pickImage(source: ImageSource.camera);
+      } else {
+        photo = await _picker.pickImage(source: ImageSource.gallery);
+      }
+
+      if (photo != null) {
+        // Crop the image
+        final croppedPhoto = await cropImage(photo);
+
+        // Compress the image
+        final compressed = await ImageCompressionService.compressImage(
+          XFile(croppedPhoto.path),
+        );
+
+        // Convert to base64
+        vehicleInteriorPhotoBase64 = await convertImageToBase64(compressed.path);
+        vehicleInteriorPhoto = File(compressed.path);
         update();
       }
     } catch (e) {
@@ -158,15 +171,27 @@ class SignUpController extends GetxController {
     }
   }
 
-  Future<void> pickVehicleExteriorPhoto() async {
+  Future<void> pickVehicleExteriorPhoto({required bool pickFromCamera}) async {
     try {
-      final XFile? image = await _picker.pickImage(
-        source: ImageSource.gallery,
-        imageQuality: 70,
-      );
-      if (image != null) {
-        vehicleExteriorPhoto = File(image.path);
-        vehicleExteriorPhotoBase64 = await _convertImageToBase64(image.path);
+      XFile? photo;
+      if (pickFromCamera) {
+        photo = await _picker.pickImage(source: ImageSource.camera);
+      } else {
+        photo = await _picker.pickImage(source: ImageSource.gallery);
+      }
+
+      if (photo != null) {
+        // Crop the image
+        final croppedPhoto = await cropImage(photo);
+
+        // Compress the image
+        final compressed = await ImageCompressionService.compressImage(
+          XFile(croppedPhoto.path),
+        );
+
+        // Convert to base64
+        vehicleExteriorPhotoBase64 = await convertImageToBase64(compressed.path);
+        vehicleExteriorPhoto = File(compressed.path);
         update();
       }
     } catch (e) {
@@ -230,15 +255,28 @@ class SignUpController extends GetxController {
     }
   }
 
-  Future<void> pickLicenseFrontImage() async {
+  // Sharp-vendor pattern: Pick license images with crop and compress
+  Future<void> pickLicenseFrontImage({required bool pickFromCamera}) async {
     try {
-      final XFile? image = await _picker.pickImage(
-        source: ImageSource.gallery,
-        imageQuality: 70,
-      );
-      if (image != null) {
-        licenseFrontImage = File(image.path);
-        licenseFrontImageBase64 = await _convertImageToBase64(image.path);
+      XFile? photo;
+      if (pickFromCamera) {
+        photo = await _picker.pickImage(source: ImageSource.camera);
+      } else {
+        photo = await _picker.pickImage(source: ImageSource.gallery);
+      }
+
+      if (photo != null) {
+        // Crop the image
+        final croppedPhoto = await cropImage(photo);
+
+        // Compress the image
+        final compressed = await ImageCompressionService.compressImage(
+          XFile(croppedPhoto.path),
+        );
+
+        // Convert to base64
+        licenseFrontImageBase64 = await convertImageToBase64(compressed.path);
+        licenseFrontImage = File(compressed.path);
         update();
       }
     } catch (e) {
@@ -246,15 +284,27 @@ class SignUpController extends GetxController {
     }
   }
 
-  Future<void> pickLicenseBackImage() async {
+  Future<void> pickLicenseBackImage({required bool pickFromCamera}) async {
     try {
-      final XFile? image = await _picker.pickImage(
-        source: ImageSource.gallery,
-        imageQuality: 70,
-      );
-      if (image != null) {
-        licenseBackImage = File(image.path);
-        licenseBackImageBase64 = await _convertImageToBase64(image.path);
+      XFile? photo;
+      if (pickFromCamera) {
+        photo = await _picker.pickImage(source: ImageSource.camera);
+      } else {
+        photo = await _picker.pickImage(source: ImageSource.gallery);
+      }
+
+      if (photo != null) {
+        // Crop the image
+        final croppedPhoto = await cropImage(photo);
+
+        // Compress the image
+        final compressed = await ImageCompressionService.compressImage(
+          XFile(croppedPhoto.path),
+        );
+
+        // Convert to base64
+        licenseBackImageBase64 = await convertImageToBase64(compressed.path);
+        licenseBackImage = File(compressed.path);
         update();
       }
     } catch (e) {
@@ -310,20 +360,7 @@ class SignUpController extends GetxController {
     update();
   }
 
-  // ==================== Utilities ====================
-  Future<String> _convertImageToBase64(String imagePath) async {
-    final bytes = await File(imagePath).readAsBytes();
-    String base64Image = base64Encode(bytes);
-    // Get file extension
-    String extension = imagePath.split('.').last.toLowerCase();
-    String mimeType = 'image/jpeg';
-    if (extension == 'png') {
-      mimeType = 'image/png';
-    } else if (extension == 'jpg' || extension == 'jpeg') {
-      mimeType = 'image/jpeg';
-    }
-    return 'data:$mimeType;base64,$base64Image';
-  }
+
 
   // ==================== Step Validation ====================
   bool validateStep1() {

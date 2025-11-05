@@ -60,7 +60,7 @@ class LocationService extends GetxService {
                 .userProfile
                 ?.vehicle
                 ?.courierType
-                .name ??
+                ?.name ??
             "");
     // First, get the initial position
     Geolocator.getCurrentPosition(

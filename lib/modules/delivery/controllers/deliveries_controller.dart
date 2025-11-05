@@ -37,8 +37,7 @@ class DeliveriesController extends GetxController with WidgetsBindingObserver {
 
   fetchDeliveries({bool isLoadMore = false}) async {
     if (fetchingDeliveries ||
-        (isLoadMore && allDeliveries.length >= totalDeliveries))
-      return;
+        (isLoadMore && allDeliveries.length >= totalDeliveries)) return;
 
     fetchingDeliveries = true;
     update();
@@ -111,46 +110,45 @@ class DeliveriesController extends GetxController with WidgetsBindingObserver {
   Future<void> toggleOnlineStatus() async {
     if (settingsController.reactiveUserProfile.value != null) {
       if (settingsController.reactiveUserProfile.value?.vehicle != null) {
-        if (settingsController.reactiveUserProfile.value?.hasVerifiedVehicle ==
-            false) {
-          await Get.find<SettingsController>().getProfile();
-        }
-        if (settingsController.reactiveUserProfile.value?.hasVerifiedVehicle ==
-            true) {
-          isOnline = !isOnline;
-          if (isOnline) {
-            bool isLocationEnabled =
-                await Geolocator.isLocationServiceEnabled();
-            LocationPermission permission = await Geolocator.checkPermission();
+        // if (settingsController.reactiveUserProfile.value?.hasVerifiedVehicle ==
+        //     false) {
+        //   await Get.find<SettingsController>().getProfile();
+        // }
+        // if (settingsController.reactiveUserProfile.value?.hasVerifiedVehicle ==
+        //     true) {
+        isOnline = !isOnline;
+        if (isOnline) {
+          bool isLocationEnabled = await Geolocator.isLocationServiceEnabled();
+          LocationPermission permission = await Geolocator.checkPermission();
 
-            if (!isLocationEnabled || permission == LocationPermission.denied) {
-              bool granted = await showLocationPermissionDialog();
-              if (!granted) {
-                isOnline = false; // Revert status
-                update();
-                return;
-              }
+          if (!isLocationEnabled || permission == LocationPermission.denied) {
+            bool granted = await showLocationPermissionDialog();
+            if (!granted) {
+              isOnline = false; // Revert status
+              update();
+              return;
             }
-
-            try {
-              await serviceManager.initializeServices(
-                settingsController.reactiveUserProfile.value!,
-              );
-              showToast(message: "You're online", isError: false);
-            } catch (e) {
-              showToast(
-                message: "Failed to initialize services: ${e.toString()}",
-                isError: true,
-              );
-            }
-          } else {
-            await serviceManager.disposeServices();
-            showToast(message: "You're offline", isError: false, duration: 1);
           }
-          update();
+
+          try {
+            await serviceManager.initializeServices(
+              settingsController.reactiveUserProfile.value!,
+            );
+            showToast(message: "You're online", isError: false);
+          } catch (e) {
+            showToast(
+              message: "Failed to initialize services: ${e.toString()}",
+              isError: true,
+            );
+          }
         } else {
-          showAdminApprovalDialog();
+          await serviceManager.disposeServices();
+          showToast(message: "You're offline", isError: false, duration: 1);
         }
+        update();
+        // } else {
+        //   showAdminApprovalDialog();
+        // }
       } else {
         showAddBikeDialog();
       }
@@ -297,15 +295,16 @@ class DeliveriesController extends GetxController with WidgetsBindingObserver {
     LatLng? currentLocation,
   }) async {
     // Get the user's current location
-    LatLng riderLatLng =
-        currentLocation ??
+    LatLng riderLatLng = currentLocation ??
         LatLng(
           (await Geolocator.getCurrentPosition(
             desiredAccuracy: LocationAccuracy.bestForNavigation,
-          )).latitude,
+          ))
+              .latitude,
           (await Geolocator.getCurrentPosition(
             desiredAccuracy: LocationAccuracy.bestForNavigation,
-          )).longitude,
+          ))
+              .longitude,
         );
     await googleMapController.future;
     // Fetch direction details
@@ -469,8 +468,8 @@ class DeliveriesController extends GetxController with WidgetsBindingObserver {
         );
         Get.find<LocationService>()
             .notifyUserOfDeliveryStatusWithLocationLocation(
-              deliveryModel: selectedDelivery!,
-            );
+          deliveryModel: selectedDelivery!,
+        );
         Get.find<LocationService>().startEmittingParcelLocation(
           deliveryModel: selectedDelivery!,
         );
@@ -484,8 +483,8 @@ class DeliveriesController extends GetxController with WidgetsBindingObserver {
         await Get.find<SocketService>().updateRiderAvailabilityStatus("busy");
         Get.find<LocationService>()
             .notifyUserOfDeliveryStatusWithLocationLocation(
-              deliveryModel: selectedDelivery!,
-            );
+          deliveryModel: selectedDelivery!,
+        );
         Get.find<LocationService>().startEmittingParcelLocation(
           deliveryModel: selectedDelivery!,
         );
@@ -629,8 +628,8 @@ class DeliveriesController extends GetxController with WidgetsBindingObserver {
 
         Get.find<LocationService>()
             .notifyUserOfDeliveryStatusWithLocationLocation(
-              deliveryModel: selectedDelivery!,
-            );
+          deliveryModel: selectedDelivery!,
+        );
         if (status.toLowerCase() == "deliver") {
           update();
           await Get.find<SocketService>().updateRiderAvailabilityStatus("busy");
@@ -645,8 +644,8 @@ class DeliveriesController extends GetxController with WidgetsBindingObserver {
         // Notify user of current status of delivery
         Get.find<LocationService>()
             .notifyUserOfDeliveryStatusWithLocationLocation(
-              deliveryModel: selectedDelivery!,
-            );
+          deliveryModel: selectedDelivery!,
+        );
       }
       if (status.toLowerCase() == 'deliver') {
         pickedDeliveries.clear();
@@ -751,10 +750,10 @@ class DeliveriesController extends GetxController with WidgetsBindingObserver {
         final websocketService = Get.find<SocketService>();
         bool connected = websocketService.isConnected.value;
 
-        if (connected && userProfile.hasVerifiedVehicle) {
-          isOnline = true;
-          update();
-        }
+        // if (connected && userProfile.hasVerifiedVehicle) {
+        //   isOnline = true;
+        //   update();
+        // }
       } else {
         debugPrint(
           'User profile is null on app resume — skipping socket initialization.',

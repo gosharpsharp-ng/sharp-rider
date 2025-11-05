@@ -1,6 +1,8 @@
 import 'dart:convert';
+import 'dart:developer';
 import 'dart:io';
 import 'dart:math' as math;
+import 'package:flutter_image_compress/flutter_image_compress.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:flutter/cupertino.dart';
@@ -8,7 +10,9 @@ import 'package:image_cropper/image_cropper.dart';
 import 'package:intl/intl.dart';
 import 'package:gorider/core/utils/exports.dart';
 import 'package:cloudinary/cloudinary.dart';
+import 'package:path_provider/path_provider.dart';
 import 'package:webview_flutter/webview_flutter.dart';
+import 'package:path/path.dart' as path;
 
 showAnyBottomSheet({required Widget child, bool isControlled = true}) {
   Get.bottomSheet(
@@ -1133,13 +1137,6 @@ Color getStatusTextColor(String? status) {
   }
 }
 
-MemoryImage base64ToMemoryImage(String base64String) {
-  String cleanBase64 =
-      base64String.contains(',') ? base64String.split(',').last : base64String;
-  Uint8List bytes = base64Decode(cleanBase64);
-  return MemoryImage(bytes);
-}
-
 double getDeliveryProgress(String status) {
   switch (status.capitalizeFirst) {
     case 'Pending':
@@ -1202,4 +1199,151 @@ showAdminApprovalDialog() async {
       ),
     ),
   );
+}
+
+customDebugPrint(dynamic message) {
+  print(
+      "*****************************************************************************************************************");
+  log(message.toString());
+  print(
+      "*****************************************************************************************************************");
+}
+
+Future<String> convertImageToBase64(String imagePath) async {
+  File imageFile = File(imagePath);
+  Uint8List imageBytes = await imageFile.readAsBytes();
+  String base64String = base64Encode(imageBytes);
+
+  // Get file extension to determine MIME type
+  String extension = path.extension(imagePath).toLowerCase();
+  String mimeType = _getMimeType(extension);
+
+  // Return proper data URI format
+  return 'data:$mimeType;base64,$base64String';
+}
+
+// Helper function to determine MIME type from file extension
+String _getMimeType(String extension) {
+  switch (extension) {
+    case '.jpg':
+    case '.jpeg':
+      return 'image/jpeg';
+    case '.png':
+      return 'image/png';
+    case '.gif':
+      return 'image/gif';
+    case '.webp':
+      return 'image/webp';
+    case '.bmp':
+      return 'image/bmp';
+    case '.svg':
+      return 'image/svg+xml';
+    default:
+      return 'image/jpeg'; // Default to JPEG if unknown
+  }
+}
+
+// Updated function to handle both formats (with and without data URI prefix)
+MemoryImage base64ToMemoryImage(String base64String) {
+  String cleanBase64;
+
+  // Check if it's already in data URI format
+  if (base64String.startsWith('data:')) {
+    // Extract just the base64 part after the comma
+    cleanBase64 = base64String.split(',').last;
+  } else {
+    // It's just base64, use as is
+    cleanBase64 = base64String;
+  }
+
+  // Remove any whitespace
+  cleanBase64 = cleanBase64.replaceAll(RegExp(r'\s'), '');
+
+  Uint8List bytes = base64Decode(cleanBase64);
+  return MemoryImage(bytes);
+}
+
+// Alternative function if you want to convert existing base64 to data URI format
+String addDataUriPrefix(String base64String, {String mimeType = 'image/jpeg'}) {
+  if (base64String.startsWith('data:')) {
+    return base64String; // Already has prefix
+  }
+  return 'data:$mimeType;base64,$base64String';
+}
+
+// Function to extract just the base64 part from data URI
+String extractBase64FromDataUri(String dataUri) {
+  if (dataUri.startsWith('data:')) {
+    return dataUri.split(',').last;
+  }
+  return dataUri; // Already just base64
+}
+
+// Function to detect MIME type from base64 data URI
+String? getMimeTypeFromDataUri(String dataUri) {
+  if (dataUri.startsWith('data:')) {
+    final parts = dataUri.split(';');
+    if (parts.isNotEmpty) {
+      return parts.first.substring(5); // Remove 'data:' prefix
+    }
+  }
+  return null;
+}
+
+// Function to validate if string is a proper data URI
+bool isValidDataUri(String dataUri) {
+  return dataUri.startsWith('data:') &&
+      dataUri.contains(';base64,') &&
+      dataUri.split(',').length == 2;
+}
+
+class ImageCompressionService {
+  static const int maxSize = 2 * 1024 * 1024; // 2MB
+
+  static Future<XFile> compressImage(XFile xfile) async {
+    final file = File(xfile.path);
+
+    if (await file.length() <= maxSize) return xfile;
+
+    final dir = await getTemporaryDirectory();
+    final targetPath = path.join(
+      dir.path,
+      '${DateTime.now().millisecondsSinceEpoch}_${path.basename(xfile.path)}',
+    ); // 👈 unique file name
+
+    int quality = 90;
+    XFile? compressed;
+
+    while (quality > 10) {
+      final result = await FlutterImageCompress.compressAndGetFile(
+        xfile.path,
+        targetPath,
+        quality: quality,
+        minWidth: 1024,
+        minHeight: 1024,
+      );
+
+      if (result != null && await File(result.path).length() <= maxSize) {
+        compressed = result;
+        break;
+      }
+      quality -= 10;
+    }
+
+    return compressed ?? xfile;
+  }
+}
+
+/// Helper for extra compression if still > 2MB
+Future<File> compressImageWithLowerQuality(File file) async {
+  final targetPath = "${file.path}_compressed_low.jpg";
+
+  final result = await FlutterImageCompress.compressAndGetFile(
+    file.path,
+    targetPath,
+    quality: 70,
+  );
+
+  // Convert XFile? -> File
+  return result != null ? File(result.path) : file;
 }

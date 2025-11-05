@@ -37,7 +37,7 @@ class VehicleAndLicenseDetailsScreen extends StatelessWidget {
                           VehicleDetailItem(
                             title: "Bike Type",
                             value: settingsController
-                                    .userProfile?.vehicle?.courierType.name ??
+                                    .userProfile?.vehicle?.courierType?.name ??
                                 "",
                           ),
                           VehicleDetailItem(

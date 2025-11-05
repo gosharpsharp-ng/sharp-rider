@@ -5,37 +5,34 @@ class WalletsService extends CoreService {
 
   Future<APIResponse> getAllTransactions(dynamic data) async {
     return await fetch(
-        "/me/transactions?page=${data['page']}&per_page=${data['per_page']}");
+        "/riders/transactions?page=${data['page']}&per_page=${data['per_page']}");
   }
 
   Future<APIResponse> getSingleTransaction(dynamic data) async {
-    return await fetch("/me/transactions/${data['id']}");
+    return await fetch("/riders/transactions/${data['id']}");
   }
 
   Future<APIResponse> getWalletBalance() async {
-    return await fetch("/me/wallet");
+    return await fetch("/riders/wallet");
   }
 
-  // Legacy withdrawal method (for backward compatibility)
-  // Consider using PayoutService.submitPayoutRequest() for new code
-  Future<APIResponse> withdrawFromWallet(dynamic data) async {
-    return await send("/me/wallet/payout", data);
+  Future<APIResponse> fundWallet(dynamic data) async {
+    return await send("/riders/wallet/fund", data);
   }
 
-  // Bank Account Methods
   Future<APIResponse> getBankList() async {
-    return await fetch("/bank-list");
-  }
-
-  Future<APIResponse> getPayoutBankAccount() async {
-    return await fetch("/riders/bank-account");
+    return await fetch("/banks/list");
   }
 
   Future<APIResponse> verifyPayoutBank(dynamic data) async {
-    return await send("/riders/verify/bank-account", data);
+    return await send("/banks/verify-account", data);
   }
 
   Future<APIResponse> updatePayoutAccount(dynamic data) async {
-    return await send("/riders/bank-account", data);
+    return await send("/riders/payout-account", data);
+  }
+
+  Future<APIResponse> getPayoutBankAccount() async {
+    return await fetch("/riders/payout-account");
   }
 }

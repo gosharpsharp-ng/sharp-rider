@@ -57,9 +57,7 @@ class WalletWidget extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 WalletBalanceText(
-                    balance:
-                        walletController.walletBalanceData?.availableBalance ??
-                            "0.0"),
+                    balance: walletController.availableBalance),
                 canWithdraw
                     ? CustomColouredTextButton(
                         onPressed: () {

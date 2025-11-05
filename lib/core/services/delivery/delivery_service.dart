@@ -5,17 +5,17 @@ class DeliveryService extends CoreService {
 
   Future<APIResponse> updateDeliveryStatus(dynamic data) async {
     return await send(
-        "/shipments/${data['tracking_id'].toString()}?action=${data['action']}",
+        "/riders/deliveries/${data['tracking_id'].toString()}?action=${data['action']}",
         null);
   }
 
   Future<APIResponse> getAllDeliveries(dynamic data) async {
     return await fetch(
-        "/shipments?page=${data['page']}&per_page=${data['per_page']}");
+        "/riders/deliveries?page=${data['page']}&per_page=${data['per_page']}");
   }
 
   Future<APIResponse> getDelivery(dynamic data) async {
-    return await fetch("/shipments/${data['id']}");
+    return await fetch("/riders/deliveries/${data['id']}");
   }
 
   Future<APIResponse> getRider(dynamic data) async {
@@ -23,6 +23,6 @@ class DeliveryService extends CoreService {
   }
 
   Future<APIResponse> searchDeliveries(dynamic data) async {
-    return await fetch("/shipments?search=${data['search']}");
+    return await fetch("/riders/deliveries?search=${data['search']}");
   }
 }

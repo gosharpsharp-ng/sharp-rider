@@ -119,23 +119,53 @@ class LicenseInfoStep extends GetView<SignUpController> {
                         ),
                         SizedBox(height: 10.sp),
 
-                        // Front Image
+                        // Front Image - Sharp-vendor pattern
                         _buildImagePicker(
                           context: context,
                           title: "Front Image",
                           image: controller.licenseFrontImage,
-                          onTap: () => controller.pickLicenseFrontImage(),
+                          onTap: () {
+                            showAnyBottomSheet(
+                              isControlled: false,
+                              child: CustomImagePickerBottomSheet(
+                                title: "License Front Image",
+                                takePhotoFunction: () =>
+                                    controller.pickLicenseFrontImage(
+                                        pickFromCamera: true),
+                                selectFromGalleryFunction: () =>
+                                    controller.pickLicenseFrontImage(
+                                        pickFromCamera: false),
+                                deleteFunction: () =>
+                                    controller.removeLicenseFrontImage(),
+                              ),
+                            );
+                          },
                           onRemove: () => controller.removeLicenseFrontImage(),
                         ),
 
                         SizedBox(height: 10.sp),
 
-                        // Back Image
+                        // Back Image - Sharp-vendor pattern
                         _buildImagePicker(
                           context: context,
                           title: "Back Image",
                           image: controller.licenseBackImage,
-                          onTap: () => controller.pickLicenseBackImage(),
+                          onTap: () {
+                            showAnyBottomSheet(
+                              isControlled: false,
+                              child: CustomImagePickerBottomSheet(
+                                title: "License Back Image",
+                                takePhotoFunction: () =>
+                                    controller.pickLicenseBackImage(
+                                        pickFromCamera: true),
+                                selectFromGalleryFunction: () =>
+                                    controller.pickLicenseBackImage(
+                                        pickFromCamera: false),
+                                deleteFunction: () =>
+                                    controller.removeLicenseBackImage(),
+                              ),
+                            );
+                          },
                           onRemove: () => controller.removeLicenseBackImage(),
                         ),
 

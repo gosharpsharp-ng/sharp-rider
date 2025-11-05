@@ -1,9 +1,9 @@
 import 'package:gorider/core/utils/exports.dart';
 
-class FaqItem extends StatelessWidget {
+class FaqItemWidget extends StatelessWidget {
   final String question;
   final String answer;
-  const FaqItem({super.key, this.question = "", this.answer = ""});
+  const FaqItemWidget({super.key, this.question = "", this.answer = ""});
 
   @override
   Widget build(BuildContext context) {

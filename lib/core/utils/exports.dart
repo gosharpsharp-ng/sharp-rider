@@ -78,12 +78,12 @@ export 'package:gorider/modules/wallets/views/widgets/withdrawal_success_bottom_
 
 export 'package:gorider/modules/dashboard/views/widgets/quick_dashboard_link_item.dart';
 export 'package:gorider/modules/wallets/views/transactions_screen.dart';
-export 'package:gorider/modules/wallets/views/withdrawal_amount_screen.dart';
 
 export 'package:gorider/modules/settings/views/change_password/change_password_screen.dart';
 export 'package:gorider/modules/settings/views/faq_screen.dart';
 
 export 'package:gorider/modules/settings/views/widgets/faq_item.dart';
+export 'package:gorider/modules/settings/views/widgets/faq_category_chip.dart';
 export 'package:gorider/modules/delivery/views/deliveries_search_screen.dart';
 
 export 'package:gorider/modules/resets/views/reset_password_otp.dart';
@@ -118,6 +118,7 @@ export 'package:gorider/modules/delivery/controllers/deliveries_controller.dart'
 export 'package:gorider/modules/delivery/views/widgets/search_filter_bottom_sheet.dart';
 
 export 'package:gorider/modules/settings/controllers/settings_controller.dart';
+export 'package:gorider/modules/settings/controllers/faq_controller.dart';
 
 export 'package:gorider/modules/app_navigation/bindings/app_navigation_binding.dart';
 export 'package:gorider/modules/dashboard/bindings/dashboard_bindings.dart';
@@ -146,6 +147,7 @@ export 'package:image_picker/image_picker.dart';
 export 'package:gorider/core/models/user_profile_model.dart';
 
 export 'package:gorider/core/utils/widgets/custom_image_picker_bottomsheet.dart';
+export 'package:gorider/core/utils/widgets/skeleton_loaders.dart';
 export 'package:gorider/core/models/transaction_model.dart';
 
 export 'package:gorider/core/models/bank_model.dart';
@@ -178,3 +180,6 @@ export 'package:gorider/core/models/bank_account_update_model.dart';
 // Payout module exports
 export 'package:gorider/modules/payouts/controllers/payout_controller.dart';
 export 'package:gorider/modules/payouts/bindings/payout_bindings.dart';
+export 'package:gorider/modules/payouts/views/payout_history_screen.dart';
+export 'package:gorider/modules/payouts/views/payout_request_screen.dart';
+export 'package:gorider/modules/payouts/views/widgets/payout_item.dart';

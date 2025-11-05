@@ -1,4 +1,5 @@
 import 'package:gorider/core/utils/exports.dart';
+import 'package:gorider/core/models/wallet_model.dart';
 
 class WalletController extends GetxController {
   final walletService = serviceLocator<WalletsService>();
@@ -94,42 +95,41 @@ class WalletController extends GetxController {
     }
   }
 
-  WalletBalanceDataModel? walletBalanceData;
-  getWalletBalance() async {
-    APIResponse response = await walletService.getWalletBalance();
-    setLoadingState(false);
-    if (response.status == "success") {
-      walletBalanceData = WalletBalanceDataModel.fromJson(response.data);
-      update();
-    } else {
-      showToast(
-          message: response.message, isError: response.status != "success");
+  // Wallet data now comes from user profile, no separate endpoint
+  Wallet? wallet;
+
+  // Payout bank account
+  BankAccount? payoutBankAccount;
+
+  // Get wallet data from user profile (via SettingsController)
+  void loadWalletFromProfile() {
+    try {
+      if (Get.isRegistered<SettingsController>()) {
+        final settingsController = Get.find<SettingsController>();
+        if (settingsController.userProfile?.wallet != null) {
+          wallet = settingsController.userProfile!.wallet;
+          update();
+        }
+      }
+    } catch (e) {
+      debugPrint("Error loading wallet from profile: $e");
     }
   }
 
-  final withdrawFromWalletFormKey = GlobalKey<FormState>();
-  TextEditingController amountEntryController = TextEditingController();
-  withdrawFromWallet() async {
-    if (withdrawFromWalletFormKey.currentState!.validate()) {
-      setLoadingState(true);
-      dynamic data = {
-        'amount': stripCurrencyFormat(amountEntryController.text),
-      };
-      APIResponse response = await walletService.withdrawFromWallet(data);
+  // Get available balance as string (for backward compatibility)
+  String get availableBalance => wallet?.balance ?? "0.00";
 
-      setLoadingState(false);
-      if (response.status == "success") {
-        showToast(message: response.message);
-        amountEntryController.clear();
-        getWalletBalance();
-        update();
-      } else {
-        if (getStorage.read("token") != null) {
-          showToast(
-              message: response.message, isError: response.status != "success");
-        }
-      }
-    }
+  // Get bonus balance as string
+  String get bonusBalance => wallet?.bonusBalance ?? "0.00";
+
+  // Get total balance (main + bonus)
+  double get totalBalance => wallet?.totalBalance ?? 0.0;
+
+  // Legacy method kept for compatibility - now loads from profile
+  @Deprecated(
+      'Use loadWalletFromProfile() instead. Wallet data is now in user profile.')
+  getWalletBalance() async {
+    loadWalletFromProfile();
   }
 
   bool walletBalanceVisibility = false;
@@ -165,16 +165,12 @@ class WalletController extends GetxController {
     isLoadingBanks = false;
     update();
     if (response.status == "success") {
-      originalBanks =
-          (response.data as List).map((bk) => BankModel.fromJson(bk)).toList();
+      originalBanks = (response.data['banks'] as List)
+          .map((bk) => BankModel.fromJson(bk))
+          .toList();
       filteredBanks = originalBanks;
       update();
     }
-  }
-
-  clearWithdrawalFields() {
-    amountEntryController.clear();
-    update();
   }
 
   BankModel? selectedBank;
@@ -192,45 +188,39 @@ class WalletController extends GetxController {
   TextEditingController bankNameController = TextEditingController();
   bool verifyingAccountNumber = false;
   verifyPayoutBank() async {
-    if (selectedBank != null) {
-      verifyingAccountNumber = true;
-      update();
+    if (selectedBank == null) {
+      showToast(message: "Please select a bank first", isError: true);
+      return;
+    }
+
+    if (accountNumberController.text.length != 10) {
+      return;
+    }
+
+    verifyingAccountNumber = true;
+    update();
+
+    try {
       dynamic data = {
         'account_number': accountNumberController.text,
         'bank_code': selectedBank!.code,
       };
-      print(data.toString());
       APIResponse response = await walletService.verifyPayoutBank(data);
-      verifyingAccountNumber = false;
-      update();
+
       if (response.status == "success") {
-        resolvedBankAccountName.text = response.data['account_name'];
+        resolvedBankAccountName.text = response.data['account_details']['account_name'];
+        showToast(message: "Account verified successfully", isError: false);
         update();
       } else {
-        showToast(
-            message: response.message, isError: response.status != "success");
+        resolvedBankAccountName.clear();
+        showToast(message: response.message, isError: true);
       }
-    }
-  }
-
-  BankAccount? payoutBankAccount;
-  bool isFetchingBankAccount = false;
-  getPayoutBankAccount() async {
-    isFetchingBankAccount = true;
-    update();
-    APIResponse response = await walletService.getPayoutBankAccount();
-    isFetchingBankAccount = false;
-    update();
-    if (response.status == "success") {
-      if (response.data.toString().isNotEmpty) {
-        payoutBankAccount = BankAccount.fromJson(response.data);
-        update();
-      }
-    } else {
-      if (getStorage.read("token") != null) {
-        showToast(
-            message: response.message, isError: response.status != "success");
-      }
+    } catch (e) {
+      resolvedBankAccountName.clear();
+      showToast(message: "Error verifying account: ${e.toString()}", isError: true);
+    } finally {
+      verifyingAccountNumber = false;
+      update();
     }
   }
 
@@ -239,42 +229,95 @@ class WalletController extends GetxController {
     resolvedBankAccountName.clear();
     bankNameController.clear();
     accountNumberController.clear();
-    accountPasswordController.clear();
     selectedBank = null;
     update();
   }
 
-  bool accountPasswordVisibility = false;
-
-  toggleAccountPasswordVisibility() {
-    accountPasswordVisibility = !accountPasswordVisibility;
-    update();
-  }
-
-  TextEditingController accountPasswordController = TextEditingController();
   bool updatingBankAccount = false;
   updatePayoutAccount() async {
-    if (payoutAccountFormKey.currentState!.validate()) {
-      updatingBankAccount = true;
-      update();
-      dynamic data = {
-        'bank_account_number': accountNumberController.text,
+    if (!payoutAccountFormKey.currentState!.validate()) return;
+
+    if (selectedBank == null) {
+      showToast(message: "Please select a bank", isError: true);
+      return;
+    }
+
+    if (resolvedBankAccountName.text.isEmpty) {
+      showToast(message: "Please verify your account number first", isError: true);
+      return;
+    }
+
+    updatingBankAccount = true;
+    update();
+
+    try {
+      final data = {
+        'bank_name': selectedBank!.name,
         'bank_code': selectedBank!.code,
-        "password": accountPasswordController.text,
+        'bank_account_number': accountNumberController.text,
+        'bank_account_name': resolvedBankAccountName.text,
       };
+
       APIResponse response = await walletService.updatePayoutAccount(data);
-      updatingBankAccount = false;
-      update();
-      showToast(
-          message: response.message, isError: response.status != "success");
-      setLoadingState(false);
+
       if (response.status == "success") {
+        showToast(message: "Bank account updated successfully", isError: false);
+        await getPayoutBankAccount(); // Refresh bank account data
         filterBanks("");
         banksFilterController.clear();
         clearImputedBankFields();
-        getPayoutBankAccount();
-        Navigator.pop(Get.context!);
+        Get.back();
+      } else {
+        showToast(message: response.message, isError: true);
       }
+    } catch (e) {
+      showToast(message: "Error updating bank account: ${e.toString()}", isError: true);
+    } finally {
+      updatingBankAccount = false;
+      update();
+    }
+  }
+
+  // Initialize bank account form with existing data
+  void initializeBankAccountForm() {
+    // Load existing bank account data if available
+    if (payoutBankAccount != null) {
+      bankNameController.text = payoutBankAccount!.bankName;
+      accountNumberController.text = payoutBankAccount!.bankAccountNumber;
+      resolvedBankAccountName.text = payoutBankAccount!.bankAccountName;
+
+      // Try to find and set the selected bank
+      if (originalBanks.isNotEmpty) {
+        try {
+          selectedBank = originalBanks.firstWhere(
+            (bank) => bank.name == payoutBankAccount!.bankName,
+          );
+        } catch (e) {
+          selectedBank = null;
+        }
+      }
+    }
+    update();
+  }
+
+  // Get payout bank account
+  bool loadingPayoutBankAccount = false;
+  getPayoutBankAccount() async {
+    loadingPayoutBankAccount = true;
+    update();
+
+    try {
+      APIResponse response = await walletService.getPayoutBankAccount();
+
+      if (response.status == "success" && response.data != null) {
+        payoutBankAccount = BankAccount.fromJson(response.data);
+        update();
+      }
+    } catch (e) {
+      debugPrint("Error loading payout bank account: $e");
+    } finally {
+      loadingPayoutBankAccount = false;
+      update();
     }
   }
 
@@ -287,8 +330,8 @@ class WalletController extends GetxController {
     }
     update();
     transactionsScrollController.addListener(_transactionsScrollListener);
-    getWalletBalance();
-    getPayoutBankAccount();
+    // Load wallet from profile instead of separate API call
+    loadWalletFromProfile();
     getTransactions();
   }
 
