@@ -137,22 +137,16 @@ class DashboardScreen extends StatelessWidget {
                           child: Row(
                             children: [
                               WalletWidget(
-                                balance: walletController
-                                        .walletBalanceData?.availableBalance ??
-                                    "0.0",
+                                balance: walletController.availableBalance,
                                 title: "Wallet balance",
                                 canWithdraw: true,
                               ),
                               WalletWidget(
-                                balance: walletController
-                                        .walletBalanceData?.pendingBalance ??
-                                    "0.0",
+                                balance: "0.0", // Pending balance no longer in API
                                 title: "Company commission",
                               ),
                               WalletWidget(
-                                balance: walletController
-                                        .walletBalanceData?.bonusBalance ??
-                                    "0.0",
+                                balance: walletController.bonusBalance,
                                 title: "Bonus balance",
                               ),
                             ],

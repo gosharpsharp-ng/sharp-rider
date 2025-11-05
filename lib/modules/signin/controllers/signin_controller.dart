@@ -44,29 +44,45 @@ class SignInController extends GetxController {
   signIn() async {
     if (signInFormKey.currentState!.validate()) {
       setLoadingState(true);
-      dynamic data = {
-        'login': signInWithEmail
-            ? loginController.text
-            : filledPhoneNumber?.completeNumber ?? '',
-        'password': passwordController.text,
-        "as_rider": true
-      };
-      APIResponse response = await authService.login(data);
-      showToast(
-          message: response.message, isError: response.status != "success");
-      setLoadingState(false);
-      if (response.status == "success") {
-        loginController.clear();
-        passwordController.clear();
-        filledPhoneNumber = null;
-        update();
-        final getStorage = GetStorage();
-        getStorage.write("token", response.data['access_token']);
-        Get.put(WalletController());
-        Get.put(DashboardController());
-        Get.put(SettingsController());
-        Get.put(DeliveriesController());
-        Get.toNamed(Routes.APP_NAVIGATION);
+      try {
+        dynamic data = {
+          'login': signInWithEmail
+              ? loginController.text
+              : filledPhoneNumber?.completeNumber ?? '',
+          'password': passwordController.text,
+          "as_rider": true
+        };
+        APIResponse response = await authService.login(data);
+        showToast(
+            message: response.message, isError: response.status != "success");
+
+        if (response.status.toLowerCase() == "success") {
+          print("*****************************************************************************");
+          print("Login successful - Token: ${response.data['access_token'] ?? response.data['auth_token']}");
+          print("*****************************************************************************");
+
+          loginController.clear();
+          passwordController.clear();
+          filledPhoneNumber = null;
+          update();
+          final getStorage = GetStorage();
+          // Try both possible token field names
+          final token = response.data['access_token'] ?? response.data['auth_token'];
+          getStorage.write("token", token);
+
+          // Initialize controllers like sharp-vendor does
+          Get.put(SettingsController());
+          Get.put(DeliveriesController());
+          Get.toNamed(Routes.APP_NAVIGATION);
+        }
+      } catch (e) {
+        print("Error during sign in: $e");
+        showToast(
+            message: "An unexpected error occurred. Please try again.",
+            isError: true);
+      } finally {
+        // Always reset loading state, even if an error occurs
+        setLoadingState(false);
       }
     }
   }

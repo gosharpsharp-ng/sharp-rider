@@ -18,9 +18,11 @@ class TransactionsScreen extends StatelessWidget {
           onRefresh: () async {
             await walletController.getTransactions();
           },
-          child: walletController.isLoading &&
+          child: walletController.fetchingTransactions &&
                   walletController.transactions.isEmpty
-              ? const Center(child: CircularProgressIndicator())
+              ? SingleChildScrollView(
+                  child: SkeletonLoaders.transactionItem(count: 5),
+                )
               : ListView(
                   controller: walletController.transactionsScrollController,
                   padding:
@@ -32,9 +34,7 @@ class TransactionsScreen extends StatelessWidget {
                             kToolbarHeight -
                             MediaQuery.of(context).padding.top,
                         child: Center(
-                            child: walletController.fetchingTransactions
-                                ? customText("Loading...")
-                                : customText("No transactions yet")),
+                            child: customText("No transactions yet")),
                       )
                     else ...[
                       ...List.generate(

@@ -21,7 +21,7 @@ class SocketService extends GetxService {
 
   void _initializeSocket() {
     socket = IO.io(
-        'http://164.90.143.42:8082',
+        'http://socket.gosharpsharp.com/',
         IO.OptionBuilder()
             .setTransports(['websocket'])
             .enableAutoConnect()
@@ -35,127 +35,130 @@ class SocketService extends GetxService {
   void _setupSocketListeners() {
     socket
       ..onConnect((_) {
-        log('Socket Connected');
+        log('🟢 Socket Connected to http://socket.gosharpsharp.com/');
 
         isConnected.value = true;
-        // Ensure rider rejoin
+        // Join rider room and start emitting location
         if (isConnected.value == true) {
-          _rejoinRooms();
           if (!_hasJoinedRiderRoom) joinRiderRoom();
           startListeningAndEmitting();
-          riderConnect({
-            "riderId": "${_userProfile.id}",
-            "name": "${_userProfile.fname} ${_userProfile.lname}",
-            "courierType": _userProfile.vehicle?.courierType ?? "",
-            "status": "available"
-          });
         }
       })
       ..onDisconnect((_) {
-        log('Socket Disconnected');
+        log('🔴 Socket Disconnected');
         isConnected.value = false;
       })
       ..onReconnect((_) {
-        log('Socket Reconnected');
+        log('🟡 Socket Reconnected');
         isConnected.value = true;
-        _rejoinRooms();
+        // Rejoin rider room on reconnection
         if (!_hasJoinedRiderRoom) joinRiderRoom();
-        riderConnect({
-          "riderId": "${_userProfile.id}",
-          "name": "${_userProfile.fname} ${_userProfile.lname}",
-          "courierType":
-              _userProfile.vehicle?.courierType ?? {"courierType": ""},
-          "status": "available"
-        });
       })
-      ..onError((error) => log('Socket Error: $error'))
-      ..onConnectError((error) => log('Socket Connect Error: $error'));
+      ..onError((error) => log('❌ Socket Error: $error'))
+      ..onConnectError((error) => log('❌ Socket Connect Error: $error'));
   }
 
+  /// Join rider delivery room
+  /// Emits to: "delivery:join" with payload { "driverId": riderId, "courierTypeId": courierTypeId }
   void joinRiderRoom() {
     if (isConnected.value) {
-      joinRoom(roomId: _userProfile.vehicle?.courierType.name ?? "");
-      _hasJoinedRiderRoom = true;
-      riderConnect({
-        "riderId": "${_userProfile.id}",
-        "name": "${_userProfile.fname} ${_userProfile.lname}",
-        "courierType": _userProfile.vehicle?.courierType ?? "",
-        "status": "available"
+      final courierTypeId = _userProfile.vehicle?.courierType?.id ?? 1;
+      socket.emit('delivery:join', {
+        'driverId': _userProfile.id,
+        'courierTypeId': courierTypeId,
       });
+      _hasJoinedRiderRoom = true;
+      log('🚴 Rider joined delivery room - Driver ID: ${_userProfile.id}, Courier Type ID: $courierTypeId');
     }
   }
 
-  listenForDeliveries(Function(dynamic) onNewDelivery) {
-    socket.on('shipment_events', onNewDelivery);
+  /// Listen for new delivery requests
+  /// Event: "delivery:new"
+  /// Data: Full delivery object with pickup/destination locations
+  void listenForDeliveries(Function(dynamic) onNewDelivery) {
+    socket.on('delivery:new', onNewDelivery);
   }
 
+  /// Emit rider's current location to join/update in delivery room
+  /// Emits to: "delivery:location-update" with payload { driverId, location: {latitude, longitude, degrees, timestamp} }
+  /// This allows the rider to receive new delivery requests based on their location
   void emitRiderLocationUpdateByCurrierType(Position position) {
     if (isConnected.value) {
       dynamic data = {
-        'room': _userProfile.vehicle?.courierType.name ?? "",
-        'event': 'rider_location',
-        'data': {
-          'location': {
-            'lon': position.latitude,
-            'lat': position.longitude,
-          },
-          'user_id': _userProfile.id,
-          'name': "${_userProfile.fname} ${_userProfile.lname}"
+        "driverId": _userProfile.id,
+        "location": {
+          "latitude": position.latitude,
+          "longitude": position.longitude,
+          "degrees": position.heading,
+          "timestamp": DateTime.now().toUtc().toIso8601String(),
         }
       };
-      socket.emit('broadcast_to_room', data);
+      socket.emit('delivery:location-update', data);
     }
   }
 
   void emitParcelRiderLocationUpdateOnce(LatLng position,
       {required DeliveryModel deliveryModel, required double locationDegrees}) {
     if (isConnected.value) {
-      dynamic data = {
-        'room': deliveryModel.trackingId,
-        'event': 'rider_tracking',
-        'data': {
-          'lon': position.longitude,
-          'lat': position.latitude,
-          'status': deliveryModel.status,
-          'degrees': locationDegrees
-        }
-      };
-      socket.emit('broadcast_to_room', data);
+      // Only emit to delivery tracking location update event
+      emitDeliveryTrackingLocationUpdate(
+        trackingId: deliveryModel.trackingId,
+        latitude: position.latitude,
+        longitude: position.longitude,
+        degrees: locationDegrees,
+      );
     }
   }
 
   void emitParcelRiderLocationUpdate(LatLng position,
       {required DeliveryModel deliveryModel, required double locationDegrees}) {
     if (isConnected.value) {
-      dynamic data = {
-        'room': deliveryModel.trackingId,
-        'event': 'rider_tracking',
-        'data': {
-          'lon': position.longitude,
-          'lat': position.latitude,
-          'status': deliveryModel.status,
-          'degrees': locationDegrees,
-          'user_id': _userProfile.id,
-          'name': "${_userProfile.fname} ${_userProfile.lname}",
-        }
-      };
-      socket.emit('broadcast_to_room', data);
+      // Only emit to delivery tracking location update event
+      emitDeliveryTrackingLocationUpdate(
+        trackingId: deliveryModel.trackingId,
+        latitude: position.latitude,
+        longitude: position.longitude,
+        degrees: locationDegrees,
+      );
     }
   }
 
-  // Connect Rider to the riding list so clients can see
-  riderConnect(
-    Map<String, dynamic> data,
-  ) async {
+  /// Emit rider's location during active delivery for customer tracking
+  /// Emits to: "delivery:tracking-location-update" with payload { trackingId, location: {latitude, longitude, degrees} }
+  /// This is used by customers to track the rider's real-time location during delivery
+  void emitDeliveryTrackingLocationUpdate({
+    required String trackingId,
+    required double latitude,
+    required double longitude,
+    required double degrees,
+  }) {
+    if (isConnected.value) {
+      dynamic data = {
+        "trackingId": trackingId,
+        "location": {
+          "latitude": latitude,
+          "longitude": longitude,
+          "degrees": degrees,
+        }
+      };
+      socket.emit('delivery:tracking-location-update', data);
+      log('📍 Emitted tracking location for: $trackingId');
+    }
+  }
+
+  // ==================== LEGACY METHODS (kept for backward compatibility) ====================
+
+  // DEPRECATED: No longer used with new WebSocket structure
+  @Deprecated('No longer used - rider joins via delivery:join event')
+  riderConnect(Map<String, dynamic> data) async {
     if (isConnected.value) {
       socket.emit("rider_connect", data);
     }
   }
 
-  // Update Rider's Availability Status
-  updateRiderAvailabilityStatus(
-    String status,
-  ) async {
+  // DEPRECATED: Status management moved to API
+  @Deprecated('Status updates should use API instead')
+  updateRiderAvailabilityStatus(String status) async {
     if (isConnected.value) {
       socket.emit("update_status", status);
     }
@@ -170,36 +173,29 @@ class SocketService extends GetxService {
     }
   }
 
+  @Deprecated('Use specific delivery tracking methods instead')
   void listenForParcelLocationUpdate(
       {required String roomId, required Function(dynamic) onLocationUpdate}) {
     socket.on(roomId, onLocationUpdate);
   }
 
+  @Deprecated('Use delivery:join event instead')
   void joinRoom({required String roomId}) {
     if (isConnected.value) {
       socket.emit('join_room', roomId);
-      _joinedRooms.add(roomId);
     }
   }
 
+  @Deprecated('Use specific leave methods instead')
   void leaveRoom({required String roomId}) {
     if (isConnected.value) {
       socket.emit('leave_room', roomId);
-      _joinedRooms.remove(roomId);
     }
   }
 
-  void _rejoinRooms() {
-    for (var room in _joinedRooms) {
-      socket.emit('join_room', room);
-    }
-  }
+  // ==================== CLEANUP ====================
 
   void disconnectAndLeaveRooms() {
-    for (var room in _joinedRooms) {
-      socket.emit('leave_room', room);
-    }
-    _joinedRooms.clear();
     _hasJoinedRiderRoom = false;
     socket.disconnect();
   }

@@ -26,8 +26,8 @@ class SettingsController extends GetxController {
     APIResponse response = await profileService.getProfile();
     setLoadingState(false);
     if (response.status == "success") {
-      userProfile = UserProfile.fromJson(response.data);
-      reactiveUserProfile.value = UserProfile.fromJson(response.data);
+      userProfile = UserProfile.fromJson(response.data['user']);
+      reactiveUserProfile.value = UserProfile.fromJson(response.data['user']);
       update();
       ZegoUIKitPrebuiltCallInvitationService().init(
         appID: int.parse(Secret.zegoCloudAppID),
@@ -166,6 +166,9 @@ class SettingsController extends GetxController {
 
   final ImagePicker _picker = ImagePicker();
   File? userProfilePicture;
+  String? userProfilePictureBase64;
+
+  // Sharp-vendor pattern: Pick, crop, convert to base64, upload
   pickUserProfilePicture({required bool pickFromCamera}) async {
     XFile? photo;
     if (pickFromCamera) {
@@ -174,23 +177,37 @@ class SettingsController extends GetxController {
       photo = await _picker.pickImage(source: ImageSource.gallery);
     }
     if (photo != null) {
-      final croppedPhoto = await cropImage(photo);
-      userProfilePicture = File(croppedPhoto.path);
-      update();
-      setLoadingProfileAvatarState(true);
-      dynamic data = {'avatar': userProfilePicture};
-      APIResponse response = await profileService.updateProfile(data);
-      if (response.status == "success") {
-        getProfile();
-        showAnyBottomSheet(
-            isControlled: false,
-            child: const ProfileUpdateSuccessBottomSheet());
-      } else {
-        showToast(
-            message: response.message, isError: response.status != "success");
+      try {
+        // Crop the image
+        final croppedPhoto = await cropImage(photo);
+
+        // Convert to base64 for API upload
+        userProfilePictureBase64 = await convertImageToBase64(croppedPhoto.path);
+
+        // Keep file for local display
+        userProfilePicture = File(croppedPhoto.path);
+        update();
+
+        // Upload to server with base64
+        setLoadingProfileAvatarState(true);
+        dynamic data = {'avatar': userProfilePictureBase64};
+        APIResponse response = await profileService.updateProfile(data);
+
+        if (response.status == "success") {
+          getProfile();
+          showAnyBottomSheet(
+              isControlled: false,
+              child: const ProfileUpdateSuccessBottomSheet());
+        } else {
+          showToast(
+              message: response.message, isError: response.status != "success");
+        }
+      } catch (e) {
+        showToast(message: "Error updating avatar: $e", isError: true);
+      } finally {
+        setLoadingProfileAvatarState(false);
       }
     }
-    setLoadingProfileAvatarState(false);
   }
 
   bool _isLoadingVehicle = false;
@@ -255,12 +272,80 @@ class SettingsController extends GetxController {
     update();
   }
 
+  // Sharp-vendor pattern: Vehicle images with base64 encoding
+  File? vehicleInteriorPhoto;
+  File? vehicleExteriorPhoto;
+  String? vehicleInteriorPhotoBase64;
+  String? vehicleExteriorPhotoBase64;
+
+  Future<void> pickVehicleInteriorPhoto({required bool pickFromCamera}) async {
+    try {
+      XFile? photo;
+      if (pickFromCamera) {
+        photo = await _picker.pickImage(source: ImageSource.camera);
+      } else {
+        photo = await _picker.pickImage(source: ImageSource.gallery);
+      }
+
+      if (photo != null) {
+        final croppedPhoto = await cropImage(photo);
+        final compressed = await ImageCompressionService.compressImage(
+          XFile(croppedPhoto.path),
+        );
+        vehicleInteriorPhotoBase64 = await convertImageToBase64(compressed.path);
+        vehicleInteriorPhoto = File(compressed.path);
+        update();
+      }
+    } catch (e) {
+      showToast(message: "Error picking image: $e", isError: true);
+    }
+  }
+
+  Future<void> pickVehicleExteriorPhoto({required bool pickFromCamera}) async {
+    try {
+      XFile? photo;
+      if (pickFromCamera) {
+        photo = await _picker.pickImage(source: ImageSource.camera);
+      } else {
+        photo = await _picker.pickImage(source: ImageSource.gallery);
+      }
+
+      if (photo != null) {
+        final croppedPhoto = await cropImage(photo);
+        final compressed = await ImageCompressionService.compressImage(
+          XFile(croppedPhoto.path),
+        );
+        vehicleExteriorPhotoBase64 = await convertImageToBase64(compressed.path);
+        vehicleExteriorPhoto = File(compressed.path);
+        update();
+      }
+    } catch (e) {
+      showToast(message: "Error picking image: $e", isError: true);
+    }
+  }
+
+  void removeVehicleInteriorPhoto() {
+    vehicleInteriorPhoto = null;
+    vehicleInteriorPhotoBase64 = null;
+    update();
+  }
+
+  void removeVehicleExteriorPhoto() {
+    vehicleExteriorPhoto = null;
+    vehicleExteriorPhotoBase64 = null;
+    update();
+  }
+
   void clearVehicleTextFields() {
     vehicleCourierTypeController.clear();
     vehicleBrandController.clear();
     vehicleModelController.clear();
     vehicleRegNumController.clear();
     vehicleYearController.clear();
+    vehicleInteriorPhoto = null;
+    vehicleExteriorPhoto = null;
+    vehicleInteriorPhotoBase64 = null;
+    vehicleExteriorPhotoBase64 = null;
   }
 
   final vehicleFormKey = GlobalKey<FormState>();
@@ -270,33 +355,49 @@ class SettingsController extends GetxController {
   TextEditingController vehicleRegNumController = TextEditingController();
   TextEditingController vehicleYearController = TextEditingController();
   final getStorage = GetStorage();
+
+  // Sharp-vendor pattern: Complete vehicle data with images
   addVehicleInfo() async {
     if (vehicleFormKey.currentState!.validate()) {
       setLoadingVehicleState(true);
 
-      dynamic data = {
-        "courier_type_id": selectedCourierType!.id,
-        // "brand": vehicleBrandController.text,
-        // "model": vehicleModelController.text,
-        "reg_num": vehicleRegNumController.text,
-        // "year": vehicleYearController.text
-      };
-      APIResponse response = await profileService.addVehicle(data);
+      try {
+        dynamic data = {
+          "courier_type_id": selectedCourierType!.id,
+          "brand": vehicleBrandController.text,
+          "model": vehicleModelController.text,
+          "reg_num": vehicleRegNumController.text,
+          "year": int.tryParse(vehicleYearController.text),
+        };
 
-      setLoadingVehicleState(false);
-
-      if (response.status == "success") {
-        showToast(
-          message: response.message,
-        );
-        getProfile();
-        clearVehicleTextFields();
-        Navigator.pop(Get.context!);
-      } else {
-        if (getStorage.read("token") != null) {
-          showToast(
-              message: response.message, isError: response.status != "success");
+        // Add interior photo if available (optional)
+        if (vehicleInteriorPhotoBase64 != null) {
+          data['interior_photo'] = vehicleInteriorPhotoBase64;
         }
+
+        // Add exterior photo if available (optional)
+        if (vehicleExteriorPhotoBase64 != null) {
+          data['exterior_photo'] = vehicleExteriorPhotoBase64;
+        }
+
+        APIResponse response = await profileService.addVehicle(data);
+
+        if (response.status == "success") {
+          showToast(message: response.message);
+          getProfile();
+          getMyVehicle();
+          clearVehicleTextFields();
+          Navigator.pop(Get.context!);
+        } else {
+          if (getStorage.read("token") != null) {
+            showToast(
+                message: response.message, isError: response.status != "success");
+          }
+        }
+      } catch (e) {
+        showToast(message: "Error adding vehicle: $e", isError: true);
+      } finally {
+        setLoadingVehicleState(false);
       }
     }
   }
@@ -371,35 +472,123 @@ class SettingsController extends GetxController {
     }
   }
 
+  // Sharp-vendor pattern: License images with base64 encoding
+  File? licenseFrontImage;
+  File? licenseBackImage;
+  String? licenseFrontImageBase64;
+  String? licenseBackImageBase64;
+
+  Future<void> pickLicenseFrontImage({required bool pickFromCamera}) async {
+    try {
+      XFile? photo;
+      if (pickFromCamera) {
+        photo = await _picker.pickImage(source: ImageSource.camera);
+      } else {
+        photo = await _picker.pickImage(source: ImageSource.gallery);
+      }
+
+      if (photo != null) {
+        final croppedPhoto = await cropImage(photo);
+        final compressed = await ImageCompressionService.compressImage(
+          XFile(croppedPhoto.path),
+        );
+        licenseFrontImageBase64 = await convertImageToBase64(compressed.path);
+        licenseFrontImage = File(compressed.path);
+        update();
+      }
+    } catch (e) {
+      showToast(message: "Error picking image: $e", isError: true);
+    }
+  }
+
+  Future<void> pickLicenseBackImage({required bool pickFromCamera}) async {
+    try {
+      XFile? photo;
+      if (pickFromCamera) {
+        photo = await _picker.pickImage(source: ImageSource.camera);
+      } else {
+        photo = await _picker.pickImage(source: ImageSource.gallery);
+      }
+
+      if (photo != null) {
+        final croppedPhoto = await cropImage(photo);
+        final compressed = await ImageCompressionService.compressImage(
+          XFile(croppedPhoto.path),
+        );
+        licenseBackImageBase64 = await convertImageToBase64(compressed.path);
+        licenseBackImage = File(compressed.path);
+        update();
+      }
+    } catch (e) {
+      showToast(message: "Error picking image: $e", isError: true);
+    }
+  }
+
+  void removeLicenseFrontImage() {
+    licenseFrontImage = null;
+    licenseFrontImageBase64 = null;
+    update();
+  }
+
+  void removeLicenseBackImage() {
+    licenseBackImage = null;
+    licenseBackImageBase64 = null;
+    update();
+  }
+
   void clearLicenseTextFields() {
     licenseNumberController.clear();
     licenseIssuedDateController.clear();
     licenseExpiryDateController.clear();
+    licenseFrontImage = null;
+    licenseBackImage = null;
+    licenseFrontImageBase64 = null;
+    licenseBackImageBase64 = null;
   }
 
   final vehicleLicenseFormKey = GlobalKey<FormState>();
   TextEditingController licenseNumberController = TextEditingController();
   TextEditingController licenseIssuedDateController = TextEditingController();
   TextEditingController licenseExpiryDateController = TextEditingController();
+
+  // Sharp-vendor pattern: Complete license data with images
   addVehicleLicense() async {
     if (vehicleLicenseFormKey.currentState!.validate()) {
       setLoadingVehicleState(true);
 
-      dynamic data = {
-        "number": licenseNumberController.text,
-        "issued_at": licenseIssuedDateController.text,
-        "expiry_date": licenseExpiryDateController.text,
-      };
-      APIResponse response = await profileService.addLicense(data);
+      try {
+        dynamic data = {
+          "number": licenseNumberController.text,
+          "issued_at": licenseIssuedDateController.text,
+          "expiry_date": licenseExpiryDateController.text,
+        };
 
-      setLoadingVehicleState(false);
-      showToast(
-          message: response.message, isError: response.status != "success");
-      if (response.status == "success") {
-        clearLicenseTextFields();
-        getMyVehicleLicense();
-        getProfile();
-        Navigator.pop(Get.context!);
+        // Add front image if available (optional)
+        if (licenseFrontImageBase64 != null) {
+          data['front_img'] = licenseFrontImageBase64;
+        }
+
+        // Add back image if available (optional)
+        if (licenseBackImageBase64 != null) {
+          data['back_img'] = licenseBackImageBase64;
+        }
+
+        APIResponse response = await profileService.addLicense(data);
+
+        if (response.status == "success") {
+          showToast(message: response.message);
+          clearLicenseTextFields();
+          getMyVehicleLicense();
+          getProfile();
+          Navigator.pop(Get.context!);
+        } else {
+          showToast(
+              message: response.message, isError: response.status != "success");
+        }
+      } catch (e) {
+        showToast(message: "Error adding license: $e", isError: true);
+      } finally {
+        setLoadingVehicleState(false);
       }
     }
   }

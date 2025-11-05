@@ -4,7 +4,7 @@ class ProfileService extends CoreService {
   Future<ProfileService> init() async => this;
 
   Future<APIResponse> getProfile() async {
-    return await fetch("/me");
+    return await fetch("/riders/profile");
   }
 
   Future<APIResponse> getCourierTypes() async {
@@ -12,40 +12,40 @@ class ProfileService extends CoreService {
   }
 
   Future<APIResponse> updateProfile(dynamic data) async {
-    return await formUpdate("/me", data);
+    return await formUpdate("/riders/profile", data);
   }
 
   Future<APIResponse> getNotifications(dynamic data) async {
     return await fetch(
-        "/me/notifications?page=${data['page']}&per_page=${data['per_page']}");
+        "/riders/notifications?page=${data['page']}&per_page=${data['per_page']}");
   }
 
   Future<APIResponse> getRiderStats() async {
-    return await fetch("/me/stats");
+    return await fetch("/riders/stats");
   }
 
   Future<APIResponse> getRiderRatingStats() async {
-    return await fetch("/me/rate-stats");
+    return await fetch("/riders/rate-stats");
   }
 
   Future<APIResponse> getNotificationById(dynamic data) async {
-    return await fetch("/me/notifications/${data['id']}");
+    return await fetch("/riders/notifications/${data['id']}");
   }
 
   Future<APIResponse> addVehicle(dynamic data) async {
-    return await send("/me/vehicle", data);
+    return await send("/riders/vehicle", data);
   }
 
   Future<APIResponse> getVehicle() async {
-    return await fetch("/me/vehicle");
+    return await fetch("/riders/vehicle");
   }
 
   Future<APIResponse> addLicense(dynamic data) async {
-    return await send("/me/driver-license", data);
+    return await send("/riders/driver-license", data);
   }
 
   Future<APIResponse> getLicense() async {
-    return await fetch("/me/driver-license");
+    return await fetch("/riders/driver-license");
   }
 
   Future<APIResponse> changePassword(dynamic data) async {
@@ -53,31 +53,22 @@ class ProfileService extends CoreService {
   }
 
   Future<APIResponse> deleteAccount(dynamic data) async {
-    return await remove("/me", data);
-  }
-
-  // Bank Account Management
-  Future<APIResponse> updateBankAccount(dynamic data) async {
-    return await send("/riders/bank-account", data);
-  }
-
-  Future<APIResponse> getBankAccount() async {
-    return await fetch("/riders/bank-account");
+    return await remove("/riders/profile", data);
   }
 
   // Payout Management
   Future<APIResponse> getPayoutHistory(dynamic data) async {
     return await fetch(
-      "/me/payout/history?page=${data['page']}&per_page=${data['per_page']}",
+      "/riders/payout/history?page=${data['page']}&per_page=${data['per_page']}",
     );
   }
 
   Future<APIResponse> getPayoutById(dynamic data) async {
-    return await fetch("/me/payout/${data['id']}");
+    return await fetch("/riders/payout/${data['id']}");
   }
 
   Future<APIResponse> submitPayoutRequest(dynamic data) async {
-    return await send("/me/wallet/payout", data);
+    return await send("/riders/wallet/payout", data);
   }
 
   // FAQ
@@ -87,10 +78,5 @@ class ProfileService extends CoreService {
 
   Future<APIResponse> getFAQById(dynamic data) async {
     return await fetch("/faqs/${data['id']}");
-  }
-
-  // Transactions (additional methods beyond WalletsService)
-  Future<APIResponse> getTransactionById(dynamic data) async {
-    return await fetch("/me/transactions/${data['id']}");
   }
 }

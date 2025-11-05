@@ -1,5 +1,6 @@
 import 'package:gorider/middlewares/guard_middleware.dart';
 import 'package:gorider/core/utils/exports.dart';
+import 'package:gorider/modules/settings/bindings/faq_bindings.dart';
 part 'app_routes.dart';
 
 class AppPages {
@@ -10,194 +11,195 @@ class AppPages {
 
   static final routes = [
     GetPage(
-      name: _Paths.SPLASH,
+      name: Routes.SPLASH,
       page: () => const SplashScreen(),
       binding: SplashBindings(),
     ),
     GetPage(
-      name: _Paths.ONBOARDING,
+      name: Routes.ONBOARDING,
       page: () => const OnboardingScreen(),
       binding: OnboardingBindings(),
     ),
 
     //
     GetPage(
-      name: _Paths.SIGNUP_SCREEN,
+      name: Routes.SIGNUP_SCREEN,
       page: () => const SignUpScreen(),
       binding: SignUpBindings(),
     ),
     GetPage(
-      name: _Paths.SIGNUP_OTP_SCREEN,
+      name: Routes.SIGNUP_OTP_SCREEN,
       page: () => SignUpOtpScreen(),
       binding: SignUpBindings(),
     ),
     GetPage(
-      name: _Paths.SIGN_IN,
+      name: Routes.SIGN_IN,
       page: () => const SignInScreen(),
       binding: SignInBindings(),
     ),
     GetPage(
-      name: _Paths.RESET_PASSWORD_EMAIL_ENTRY_SCREEN,
+      name: Routes.RESET_PASSWORD_EMAIL_ENTRY_SCREEN,
       page: () => const ResetPasswordEmailEntry(),
       binding: PasswordResetBinding(),
     ),
     GetPage(
-      name: _Paths.RESET_PASSWORD_OTP_SCREEN,
+      name: Routes.RESET_PASSWORD_OTP_SCREEN,
       page: () => ResetPasswordOtpScreen(),
       binding: PasswordResetBinding(),
     ),
     GetPage(
-      name: _Paths.RESET_PASSWORD_NEW_PASSWORD_SCREEN,
+      name: Routes.RESET_PASSWORD_NEW_PASSWORD_SCREEN,
       page: () => const NewPasswordScreen(),
       binding: PasswordResetBinding(),
     ),
     GetPage(
-      name: _Paths.SIGN_IN,
-      page: () => const SignInScreen(),
-      binding: SignInBindings(),
-    ),
-    GetPage(
-      name: _Paths.APP_NAVIGATION,
+      name: Routes.APP_NAVIGATION,
       page: () => AppNavigationScreen(),
       middlewares: [AuthMiddleware()],
       binding: AppNavigationBinding(),
     ),
     GetPage(
-      name: _Paths.DASHBOARD,
+      name: Routes.DASHBOARD,
       page: () => const DashboardScreen(),
       middlewares: [AuthMiddleware()],
       binding: DashboardBindings(),
     ),
     GetPage(
-      name: _Paths.NOTIFICATIONS_HOME,
+      name: Routes.NOTIFICATIONS_HOME,
       page: () => const NotificationsHomeScreen(),
       middlewares: [AuthMiddleware()],
       binding: NotificationsBindings(),
     ),
     GetPage(
-      name: _Paths.NOTIFICATIONS_DETAILS,
+      name: Routes.NOTIFICATIONS_DETAILS,
       page: () => const NotificationDetailsScreen(),
       middlewares: [AuthMiddleware()],
       binding: NotificationsBindings(),
     ),
     GetPage(
-      name: _Paths.DELIVERIES_HOME,
+      name: Routes.DELIVERIES_HOME,
       page: () => const DeliveriesHistoryScreen(),
       middlewares: [AuthMiddleware()],
       binding: DeliveriesBindings(),
     ),
     GetPage(
-      name: _Paths.RIDER_PERFORMANCE_SCREEN,
+      name: Routes.RIDER_PERFORMANCE_SCREEN,
       page: () => const PerformanceScreen(),
       middlewares: [AuthMiddleware()],
       binding: DeliveriesBindings(),
     ),
     GetPage(
-      name: _Paths.DELIVERY_DETAILS,
+      name: Routes.DELIVERY_DETAILS,
       page: () => const DeliveryDetailsScreen(),
       middlewares: [AuthMiddleware()],
       binding: DeliveriesBindings(),
     ),
     GetPage(
-      name: _Paths.DELIVERY_INVOICE_DETAILS,
+      name: Routes.DELIVERY_INVOICE_DETAILS,
       page: () => const DeliveryInvoiceDetailsScreen(),
       middlewares: [AuthMiddleware()],
       binding: DeliveriesBindings(),
     ),
     GetPage(
-      name: _Paths.DELIVERY_TRACKING_SCREEN,
+      name: Routes.DELIVERY_TRACKING_SCREEN,
       page: () => const DeliveryTrackingScreen(),
       middlewares: [AuthMiddleware()],
       binding: DeliveriesBindings(),
     ),
     GetPage(
-      name: _Paths.DELIVERY_SEARCH_SCREEN,
+      name: Routes.DELIVERY_SEARCH_SCREEN,
       page: () => const SearchDeliveriesScreen(),
       middlewares: [AuthMiddleware()],
       binding: DeliveriesBindings(),
     ),
     GetPage(
-      name: _Paths.DELIVERY_PRE_ACCEPTANCE_DETAILS,
+      name: Routes.DELIVERY_PRE_ACCEPTANCE_DETAILS,
       page: () => const DeliveryPreAcceptanceDetailsScreen(),
       middlewares: [AuthMiddleware()],
       binding: DeliveriesBindings(),
     ),
     GetPage(
-      name: _Paths.DELIVERY_PACKAGE_INFORMATION_UPLOAD_SCREEN,
+      name: Routes.DELIVERY_PACKAGE_INFORMATION_UPLOAD_SCREEN,
       page: () => const DeliveryPackageInformationUploadScreen(),
       middlewares: [AuthMiddleware()],
       binding: DeliveriesBindings(),
     ),
 
     GetPage(
-      name: _Paths.SETTINGS_HOME_SCREEN,
+      name: Routes.SETTINGS_HOME_SCREEN,
       page: () => const SettingsHomeScreen(),
       middlewares: [AuthMiddleware()],
       binding: SettingsBindings(),
     ),
     GetPage(
-      name: _Paths.EDIT_PROFILE_SCREEN,
+      name: Routes.EDIT_PROFILE_SCREEN,
       page: () => const EditProfileScreen(),
       middlewares: [AuthMiddleware()],
       binding: SettingsBindings(),
     ),
     GetPage(
-      name: _Paths.ADD_VEHICLE_SCREEN,
+      name: Routes.ADD_VEHICLE_SCREEN,
       page: () => const AddVehicleScreen(),
       middlewares: [AuthMiddleware()],
       binding: SettingsBindings(),
     ),
     GetPage(
-      name: _Paths.ADD_LICENSE_SCREEN,
+      name: Routes.ADD_LICENSE_SCREEN,
       page: () => const AddLicenseScreen(),
       middlewares: [AuthMiddleware()],
       binding: SettingsBindings(),
     ),
     GetPage(
-      name: _Paths.VEHICLE_AND_LICENSE_DETAILS_SCREEN,
+      name: Routes.VEHICLE_AND_LICENSE_DETAILS_SCREEN,
       page: () => const VehicleAndLicenseDetailsScreen(),
       middlewares: [AuthMiddleware()],
       binding: SettingsBindings(),
     ),
     GetPage(
-      name: _Paths.CHANGE_PASSWORD_SCREEN,
+      name: Routes.CHANGE_PASSWORD_SCREEN,
       page: () => const ChangePasswordScreen(),
       middlewares: [AuthMiddleware()],
       binding: SettingsBindings(),
     ),
     GetPage(
-      name: _Paths.FAQS_SCREEN,
+      name: Routes.FAQS_SCREEN,
       page: () => const FaqScreen(),
       middlewares: [AuthMiddleware()],
-      binding: SettingsBindings(),
+      binding: FaqBindings(),
     ),
     GetPage(
-      name: _Paths.TRANSACTIONS_SCREEN,
+      name: Routes.TRANSACTIONS_SCREEN,
       page: () => const TransactionsScreen(),
       middlewares: [AuthMiddleware()],
       binding: WalletBindings(),
     ),
     GetPage(
-      name: _Paths.TRANSACTION_DETAILS_SCREEN,
+      name: Routes.TRANSACTION_DETAILS_SCREEN,
       page: () => const TransactionDetailsScreen(),
       middlewares: [AuthMiddleware()],
       binding: WalletBindings(),
     ),
     GetPage(
-      name: _Paths.ADD_WITHDRAWAL_ACCOUNT_SCREEN,
-      page: () => const AddWithdrawalAccountScreen(),
+      name: Routes.PAYOUT_HISTORY_SCREEN,
+      page: () => const PayoutHistoryScreen(),
       middlewares: [AuthMiddleware()],
-      binding: WalletBindings(),
+      binding: PayoutBindings(),
     ),
     GetPage(
-      name: _Paths.WITHDRAWAL_AMOUNT_SCREEN,
-      page: () => const WithdrawalAmountScreen(),
+      name: Routes.PAYOUT_REQUEST_SCREEN,
+      page: () => const PayoutRequestScreen(),
+      middlewares: [AuthMiddleware()],
+      binding: PayoutBindings(),
+    ),
+    GetPage(
+      name: Routes.ADD_WITHDRAWAL_ACCOUNT_SCREEN,
+      page: () => const AddWithdrawalAccountScreen(),
       middlewares: [AuthMiddleware()],
       binding: WalletBindings(),
     ),
 
     // GetPage(
-    //   name: _Paths.WEALTHMATE_TRANSACTION_DETAILS,
+    //   name: Routes.WEALTHMATE_TRANSACTION_DETAILS,
     //   page: () => const WealthTransactionDetailsView(),
     //   binding: WealthmateBindings(),
     //   middlewares: [

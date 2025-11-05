@@ -1,39 +1,26 @@
-import 'package:json_annotation/json_annotation.dart';
 import 'package:gorider/core/models/vehicle_model.dart';
+import 'package:gorider/core/models/wallet_model.dart';
 
-part 'user_profile_model.g.dart';
-
-@JsonSerializable()
 class UserProfile {
   final int id;
   final String? avatar;
   final String fname;
   final String lname;
   final String phone;
+  final String? dob;
   final String email;
-  final String role;
   final String status;
-  @JsonKey(name: 'referral_code')
   final String? referralCode;
-  @JsonKey(name: 'referred_by')
   final String? referredBy;
-  @JsonKey(name: 'last_login_at')
   final String? lastLoginAt;
-  @JsonKey(name: 'failed_login_attempts')
-  final int failedLoginAttempts;
-  @JsonKey(name: 'created_at')
-  final String createdAt;
-  @JsonKey(name: 'updated_at')
-  final String updatedAt;
-  @JsonKey(name: 'is_email_verified')
-  final bool isEmailVerified;
-  @JsonKey(name: 'is_phone_verified')
-  final bool isPhoneVerified;
-  @JsonKey(name: 'has_valid_driver_license')
-  final bool hasValidDriverLicense;
-  @JsonKey(name: 'has_verified_vehicle')
-  final bool hasVerifiedVehicle;
+  final int? failedLoginAttempts;
+  final String? deletedAt;
+  final String? createdAt;
+  final String? updatedAt;
+  final List<UserRole>? roles;
+  final List<dynamic>? permissions;
   final VehicleModel? vehicle;
+  final Wallet? wallet;
 
   UserProfile({
     required this.id,
@@ -41,26 +28,149 @@ class UserProfile {
     required this.fname,
     required this.lname,
     required this.phone,
+    this.dob,
     required this.email,
-    required this.role,
     required this.status,
     this.referralCode,
     this.referredBy,
     this.lastLoginAt,
-    required this.failedLoginAttempts,
-    required this.createdAt,
-    required this.updatedAt,
-    required this.isEmailVerified,
-    required this.hasValidDriverLicense,
-    required this.hasVerifiedVehicle,
-    required this.isPhoneVerified,
-    required this.vehicle,
+    this.failedLoginAttempts,
+    this.deletedAt,
+    this.createdAt,
+    this.updatedAt,
+    this.roles,
+    this.permissions,
+    this.vehicle,
+    this.wallet,
   });
 
-  // Factory method to create an instance from JSON
-  factory UserProfile.fromJson(Map<String, dynamic> json) =>
-      _$UserProfileFromJson(json);
+  factory UserProfile.fromJson(Map<String, dynamic> json) {
+    return UserProfile(
+      id: json['id'] as int,
+      avatar: json['avatar'] as String?,
+      fname: json['fname'] as String,
+      lname: json['lname'] as String,
+      phone: json['phone'] as String,
+      dob: json['dob'] as String?,
+      email: json['email'] as String,
+      status: json['status'] as String,
+      referralCode: json['referral_code'] as String?,
+      referredBy: json['referred_by'] as String?,
+      lastLoginAt: json['last_login_at'] as String?,
+      failedLoginAttempts: json['failed_login_attempts'] as int?,
+      deletedAt: json['deleted_at'] as String?,
+      createdAt: json['created_at'] as String?,
+      updatedAt: json['updated_at'] as String?,
+      roles: json['roles'] != null
+          ? (json['roles'] as List)
+              .map((e) => UserRole.fromJson(e as Map<String, dynamic>))
+              .toList()
+          : null,
+      permissions: json['permissions'] as List<dynamic>?,
+      vehicle: json['vehicle'] != null
+          ? VehicleModel.fromJson(json['vehicle'] as Map<String, dynamic>)
+          : null,
+      wallet: json['wallet'] != null
+          ? Wallet.fromJson(json['wallet'] as Map<String, dynamic>)
+          : null,
+    );
+  }
 
-  // Method to convert an instance to JSON
-  Map<String, dynamic> toJson() => _$UserProfileToJson(this);
+  Map<String, dynamic> toJson() {
+    return {
+      'id': id,
+      'avatar': avatar,
+      'fname': fname,
+      'lname': lname,
+      'phone': phone,
+      'dob': dob,
+      'email': email,
+      'status': status,
+      'referral_code': referralCode,
+      'referred_by': referredBy,
+      'last_login_at': lastLoginAt,
+      'failed_login_attempts': failedLoginAttempts,
+      'deleted_at': deletedAt,
+      'created_at': createdAt,
+      'updated_at': updatedAt,
+      'roles': roles?.map((e) => e.toJson()).toList(),
+      'permissions': permissions,
+      'vehicle': vehicle?.toJson(),
+      'wallet': wallet?.toJson(),
+    };
+  }
+}
+
+class UserRole {
+  final int id;
+  final String name;
+  final String guardName;
+  final String? deletedAt;
+  final String? createdAt;
+  final String? updatedAt;
+  final RolePivot? pivot;
+
+  UserRole({
+    required this.id,
+    required this.name,
+    required this.guardName,
+    this.deletedAt,
+    this.createdAt,
+    this.updatedAt,
+    this.pivot,
+  });
+
+  factory UserRole.fromJson(Map<String, dynamic> json) {
+    return UserRole(
+      id: json['id'] as int,
+      name: json['name'] as String,
+      guardName: json['guard_name'] as String,
+      deletedAt: json['deleted_at'] as String?,
+      createdAt: json['created_at'] as String?,
+      updatedAt: json['updated_at'] as String?,
+      pivot: json['pivot'] != null
+          ? RolePivot.fromJson(json['pivot'] as Map<String, dynamic>)
+          : null,
+    );
+  }
+
+  Map<String, dynamic> toJson() {
+    return {
+      'id': id,
+      'name': name,
+      'guard_name': guardName,
+      'deleted_at': deletedAt,
+      'created_at': createdAt,
+      'updated_at': updatedAt,
+      'pivot': pivot?.toJson(),
+    };
+  }
+}
+
+class RolePivot {
+  final String modelType;
+  final int modelId;
+  final int roleId;
+
+  RolePivot({
+    required this.modelType,
+    required this.modelId,
+    required this.roleId,
+  });
+
+  factory RolePivot.fromJson(Map<String, dynamic> json) {
+    return RolePivot(
+      modelType: json['model_type'] as String,
+      modelId: json['model_id'] as int,
+      roleId: json['role_id'] as int,
+    );
+  }
+
+  Map<String, dynamic> toJson() {
+    return {
+      'model_type': modelType,
+      'model_id': modelId,
+      'role_id': roleId,
+    };
+  }
 }

@@ -6,38 +6,46 @@ class NotificationsHomeScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return GetBuilder<NotificationsController>(
-        builder: (notificationsController) {
-      return Scaffold(
-        backgroundColor: AppColors.backgroundColor,
-        appBar: defaultAppBar(
-          bgColor: AppColors.backgroundColor,
-          title: "Notifications",
-          centerTitle: false,
-        ),
-        body: RefreshIndicator(
-          color: AppColors.primaryColor,
-          onRefresh: () async {
-            notificationsController.getNotifications();
-          },
-          child: Container(
-            padding: EdgeInsets.symmetric(horizontal: 8.sp, vertical: 12.sp),
-            height: 1.sh,
-            width: 1.sw,
-            child: Visibility(
-              visible: notificationsController.notifications.isNotEmpty,
-              replacement: Visibility(
-                visible: notificationsController.fetchingNotifications &&
-                    notificationsController.notifications.isEmpty,
-                replacement: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Center(
-                      child: customText("No Notifications yet"),
-                    ),
-                  ],
-                ),
-                child: Center(
-                  child: customText("Loading...."),
+      initState: (_) {
+        // Trigger fetch when screen is first built
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+          Get.find<NotificationsController>().getNotifications();
+        });
+      },
+      builder: (notificationsController) {
+        return Scaffold(
+          backgroundColor: AppColors.backgroundColor,
+          appBar: defaultAppBar(
+            bgColor: AppColors.backgroundColor,
+            title: "Notifications",
+            centerTitle: false,
+          ),
+          body: RefreshIndicator(
+            backgroundColor: AppColors.primaryColor,
+            color: AppColors.whiteColor,
+            onRefresh: () async {
+              notificationsController.getNotifications();
+            },
+            child: Container(
+              padding: EdgeInsets.symmetric(horizontal: 8.sp, vertical: 12.sp),
+              height: 1.sh,
+              width: 1.sw,
+              child: Visibility(
+                visible: notificationsController.notifications.isNotEmpty,
+                replacement: Visibility(
+                  visible: notificationsController.fetchingNotifications &&
+                      notificationsController.notifications.isEmpty,
+                  replacement: Column(
+                    mainAxisSize: MainAxisSize.max,
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Center(
+                        child: customText("No Notifications yet"),
+                      ),
+                    ],
+                  ),
+                child: SingleChildScrollView(
+                  child: SkeletonLoaders.notificationsPage(),
                 ),
               ),
               child: SingleChildScrollView(
@@ -70,7 +78,7 @@ class NotificationsHomeScreen extends StatelessWidget {
                       ),
                     ),
                     Visibility(
-                      visible: notificationsController.notifications ==
+                      visible: notificationsController.notifications.length ==
                           notificationsController.totalNotifications,
                       child: Center(
                         child: Padding(

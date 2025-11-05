@@ -142,10 +142,7 @@ class SettingsHomeScreen extends StatelessWidget {
                   ),
                   SettingsItem(
                     onPressed: () {
-                      showWebViewDialog(context, controller: webViewController,
-                          onDialogClosed: () {
-                        Get.back();
-                      }, title: "FAQ", url: "https://gosharpsharp.com/faq");
+                      Get.toNamed(Routes.FAQS_SCREEN);
                     },
                     title: "FAQS",
                     icon: SvgAssets.faqsIcon,
@@ -163,18 +160,18 @@ class SettingsHomeScreen extends StatelessWidget {
                     icon: SvgAssets.supportIcon,
                   ),
 
-                  SettingsItem(
-                    onPressed: () {
-                      showWebViewDialog(context, controller: webViewController,
-                          onDialogClosed: () {
-                        Get.back();
-                      },
-                          title: "Privacy Policy",
-                          url: "https://gosharpsharp.com/privacy");
-                    },
-                    title: "Privacy Policy",
-                    icon: SvgAssets.profileIcon,
-                  ),
+                  // SettingsItem(
+                  //   onPressed: () {
+                  //     showWebViewDialog(context, controller: webViewController,
+                  //         onDialogClosed: () {
+                  //       Get.back();
+                  //     },
+                  //         title: "Privacy Policy",
+                  //         url: "https://gosharpsharp.com/privacy");
+                  //   },
+                  //   title: "Privacy Policy",
+                  //   icon: SvgAssets.profileIcon,
+                  // ),
                   // SettingsItem(
                   //   onPressed: () {},
                   //   title: "Language",
@@ -191,8 +188,8 @@ class SettingsHomeScreen extends StatelessWidget {
                     },
                     title: "Logout",
                     icon: SvgAssets.logoutIcon,
-                    isShouting: true,
-                    isLast: true,
+                    // isShouting: true,
+                    // isLast: true,
                   ),
                   SettingsItem(
                     onPressed: () {
@@ -201,8 +198,8 @@ class SettingsHomeScreen extends StatelessWidget {
                     },
                     title: "Delete Account",
                     icon: SvgAssets.deleteIcon,
-                    isShouting: true,
-                    isLast: true,
+                    // isShouting: true,
+                    // isLast: true,
                   ),
                 ]),
               ],
