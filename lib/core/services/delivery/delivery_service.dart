@@ -25,4 +25,11 @@ class DeliveryService extends CoreService {
   Future<APIResponse> searchDeliveries(dynamic data) async {
     return await fetch("/riders/deliveries?search=${data['search']}");
   }
+
+  Future<APIResponse> verifyDeliveryOTP(dynamic data) async {
+    return await send(
+        "/riders/deliveries/${data['tracking_id']}/verify-otp",
+        {"otp": data['otp']}
+    );
+  }
 }
