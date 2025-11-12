@@ -12,6 +12,7 @@ void setupServiceLocator() {
   serviceLocator
       .registerLazySingleton<CourierTypeService>(() => CourierTypeService());
   serviceLocator.registerLazySingleton<WalletsService>(() => WalletsService());
+  serviceLocator.registerLazySingleton<PayoutService>(() => PayoutService());
 
   // serviceLocator.registerLazySingleton<User>(() => UserImpl());
 }

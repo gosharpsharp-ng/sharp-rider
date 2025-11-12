@@ -1114,19 +1114,28 @@ class _CustomOutlinedRoundedPhoneInputFieldState
                   borderRadius: BorderRadius.circular(
                     widget.isSearch ? 22.r : 8.r,
                   ),
-                  borderSide: BorderSide(color: widget.color, width: 1.0),
+                  borderSide: BorderSide(
+                    color: AppColors.primaryColor,
+                    width: 0.5,
+                  ),
                 ),
                 enabledBorder: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(
                     widget.isSearch ? 22.r : 8.r,
                   ),
-                  borderSide: BorderSide(color: widget.color, width: 0.5),
+                  borderSide: BorderSide(
+                    color: AppColors.greyColor.withOpacity(0.2),
+                    width: 1.0,
+                  ),
                 ),
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(
                     widget.isSearch ? 22.r : 8.r,
                   ),
-                  borderSide: BorderSide(color: widget.color, width: 0.5),
+                  borderSide: BorderSide(
+                    color: AppColors.greyColor.withAlpha(180),
+                    width: 0.5,
+                  ),
                 ),
                 errorBorder: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(
@@ -1345,21 +1354,24 @@ class _CustomRoundedPhoneInputFieldState
                 ),
                 enabledBorder: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(8.r),
-                  borderSide: const BorderSide(
-                    color: AppColors.transparent,
-                    width: 0,
+                  borderSide: BorderSide(
+                    color: AppColors.greyColor.withOpacity(0.2),
+                    width: 1.0,
                   ),
                 ),
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(8.r),
                   borderSide: BorderSide(
-                    color: AppColors.transparent,
-                    width: 0,
+                    color: AppColors.greyColor.withAlpha(180),
+                    width: 0.5,
                   ),
                 ),
                 errorBorder: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(8.r),
-                  borderSide: BorderSide(color: AppColors.redColor, width: 0.5),
+                  borderSide: const BorderSide(
+                    color: AppColors.redColor,
+                    width: 0.5,
+                  ),
                 ),
               ),
             ),

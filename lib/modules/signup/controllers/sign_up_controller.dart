@@ -498,7 +498,7 @@ class SignUpController extends GetxController {
   Future<void> sendOtp() async {
     setIsResendingOTPState(true);
     dynamic data = {
-      'login': emailController.text,
+      'identifier': emailController.text,
     };
     APIResponse response = await authService.sendOtp(data);
     showToast(message: response.message, isError: response.status != "success");
@@ -513,7 +513,7 @@ class SignUpController extends GetxController {
       setLoadingState(true);
       dynamic data = {
         'otp': otpController.text,
-        'email': emailController.text,
+        'identifier': emailController.text,
       };
       APIResponse response = await authService.verifyEmailOtp(data);
       showToast(

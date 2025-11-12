@@ -14,8 +14,8 @@ class WalletWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     return GetBuilder<WalletController>(builder: (walletController) {
       return Container(
-        width: 1.sw * 0.85,
-        margin: EdgeInsets.symmetric(horizontal: 5.w),
+        width: 1.sw,
+        margin: EdgeInsets.symmetric(horizontal: 10.w),
         padding: EdgeInsets.symmetric(vertical: 18.sp, horizontal: 15.sp),
         decoration: BoxDecoration(
             color: AppColors.deepPrimaryColor,
@@ -61,7 +61,7 @@ class WalletWidget extends StatelessWidget {
                 canWithdraw
                     ? CustomColouredTextButton(
                         onPressed: () {
-                          Get.toNamed(Routes.WITHDRAWAL_AMOUNT_SCREEN);
+                          Get.toNamed(Routes.PAYOUT_REQUEST_SCREEN);
                         },
                         bgColor: AppColors.primaryColor,
                         title: '',

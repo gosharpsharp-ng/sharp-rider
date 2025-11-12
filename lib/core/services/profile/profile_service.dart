@@ -56,6 +56,15 @@ class ProfileService extends CoreService {
     return await remove("/riders/profile", data);
   }
 
+  // Bank Account Management
+  Future<APIResponse> getBankAccount() async {
+    return await fetch("/riders/bank-account");
+  }
+
+  Future<APIResponse> updateBankAccount(dynamic data) async {
+    return await send("/riders/bank-account", data);
+  }
+
   // Payout Management
   Future<APIResponse> getPayoutHistory(dynamic data) async {
     return await fetch(

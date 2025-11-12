@@ -19,6 +19,44 @@ class DeliveriesController extends GetxController with WidgetsBindingObserver {
   bool fetchingDeliveries = false;
   final ScrollController deliveriesScrollController = ScrollController();
 
+  // Status filtering
+  final List<String> deliveryStatuses = [
+    'all',
+    'pending',
+    'accepted',
+    'picked',
+    'delivered',
+    'cancelled'
+  ];
+  String selectedDeliveryStatus = 'all';
+
+  void setSelectedDeliveryStatus(String status) {
+    selectedDeliveryStatus = status;
+    update();
+    // Fetch deliveries when status changes
+    fetchDeliveries();
+  }
+
+  List<DeliveryModel> get filteredDeliveries {
+    if (selectedDeliveryStatus == 'all') {
+      return allDeliveries;
+    }
+    return allDeliveries
+        .where((delivery) =>
+            delivery.status?.toLowerCase() == selectedDeliveryStatus.toLowerCase())
+        .toList();
+  }
+
+  int getDeliveryCountByStatus(String status) {
+    if (status == 'all') {
+      return allDeliveries.length;
+    }
+    return allDeliveries
+        .where((delivery) =>
+            delivery.status?.toLowerCase() == status.toLowerCase())
+        .length;
+  }
+
   void _deliveriesScrollListener() {
     if (deliveriesScrollController.position.pixels >=
         deliveriesScrollController.position.maxScrollExtent - 100) {
@@ -492,6 +530,8 @@ class DeliveriesController extends GetxController with WidgetsBindingObserver {
       acceptedDelivery = true;
       acceptingDelivery = false;
       update();
+      // Refresh deliveries list after accepting
+      fetchDeliveries();
     } else {
       showToast(
         message: response.message,
@@ -653,11 +693,18 @@ class DeliveriesController extends GetxController with WidgetsBindingObserver {
         await Get.find<LocationService>().leaveParcelTrackingRoom(
           trackingId: selectedDelivery?.trackingId ?? "",
         );
-        Get.find<WalletController>().getWalletBalance();
-        await getRiderStats();
-        await getRiderRatingStats();
+        // Reload rider profile to get updated wallet balance
+        if (Get.isRegistered<SettingsController>()) {
+          await Get.find<SettingsController>().getProfile();
+        }
+        // Load wallet from updated profile
+        if (Get.isRegistered<WalletController>()) {
+          Get.find<WalletController>().loadWalletFromProfile();
+        }
+        // await getRiderStats();
+        // await getRiderRatingStats();
         Navigator.pop(Get.context!);
-        Get.offAndToNamed(Routes.RIDER_PERFORMANCE_SCREEN);
+        // Get.offAndToNamed(Routes.RIDER_PERFORMANCE_SCREEN);
       }
       selectedDelivery = DeliveryModel.fromJson(response.data);
       if (['picked'].contains(selectedDelivery!.status)) {

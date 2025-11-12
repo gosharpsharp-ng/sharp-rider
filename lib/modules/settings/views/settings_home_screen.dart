@@ -98,6 +98,27 @@ class SettingsHomeScreen extends StatelessWidget {
                     title: "Update Bank Account",
                     icon: SvgAssets.walletIcon,
                   ),
+                  SettingsItem(
+                    onPressed: () {
+                      Get.toNamed(Routes.TRANSACTIONS_SCREEN);
+                    },
+                    title: "Transaction History",
+                    icon: SvgAssets.walletIcon,
+                  ),
+                  SettingsItem(
+                    onPressed: () {
+                      Get.toNamed(Routes.PAYOUT_HISTORY_SCREEN);
+                    },
+                    title: "Payout History",
+                    icon: SvgAssets.walletIcon,
+                  ),
+                  // SettingsItem(
+                  //   onPressed: () {
+                  //     Get.toNamed(Routes.RIDER_PERFORMANCE_SCREEN);
+                  //   },
+                  //   title: "Ride Performance",
+                  //   icon: SvgAssets.deliveryIcon,
+                  // ),
                   settingsController.userProfile?.vehicle == null
                       ? SettingsItem(
                           onPressed: () {
@@ -113,7 +134,7 @@ class SettingsHomeScreen extends StatelessWidget {
                                 Routes.VEHICLE_AND_LICENSE_DETAILS_SCREEN);
                           },
                           title: "Bike details",
-                          icon: SvgAssets.deliveryIcon,
+                          icon: SvgAssets.bikeIcon,
                         ),
                   settingsController.vehicleLicense == null
                       ? SettingsItem(

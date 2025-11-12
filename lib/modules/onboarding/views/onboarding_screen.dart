@@ -1,3 +1,4 @@
+import 'package:flutter/services.dart';
 import 'package:gorider/core/utils/exports.dart';
 
 class OnboardingScreen extends StatelessWidget {
@@ -5,108 +6,153 @@ class OnboardingScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: AppColors.fadedSecondaryColor,
-      appBar: flatAppBar(
-          bgColor: AppColors.fadedSecondaryColor,
-          navigationColor: AppColors.deepPrimaryColor),
-      body: SizedBox(
-        height: 1.sh,
-        width: 1.sw,
-        child: Stack(
-          children: [
-            Column(
+    return AnnotatedRegion<SystemUiOverlayStyle>(
+      value: const SystemUiOverlayStyle(
+        statusBarColor: Colors.transparent,
+        statusBarIconBrightness: Brightness.dark,
+        statusBarBrightness: Brightness.light,
+        systemNavigationBarColor: Colors.transparent,
+        systemNavigationBarIconBrightness: Brightness.dark,
+      ),
+      child: Scaffold(
+        backgroundColor: AppColors.backgroundColor,
+        extendBodyBehindAppBar: true,
+        extendBody: true,
+        body: Container(
+          height: 1.sh,
+          width: 1.sw,
+          decoration: const BoxDecoration(
+            image: DecorationImage(
+              image: AssetImage(PngAssets.lightWatermark),
+              fit: BoxFit.cover,
+              opacity: 0.95,
+            ),
+          ),
+          child: SafeArea(
+            bottom: false,
+            child: Column(
               children: [
+                // Top section with image
                 Expanded(
+                  flex: 6,
                   child: Container(
-                    color: AppColors.fadedSecondaryColor,
+                    width: 1.sw,
+                    padding: EdgeInsets.symmetric(horizontal: 20.w, vertical: 20.h),
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      children: [
+                        // Hero Image
+                        Container(
+                          height: 1.sh * 0.52,
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(24.r),
+                            boxShadow: [
+                              BoxShadow(
+                                color: AppColors.primaryColor.withOpacity(0.2),
+                                blurRadius: 30,
+                                offset: const Offset(0, 10),
+                                spreadRadius: 0,
+                              ),
+                            ],
+                            image: const DecorationImage(
+                              image: AssetImage(PngAssets.onboardingImage1),
+                              fit: BoxFit.cover,
+                            ),
+                          ),
+                        ),
+                        SizedBox(height: 5.h),
+                      ],
+                    ),
                   ),
                 ),
+
+                // Bottom section with text and buttons
                 Expanded(
+                  flex: 4,
                   child: Container(
-                    padding: EdgeInsets.only(
-                        left: 10.w, bottom: 20.h, right: 10.w, top: 20.h),
-                    color: AppColors.deepPrimaryColor,
+                    width: 1.sw,
+                    padding: EdgeInsets.symmetric(horizontal: 24.w),
+                    decoration: BoxDecoration(
+                      gradient: LinearGradient(
+                        begin: Alignment.topCenter,
+                        end: Alignment.bottomCenter,
+                        colors: [
+                          AppColors.backgroundColor.withOpacity(0.0),
+                          AppColors.backgroundColor,
+                          AppColors.backgroundColor,
+                        ],
+                      ),
+                    ),
                     child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      mainAxisAlignment: MainAxisAlignment.center,
+                      mainAxisAlignment: MainAxisAlignment.start,
                       children: [
-                        SizedBox(
-                          height: 30.h,
-                        ),
+                        // Main Title
                         customText(
-                          "Welcome to GoSharpSharp Logistics",
-                          color: AppColors.secondaryColor,
+                          'Deliver Smarter,\nEarn Better',
+                          color: AppColors.blackColor,
                           fontWeight: FontWeight.bold,
-                          fontSize: 25.sp,
+                          fontSize: 27.sp,
                           textAlign: TextAlign.center,
                           overflow: TextOverflow.visible,
+                          height: 1.2,
                         ),
-                        SizedBox(
-                          height: 20.h,
-                        ),
+                        SizedBox(height: 10.h),
+
+                        // Subtitle
                         customText(
-                          "Deliver and get paid",
-                          color: AppColors.whiteColor,
-                          fontWeight: FontWeight.w500,
-                          fontSize: 18.sp,
+                          'Join thousands of riders earning on their own schedule with GoSharpSharp',
+                          color: AppColors.obscureTextColor,
+                          fontWeight: FontWeight.w400,
+                          fontSize: 16.sp,
                           textAlign: TextAlign.center,
                           overflow: TextOverflow.visible,
+                          height: 1.5,
                         ),
-                        SizedBox(
-                          height: 15.h,
+                        SizedBox(height: 20.h),
+
+                        // Sign Up Button (Primary)
+                        Container(
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(12.r),
+                            boxShadow: [
+                              BoxShadow(
+                                color: AppColors.primaryColor.withOpacity(0.3),
+                                blurRadius: 20,
+                                offset: const Offset(0, 8),
+                              ),
+                            ],
+                          ),
+                          child: CustomButton(
+                            onPressed: () {
+                              Get.toNamed(Routes.SIGNUP_SCREEN);
+                            },
+                            backgroundColor: AppColors.primaryColor,
+                            title: "Get Started",
+                            fontColor: AppColors.whiteColor,
+                            width: double.infinity,
+                          ),
                         ),
+                        SizedBox(height: 15.h),
+
+                        // Login Button (Secondary)
                         CustomButton(
                           onPressed: () {
                             Get.toNamed(Routes.SIGN_IN);
                           },
-                          backgroundColor: AppColors.fadedPrimaryColor,
-                          title: "Login",
+                          backgroundColor: AppColors.transparent,
+                          borderColor: AppColors.primaryColor,
+                          title: "Already have an account? Login",
                           fontColor: AppColors.primaryColor,
                           width: double.infinity,
                         ),
-                        SizedBox(
-                          height: 10.h,
-                        ),
-                        CustomButton(
-                          onPressed: () {
-                            Get.toNamed(Routes.SIGNUP_SCREEN);
-                          },
-                          backgroundColor: AppColors.primaryColor,
-                          title: "Sign up",
-                          fontColor: AppColors.whiteColor,
-                          width: double.infinity,
-                        ),
+                        SizedBox(height: 10.h),
                       ],
                     ),
                   ),
                 ),
               ],
             ),
-            Container(
-              width: 1.sw,
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.center,
-                mainAxisAlignment: MainAxisAlignment.start,
-                children: [
-                  Container(
-                    width: 1.sw * 0.9,
-                    height: 1.sh * 0.57,
-                    decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(15),
-                        image: DecorationImage(
-                            // colorFilter: ColorFilter.srgbToLinearGamma(),
-                            filterQuality: FilterQuality.low,
-                            image: AssetImage(
-                              PngAssets.onboardingImage2,
-                            ),
-                            fit: BoxFit.cover)),
-                    child: SizedBox.shrink(),
-                  ),
-                ],
-              ),
-            ),
-          ],
+          ),
         ),
       ),
     );

@@ -95,6 +95,7 @@ export 'package:gorider/modules/dashboard/views/performance_screen.dart';
 
 export 'package:gorider/modules/app_navigation/views/app_navigation_screen.dart';
 export 'package:gorider/modules/resets/views/reset_password_email_entry.dart';
+export 'package:gorider/modules/location_permission/views/location_permission_screen.dart';
 
 export 'package:gorider/modules/notifications/views/notification_details_screen.dart';
 export 'package:gorider/modules/notifications/views/widgets/notification_item.dart';
@@ -182,4 +183,5 @@ export 'package:gorider/modules/payouts/controllers/payout_controller.dart';
 export 'package:gorider/modules/payouts/bindings/payout_bindings.dart';
 export 'package:gorider/modules/payouts/views/payout_history_screen.dart';
 export 'package:gorider/modules/payouts/views/payout_request_screen.dart';
+export 'package:gorider/modules/payouts/views/payout_details_screen.dart';
 export 'package:gorider/modules/payouts/views/widgets/payout_item.dart';

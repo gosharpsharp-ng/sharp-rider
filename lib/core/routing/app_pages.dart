@@ -30,7 +30,6 @@ class AppPages {
     GetPage(
       name: Routes.SIGNUP_OTP_SCREEN,
       page: () => SignUpOtpScreen(),
-      binding: SignUpBindings(),
     ),
     GetPage(
       name: Routes.SIGN_IN,
@@ -51,6 +50,11 @@ class AppPages {
       name: Routes.RESET_PASSWORD_NEW_PASSWORD_SCREEN,
       page: () => const NewPasswordScreen(),
       binding: PasswordResetBinding(),
+    ),
+    GetPage(
+      name: Routes.LOCATION_PERMISSION_SCREEN,
+      page: () => const LocationPermissionScreen(),
+      middlewares: [AuthMiddleware()],
     ),
     GetPage(
       name: Routes.APP_NAVIGATION,
@@ -188,6 +192,12 @@ class AppPages {
     GetPage(
       name: Routes.PAYOUT_REQUEST_SCREEN,
       page: () => const PayoutRequestScreen(),
+      middlewares: [AuthMiddleware()],
+      binding: PayoutBindings(),
+    ),
+    GetPage(
+      name: Routes.PAYOUT_DETAILS_SCREEN,
+      page: () => const PayoutDetailsScreen(),
       middlewares: [AuthMiddleware()],
       binding: PayoutBindings(),
     ),

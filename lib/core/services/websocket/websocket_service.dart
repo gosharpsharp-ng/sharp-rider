@@ -21,7 +21,7 @@ class SocketService extends GetxService {
 
   void _initializeSocket() {
     socket = IO.io(
-        'http://socket.gosharpsharp.com/',
+        'https://socket.gosharpsharp.com',
         IO.OptionBuilder()
             .setTransports(['websocket'])
             .enableAutoConnect()
@@ -35,7 +35,7 @@ class SocketService extends GetxService {
   void _setupSocketListeners() {
     socket
       ..onConnect((_) {
-        log('🟢 Socket Connected to http://socket.gosharpsharp.com/');
+        log('🟢 Socket Connected to https://socket.gosharpsharp.com');
 
         isConnected.value = true;
         // Join rider room and start emitting location

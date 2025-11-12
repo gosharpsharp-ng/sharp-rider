@@ -137,7 +137,7 @@ class PayoutRequestScreen extends StatelessWidget {
                     // Link to Payout History
                     GestureDetector(
                       onTap: () {
-                        Get.toNamed(Routes.PAYOUT_HISTORY_SCREEN);
+                        Get.offNamed(Routes.PAYOUT_HISTORY_SCREEN);
                       },
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.center,
