@@ -2,6 +2,7 @@ class PngAssets {
   static const String onboardingImage = 'assets/imgs/onboarding_image.png';
   static const String lightWatermark = 'assets/imgs/light_watermark.png';
   static const String onboardingImage2 = 'assets/imgs/gorider.png';
+  static const String onboardingImage1 = 'assets/imgs/deliveryman.png';
   static const String goSharpSharpIcon = 'assets/icons/gosharp_icon.png';
   static const String goSharpSharpTextLogo = 'assets/icons/gosharp_icon.png';
   static const String avatarIcon = 'assets/imgs/avatar.png';

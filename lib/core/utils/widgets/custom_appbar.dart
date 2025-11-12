@@ -90,8 +90,8 @@ PreferredSize flatEmptyAppBar(
         statusBarColor: topColor,
         systemNavigationBarIconBrightness:
             navigationColor == AppColors.whiteColor
-                ? Brightness.light
-                : Brightness.dark,
+                ? Brightness.dark
+                : Brightness.light,
         systemNavigationBarDividerColor: navigationColor,
       ),
     ),

@@ -2,7 +2,6 @@ import 'package:gorider/core/utils/exports.dart';
 
 class PayoutController extends GetxController {
   final PayoutService _payoutService = PayoutService();
-  final WalletsService _walletsService = serviceLocator<WalletsService>();
 
   // Loading states
   bool _isLoading = false;
@@ -55,7 +54,7 @@ class PayoutController extends GetxController {
     _payoutService.init();
     payoutHistoryScrollController.addListener(_payoutHistoryScrollListener);
     getPayoutHistory();
-    _loadBalanceFromWallet();
+    _loadBalanceFromDashboard();
   }
 
   @override
@@ -85,19 +84,13 @@ class PayoutController extends GetxController {
     update();
   }
 
-  // Load balance from user profile (via SettingsController)
-  void _loadBalanceFromWallet() {
+  // Load balance from settings controller (via rider wallet)
+  void _loadBalanceFromDashboard() {
     try {
       if (Get.isRegistered<SettingsController>()) {
         final settingsController = Get.find<SettingsController>();
-        availableBalance = double.tryParse(
-                settingsController.userProfile?.wallet?.balance ?? '0') ??
-            0.0;
-        update();
-      } else if (Get.isRegistered<WalletController>()) {
-        // Fallback to WalletController
-        final walletController = Get.find<WalletController>();
-        availableBalance = double.tryParse(walletController.availableBalance) ?? 0.0;
+        availableBalance =
+            settingsController.userProfile?.wallet?.balanceDouble ?? 0.0;
         update();
       }
     } catch (e) {
@@ -107,17 +100,11 @@ class PayoutController extends GetxController {
 
   // Refresh balance (called after payout submission)
   Future<void> refreshBalance() async {
-    // Refresh profile to get updated wallet data
     if (Get.isRegistered<SettingsController>()) {
       final settingsController = Get.find<SettingsController>();
       await settingsController.getProfile();
+      _loadBalanceFromDashboard();
     }
-    // Also refresh WalletController
-    if (Get.isRegistered<WalletController>()) {
-      final walletController = Get.find<WalletController>();
-      walletController.loadWalletFromProfile();
-    }
-    _loadBalanceFromWallet();
   }
 
   // Get payout history with pagination
@@ -160,37 +147,15 @@ class PayoutController extends GetxController {
         currentPayoutPage++;
         update();
       } else {
-        _payoutError = response.message ?? 'Failed to load payout history';
-        showToast(message: _payoutError, isError: true);
-      }
-    } catch (e) {
-      _fetchingPayouts = false;
-      _payoutError = 'Error loading payout history: ${e.toString()}';
-      showToast(message: _payoutError, isError: true);
-      update();
-    }
-  }
-
-  // Get payout request details
-  Future<void> getPayoutRequestDetails(int payoutId) async {
-    setLoadingState(true);
-
-    try {
-      final response = await _payoutService.getPayoutRequestDetails(payoutId);
-
-      if (response.status == "success" && response.data != null) {
-        selectedPayoutRequest = PayoutRequest.fromJson(response.data);
-        update();
-      } else {
         showToast(message: response.message, isError: true);
       }
     } catch (e) {
+      _fetchingPayouts = false;
       showToast(
-        message: "Error loading payout details: ${e.toString()}",
+        message: "Error loading payout history: ${e.toString()}",
         isError: true,
       );
-    } finally {
-      setLoadingState(false);
+      update();
     }
   }
 
@@ -243,8 +208,11 @@ class PayoutController extends GetxController {
         );
 
         // Update available balance from response if provided
-        if (response.data != null && response.data['available_balance'] != null) {
-          availableBalance = double.tryParse(response.data['available_balance'].toString()) ?? availableBalance;
+        if (response.data != null &&
+            response.data['available_balance'] != null) {
+          availableBalance =
+              double.tryParse(response.data['available_balance'].toString()) ??
+                  availableBalance;
         }
 
         // Clear form
@@ -267,6 +235,29 @@ class PayoutController extends GetxController {
       );
     } finally {
       setSubmittingState(false);
+    }
+  }
+
+  // Get payout request details
+  Future<void> getPayoutRequestDetails(int payoutId) async {
+    setLoadingState(true);
+
+    try {
+      final response = await _payoutService.getPayoutRequestDetails(payoutId);
+
+      if (response.status == "success" && response.data != null) {
+        selectedPayoutRequest = PayoutRequest.fromJson(response.data);
+        update();
+      } else {
+        showToast(message: response.message, isError: true);
+      }
+    } catch (e) {
+      showToast(
+        message: "Error loading payout details: ${e.toString()}",
+        isError: true,
+      );
+    } finally {
+      setLoadingState(false);
     }
   }
 

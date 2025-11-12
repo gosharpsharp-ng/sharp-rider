@@ -125,203 +125,124 @@ class DashboardScreen extends StatelessWidget {
                   Get.find<SettingsController>().getProfile();
                   Get.find<NotificationsController>().getNotifications();
                 },
-                child: SingleChildScrollView(
-                  child: Column(
-                    children: [
-                      SizedBox(
-                        height: 10.h,
-                      ),
-                      GetBuilder<WalletController>(builder: (walletController) {
-                        return SingleChildScrollView(
-                          scrollDirection: Axis.horizontal,
-                          child: Row(
-                            children: [
-                              WalletWidget(
-                                balance: walletController.availableBalance,
-                                title: "Wallet balance",
-                                canWithdraw: true,
-                              ),
-                              WalletWidget(
-                                balance: "0.0", // Pending balance no longer in API
-                                title: "Company commission",
-                              ),
-                              WalletWidget(
-                                balance: walletController.bonusBalance,
-                                title: "Bonus balance",
-                              ),
-                            ],
-                          ),
+                child: Column(
+                  children: [
+                    // Wallet Section
+                    Padding(
+                      padding: EdgeInsets.symmetric(vertical: 10.h),
+                      child: GetBuilder<WalletController>(builder: (walletController) {
+                        return WalletWidget(
+                          balance: walletController.availableBalance,
+                          title: "Wallet balance",
+                          canWithdraw: true,
                         );
                       }),
-                      SizedBox(
-                        height: 10.h,
-                      ),
-                      SizedBox(
-                        width: 1.sw,
-                        child: Row(
-                          children: [
-                            Expanded(
-                              child: QuickDashboardLinkItem(
-                                gradient: const LinearGradient(
-                                  colors: [
-                                    Color(0xFFFFF6E3),
-                                    Color(0xFFFFFFFF),
-                                  ],
-                                  begin: Alignment.topRight,
-                                  end: Alignment.bottomLeft,
-                                ),
-                                assetIconUrl: SvgAssets.walletIcon,
-                                onPressed: () {
-                                  Get.find<WalletController>()
-                                      .getTransactions();
-                                  Get.to(const TransactionsScreen());
-                                },
-                                title: "Transaction history",
-                              ),
-                            ),
-                            Expanded(
-                              child: QuickDashboardLinkItem(
-                                assetIconUrl: SvgAssets.bikeIcon,
-                                onPressed: () {
-                                  Get.find<DeliveriesController>()
-                                      .getRiderStats();
-                                  Get.find<DeliveriesController>()
-                                      .getRiderRatingStats();
-                                  Get.to(const PerformanceScreen());
-                                },
-                                title: "Ride performance",
-                                gradient: const LinearGradient(
-                                  colors: [
-                                    Color(0xFFE3EDFF),
-                                    Color(0xFFFFFFFF),
-                                  ],
-                                  begin: Alignment.topRight,
-                                  end: Alignment.bottomLeft,
-                                ),
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                      SizedBox(
-                        height: 15.h,
-                      ),
-                      GetBuilder<DeliveriesController>(
-                          builder: (ordersController) {
-                        return Container(
-                          width: 1.sw,
-                          decoration: BoxDecoration(
-                              gradient: const LinearGradient(
-                                colors: [
-                                  Color(0xFFFFF6E3),
-                                  Color(0xFFFFFFFF),
-                                ],
-                                begin: Alignment.topRight,
-                                end: Alignment.bottomLeft,
-                              ),
-                              borderRadius: BorderRadius.circular(12.r)),
-                          padding: EdgeInsets.symmetric(
-                              horizontal: 25.sp, vertical: 8.sp),
-                          child: Column(
-                            children: [
-                              customText(
-                                  ordersController.isOnline
-                                      ? "You're online! Stay active to earn more or turn off the switch to take a break."
-                                      : "You're offline. Turn on the switch to start earning and making deliveries!",
-                                  fontWeight: FontWeight.w500,
-                                  fontSize: 12.sp,
-                                  textAlign: TextAlign.center,
-                                  overflow: TextOverflow.visible),
-                              GetBuilder<SettingsController>(
-                                  builder: (settingsController) {
-                                return Container(
+                    ),
+
+                    // Map with Go Online Overlay
+                    Expanded(
+                      child: GetBuilder<DashboardController>(
+                        builder: (dashController) {
+                          return GetBuilder<DeliveriesController>(
+                            builder: (ordersController) {
+                              return Stack(
+                                children: [
+                                  // Google Map
+                                  ClipRRect(
+                                    borderRadius: BorderRadius.only(
+                                      topLeft: Radius.circular(20.r),
+                                      topRight: Radius.circular(20.r),
+                                    ),
+                                    child: GoogleMap(
+                                      initialCameraPosition: CameraPosition(
+                                        target: dashController.initialPosition,
+                                        zoom: 16.5,
+                                      ),
+                                      myLocationEnabled: true,
+                                      myLocationButtonEnabled: false,
+                                      zoomControlsEnabled: false,
+                                      mapToolbarEnabled: false,
+                                      compassEnabled: false,
+                                      liteModeEnabled: true, // For faster loading
+                                      onMapCreated: (GoogleMapController controller) {
+                                        dashController.onMapCreated(controller);
+                                      },
+                                    ),
+                                  ),
+
+                              // Go Online Widget Overlay
+                              Positioned(
+                                bottom: 20.h,
+                                left: 20.w,
+                                right: 20.w,
+                                child: Container(
                                   width: 1.sw,
-                                  child: Row(
-                                    mainAxisAlignment: MainAxisAlignment.center,
-                                    children: [
-                                      customText(
-                                          ordersController.isOnline
-                                              ? 'Go Offline'
-                                              : 'Go Online',
-                                          fontWeight: FontWeight.w600,
-                                          fontSize: 20.sp),
-                                      SizedBox(
-                                          width: 10
-                                              .sp), // Space between text and switch
-                                      Switch(
-                                        activeColor: AppColors.greenColor,
-                                        value: ordersController.isOnline,
-                                        onChanged: (value) {
-                                          ordersController.toggleOnlineStatus();
-                                        },
+                                  decoration: BoxDecoration(
+                                    gradient: const LinearGradient(
+                                      colors: [
+                                        Color(0xFFFFF6E3),
+                                        Color(0xFFFFFFFF),
+                                      ],
+                                      begin: Alignment.topRight,
+                                      end: Alignment.bottomLeft,
+                                    ),
+                                    borderRadius: BorderRadius.circular(12.r),
+                                    boxShadow: [
+                                      BoxShadow(
+                                        color: Colors.black.withOpacity(0.1),
+                                        blurRadius: 10,
+                                        offset: const Offset(0, 4),
                                       ),
                                     ],
                                   ),
-                                );
-                              }),
-                            ],
-                          ),
-                        );
-                      }),
-                      SizedBox(
-                        height: 15.h,
-                      ),
-                      Row(
-                        children: [
-                          Expanded(
-                            child: customText("Your deliveries",
-                                fontWeight: FontWeight.w500,
-                                fontSize: 18.sp,
-                                color: AppColors.blackColor),
-                          ),
-                        ],
-                      ),
-                      SizedBox(
-                        height: 5.h,
-                      ),
-                      GetBuilder<DeliveriesController>(
-                          builder: (ordersController) {
-                        return Column(
-                          children: [
-                            ordersController.allDeliveries.isEmpty
-                                ? Container(
-                                    width: 1.sw,
-                                    height: 1.sh * 0.4,
-                                    child: Column(
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.center,
-                                      children: [
-                                        customText(
-                                          ordersController.fetchingDeliveries
-                                              ? "Loading..."
-                                              : "No deliveries yet",
-                                        ),
-                                      ],
-                                    ),
-                                  )
-                                : Column(
-                                    children: List.generate(
-                                      ordersController.allDeliveries.length,
-                                      (i) => DeliveryItemWidget(
-                                        onSelected: () {
-                                          ordersController.setSelectedDelivery(
-                                              ordersController
-                                                  .allDeliveries[i]);
-                                          Get.toNamed(Routes.DELIVERY_DETAILS);
-                                        },
-                                        shipment:
-                                            ordersController.allDeliveries[i],
-                                      ),
-                                    ),
+                                  padding: EdgeInsets.symmetric(
+                                    horizontal: 25.sp,
+                                    vertical: 15.sp,
                                   ),
-                          ],
-                        );
-                      }),
-                      SizedBox(
-                        height: 15.h,
+                                  child: Column(
+                                    children: [
+                                      customText(
+                                        ordersController.isOnline
+                                            ? "You're online! Stay active to earn more."
+                                            : "You're offline. Go online to start earning!",
+                                        fontWeight: FontWeight.w500,
+                                        fontSize: 12.sp,
+                                        textAlign: TextAlign.center,
+                                        overflow: TextOverflow.visible,
+                                      ),
+                                      SizedBox(height: 8.h),
+                                      Row(
+                                        mainAxisAlignment: MainAxisAlignment.center,
+                                        children: [
+                                          customText(
+                                            ordersController.isOnline
+                                                ? 'Go Offline'
+                                                : 'Go Online',
+                                            fontWeight: FontWeight.w600,
+                                            fontSize: 18.sp,
+                                          ),
+                                          SizedBox(width: 10.sp),
+                                          Switch(
+                                            activeColor: AppColors.greenColor,
+                                            value: ordersController.isOnline,
+                                            onChanged: (value) {
+                                              ordersController.toggleOnlineStatus();
+                                            },
+                                          ),
+                                        ],
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              ),
+                                ],
+                              );
+                            },
+                          );
+                        },
                       ),
-                    ],
-                  ),
+                    ),
+                  ],
                 ),
               ),
             ),

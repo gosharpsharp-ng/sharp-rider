@@ -141,6 +141,7 @@ class _DeliveryOTPVerificationDialogState
                 focusedPinTheme: focusedPinTheme,
                 submittedPinTheme: submittedPinTheme,
                 showCursor: true,
+                autofocus: true,
                 onCompleted: (pin) => _verifyOTP(),
                 keyboardType: TextInputType.number,
                 enabled: !isVerifying,

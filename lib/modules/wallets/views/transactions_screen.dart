@@ -1,7 +1,23 @@
 import 'package:gorider/core/utils/exports.dart';
 
-class TransactionsScreen extends StatelessWidget {
+class TransactionsScreen extends StatefulWidget {
   const TransactionsScreen({super.key});
+
+  @override
+  State<TransactionsScreen> createState() => _TransactionsScreenState();
+}
+
+class _TransactionsScreenState extends State<TransactionsScreen> {
+  @override
+  void initState() {
+    super.initState();
+    // Fetch fresh transactions when screen is opened
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (Get.isRegistered<WalletController>()) {
+        Get.find<WalletController>().getTransactions();
+      }
+    });
+  }
 
   @override
   Widget build(BuildContext context) {

@@ -19,6 +19,9 @@ abstract class Routes {
   static const RESET_PASSWORD_OTP_SCREEN = '/reset_password_otp_screen';
   static const RESET_PASSWORD_SUCCESS_SCREEN = '/reset_password_success_screen';
 
+  // Permissions
+  static const LOCATION_PERMISSION_SCREEN = '/location_permission_screen';
+
   // Main App
   static const APP_NAVIGATION = '/app_navigation';
   static const DASHBOARD = '/dashboard';
@@ -64,6 +67,7 @@ abstract class Routes {
   // Payouts
   static const PAYOUT_HISTORY_SCREEN = '/payout_history_screen';
   static const PAYOUT_REQUEST_SCREEN = '/payout_request_screen';
+  static const PAYOUT_DETAILS_SCREEN = '/payout_details_screen';
 
   // Performance & Reviews
   static const RIDER_PERFORMANCE_SCREEN = '/rider_performance_screen';

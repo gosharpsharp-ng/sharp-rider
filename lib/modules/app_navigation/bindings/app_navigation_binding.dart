@@ -9,14 +9,15 @@ class AppNavigationBinding extends Bindings {
     Get.put(
       DashboardController(),
     );
+    // Initialize SettingsController first as it's a dependency for DeliveriesController
+    Get.put(
+      SettingsController(),
+    );
     Get.put(
       DeliveriesController(),
     );
     Get.put(
       WalletController(),
-    );
-    Get.put(
-      SettingsController(),
     );
     Get.put(
       NotificationsController(),
