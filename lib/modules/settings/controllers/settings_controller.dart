@@ -29,20 +29,21 @@ class SettingsController extends GetxController {
       userProfile = UserProfile.fromJson(response.data['user']);
       reactiveUserProfile.value = UserProfile.fromJson(response.data['user']);
       update();
-      ZegoUIKitPrebuiltCallInvitationService().init(
-        appID: int.parse(Secret.zegoCloudAppID),
-        appSign: Secret.zegoCloudAppSign,
-        userID: userProfile!.id.toString(),
-        userName: "${userProfile?.fname ?? ""} ${userProfile?.lname ?? ""}",
-        plugins: [ZegoUIKitSignalingPlugin()],
-        notificationConfig: ZegoCallInvitationNotificationConfig(
-            androidNotificationConfig: ZegoCallAndroidNotificationConfig(
-              sound: null,
-              showFullScreen: true,
-            ),
-            iOSNotificationConfig:
-                ZegoCallIOSNotificationConfig(appName: "gosharpsharp_mobile")),
-      );
+      // Zego Cloud temporarily disabled
+      // ZegoUIKitPrebuiltCallInvitationService().init(
+      //   appID: int.parse(Secret.zegoCloudAppID),
+      //   appSign: Secret.zegoCloudAppSign,
+      //   userID: userProfile!.id.toString(),
+      //   userName: "${userProfile?.fname ?? ""} ${userProfile?.lname ?? ""}",
+      //   plugins: [ZegoUIKitSignalingPlugin()],
+      //   notificationConfig: ZegoCallInvitationNotificationConfig(
+      //       androidNotificationConfig: ZegoCallAndroidNotificationConfig(
+      //         sound: null,
+      //         showFullScreen: true,
+      //       ),
+      //       iOSNotificationConfig:
+      //           ZegoCallIOSNotificationConfig(appName: "gosharpsharp_mobile")),
+      // );
       setProfileFields();
     } else {
       if (getStorage.read('token') != null) {
@@ -115,6 +116,7 @@ class SettingsController extends GetxController {
         newPasswordController.clear();
         confirmNewPasswordController.clear();
         update();
+        Get.back();
       }
     }
   }
@@ -148,6 +150,7 @@ class SettingsController extends GetxController {
       if (response.status == "success") {
         getProfile();
         toggleProfileEditState(false);
+        Get.back();
         showAnyBottomSheet(
             isControlled: false,
             child: const ProfileUpdateSuccessBottomSheet());
@@ -182,7 +185,8 @@ class SettingsController extends GetxController {
         final croppedPhoto = await cropImage(photo);
 
         // Convert to base64 for API upload
-        userProfilePictureBase64 = await convertImageToBase64(croppedPhoto.path);
+        userProfilePictureBase64 =
+            await convertImageToBase64(croppedPhoto.path);
 
         // Keep file for local display
         userProfilePicture = File(croppedPhoto.path);
@@ -195,6 +199,7 @@ class SettingsController extends GetxController {
 
         if (response.status == "success") {
           getProfile();
+          Get.back();
           showAnyBottomSheet(
               isControlled: false,
               child: const ProfileUpdateSuccessBottomSheet());
@@ -238,19 +243,19 @@ class SettingsController extends GetxController {
     }
   }
 
-  VehicleModel? vehicleModel;
-  getMyVehicle() async {
-    // setLoadingVehicleState(true);
-    APIResponse response = await profileService.getVehicle();
-    // setLoadingVehicleState(false);
-    if (response.status == "success") {
-      if (response.data.isNotEmpty) {
-        vehicleModel = VehicleModel.fromJson(response.data[0]);
-      }
+  // VehicleModel? vehicleModel;
+  // getMyVehicle() async {
+  //   // setLoadingVehicleState(true);
+  //   APIResponse response = await profileService.getVehicle();
+  //   // setLoadingVehicleState(false);
+  //   if (response.status == "success") {
+  //     if (response.data.isNotEmpty) {
+  //       vehicleModel = VehicleModel.fromJson(response.data[0]);
+  //     }
 
-      update();
-    }
-  }
+  //     update();
+  //   }
+  // }
 
   LicenseModel? vehicleLicense;
   getMyVehicleLicense() async {
@@ -292,7 +297,8 @@ class SettingsController extends GetxController {
         final compressed = await ImageCompressionService.compressImage(
           XFile(croppedPhoto.path),
         );
-        vehicleInteriorPhotoBase64 = await convertImageToBase64(compressed.path);
+        vehicleInteriorPhotoBase64 =
+            await convertImageToBase64(compressed.path);
         vehicleInteriorPhoto = File(compressed.path);
         update();
       }
@@ -315,7 +321,8 @@ class SettingsController extends GetxController {
         final compressed = await ImageCompressionService.compressImage(
           XFile(croppedPhoto.path),
         );
-        vehicleExteriorPhotoBase64 = await convertImageToBase64(compressed.path);
+        vehicleExteriorPhotoBase64 =
+            await convertImageToBase64(compressed.path);
         vehicleExteriorPhoto = File(compressed.path);
         update();
       }
@@ -385,13 +392,14 @@ class SettingsController extends GetxController {
         if (response.status == "success") {
           showToast(message: response.message);
           getProfile();
-          getMyVehicle();
+          // getMyVehicle();
           clearVehicleTextFields();
           Navigator.pop(Get.context!);
         } else {
           if (getStorage.read("token") != null) {
             showToast(
-                message: response.message, isError: response.status != "success");
+                message: response.message,
+                isError: response.status != "success");
           }
         }
       } catch (e) {
@@ -600,7 +608,8 @@ class SettingsController extends GetxController {
     serviceManager.disposeServices();
     getStorage.remove('token');
     Get.offAllNamed(Routes.SIGN_IN);
-    ZegoUIKitPrebuiltCallInvitationService().uninit();
+    // Zego Cloud temporarily disabled
+    // ZegoUIKitPrebuiltCallInvitationService().uninit();
   }
 
   bool deletePasswordVisibility = false;
@@ -624,7 +633,8 @@ class SettingsController extends GetxController {
         DeliveryNotificationServiceManager serviceManager =
             DeliveryNotificationServiceManager();
         serviceManager.disposeServices();
-        ZegoUIKitPrebuiltCallInvitationService().uninit();
+        // Zego Cloud temporarily disabled
+        // ZegoUIKitPrebuiltCallInvitationService().uninit();
       } else {
         showToast(message: "could not delete your account", isError: true);
       }
@@ -676,12 +686,60 @@ class SettingsController extends GetxController {
     );
   }
 
+  // Rating Stats
+  RatingStatsModel? ratingStats;
+  bool _isFetchingRatingStats = false;
+  get isFetchingRatingStats => _isFetchingRatingStats;
+  DateTime? ratingStartDate;
+  DateTime? ratingEndDate;
+
+  setRatingDateRange(DateTime? start, DateTime? end) {
+    ratingStartDate = start;
+    ratingEndDate = end;
+    update();
+    getRatingStats();
+  }
+
+  clearRatingDateFilter() {
+    ratingStartDate = null;
+    ratingEndDate = null;
+    update();
+    getRatingStats();
+  }
+
+  getRatingStats() async {
+    _isFetchingRatingStats = true;
+    update();
+
+    String? startDate;
+    String? endDate;
+
+    if (ratingStartDate != null && ratingEndDate != null) {
+      startDate = DateFormat('yyyy-MM-dd').format(ratingStartDate!);
+      endDate = DateFormat('yyyy-MM-dd').format(ratingEndDate!);
+    }
+
+    APIResponse response = await profileService.getRatingStats(
+      startDate: startDate,
+      endDate: endDate,
+    );
+
+    _isFetchingRatingStats = false;
+
+    if (response.status == "success") {
+      ratingStats = RatingStatsModel.fromJson(response.data);
+    } else {
+      ratingStats = null;
+    }
+    update();
+  }
+
   @override
   void onInit() {
     super.onInit();
     // Load profile when the controller is initialized
     getMyVehicleLicense();
-    getMyVehicle();
+    // getMyVehicle();
     getProfile();
   }
 }

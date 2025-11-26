@@ -143,6 +143,9 @@ export 'package:gorider/core/models/notification_model.dart';
 export 'dart:async';
 export 'package:gorider/core/models/delivery_model.dart';
 export 'package:gorider/modules/wallets/views/add_withdrawal_account_screen.dart';
+export 'package:gorider/modules/wallets/views/fund_wallet_amount_screen.dart';
+export 'package:gorider/modules/wallets/views/fund_wallet_success_screen.dart';
+export 'package:gorider/modules/wallets/views/fund_wallet_failure_screen.dart';
 
 export 'package:image_picker/image_picker.dart';
 export 'package:gorider/core/models/user_profile_model.dart';
@@ -153,13 +156,14 @@ export 'package:gorider/core/models/transaction_model.dart';
 
 export 'package:gorider/core/models/bank_model.dart';
 export 'package:gorider/core/models/wallet_balance_data_model.dart';
+export 'package:gorider/core/models/paystack_authorization_model.dart';
 
 export 'package:gorider/core/services/websocket/location_service.dart';
 export 'package:gorider/core/services/websocket/websocket_service.dart';
 
 export 'package:gorider/core/models/courier_type_model.dart';
 export 'package:gorider/core/models/license_model.dart';
-export 'package:gorider/core/models/vehicle_model.dart';
+// export 'package:gorider/core/models/vehicle_model.dart';
 export 'package:gorider/core/services/websocket/delivery_notification_service_manager.dart';
 export 'package:gorider/modules/settings/views/widgets/vehicle_details_item_widget.dart';
 export 'package:gorider/modules/settings/views/vehicle/vehicle_details_screen.dart';
@@ -167,9 +171,11 @@ export 'package:gorider/modules/settings/views/vehicle/vehicle_details_screen.da
 export 'package:gorider/core/models/direction_details_Info.dart';
 export 'package:gorider/core/models/review_model.dart';
 export 'package:gorider/core/models/rider_stats_model.dart';
+export 'package:gorider/core/models/rating_stats_model.dart';
 
-export 'package:zego_uikit_prebuilt_call/zego_uikit_prebuilt_call.dart';
-export 'package:zego_uikit_signaling_plugin/zego_uikit_signaling_plugin.dart';
+// Zego packages temporarily disabled
+// export 'package:zego_uikit_prebuilt_call/zego_uikit_prebuilt_call.dart';
+// export 'package:zego_uikit_signaling_plugin/zego_uikit_signaling_plugin.dart';
 export 'package:gorider/core/models/delivery_notification_model.dart';
 export 'package:gorider/core/services/websocket/delivery_notification.dart';
 
@@ -185,3 +191,6 @@ export 'package:gorider/modules/payouts/views/payout_history_screen.dart';
 export 'package:gorider/modules/payouts/views/payout_request_screen.dart';
 export 'package:gorider/modules/payouts/views/payout_details_screen.dart';
 export 'package:gorider/modules/payouts/views/widgets/payout_item.dart';
+
+// Ratings
+export 'package:gorider/modules/settings/views/ratings_screen.dart';

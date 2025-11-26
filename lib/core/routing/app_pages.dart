@@ -207,6 +207,30 @@ class AppPages {
       middlewares: [AuthMiddleware()],
       binding: WalletBindings(),
     ),
+    GetPage(
+      name: Routes.FUND_WALLET_AMOUNT_SCREEN,
+      page: () => const FundWalletAmountScreen(),
+      middlewares: [AuthMiddleware()],
+      binding: WalletBindings(),
+    ),
+    GetPage(
+      name: Routes.FUND_WALLET_SUCCESS_SCREEN,
+      page: () => const FundWalletSuccessScreen(),
+      middlewares: [AuthMiddleware()],
+      binding: WalletBindings(),
+    ),
+    GetPage(
+      name: Routes.FUND_WALLET_FAILURE_SCREEN,
+      page: () => const FundWalletFailureScreen(),
+      middlewares: [AuthMiddleware()],
+      binding: WalletBindings(),
+    ),
+    GetPage(
+      name: Routes.RATINGS_AND_REVIEWS_HOME,
+      page: () => const RatingsScreen(),
+      middlewares: [AuthMiddleware()],
+      binding: SettingsBindings(),
+    ),
 
     // GetPage(
     //   name: Routes.WEALTHMATE_TRANSACTION_DETAILS,
