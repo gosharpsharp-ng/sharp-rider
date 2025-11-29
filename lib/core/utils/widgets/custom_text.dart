@@ -10,7 +10,7 @@ Widget customText(String text,
     TextOverflow overflow = TextOverflow.ellipsis,
     TextDecoration? decoration,
     FontWeight? fontWeight,
-    String fontFamily = 'Satoshi',
+    String? fontFamily,
     bool blur = false}) {
   return Text(
     text,
@@ -18,14 +18,25 @@ Widget customText(String text,
     maxLines: maxLines,
     overflow: overflow,
     softWrap: true,
-    style: TextStyle(
-      fontFamily: fontFamily,
-      color: color,
-      letterSpacing: letterSpacing,
-      fontSize: fontSize,
-      height: height,
-      fontWeight: fontWeight,
-      decoration: decoration,
-    ),
+    style: fontFamily != null
+        ? TextStyle(
+            fontFamily: fontFamily,
+            fontStyle: FontStyle.normal,
+            color: color,
+            letterSpacing: letterSpacing,
+            fontSize: fontSize,
+            height: height,
+            fontWeight: fontWeight,
+            decoration: decoration,
+          )
+        : GoogleFonts.inter(
+            fontStyle: FontStyle.normal,
+            color: color,
+            letterSpacing: letterSpacing,
+            fontSize: fontSize,
+            height: height,
+            fontWeight: fontWeight,
+            decoration: decoration,
+          ),
   );
 }

@@ -5,7 +5,15 @@ class VehicleModel {
   final String? model;
   final String regNum;
   final String status;
+  final String? availabilityStatus;
   final int? year;
+  final int? userId;
+  final String? interiorPhoto;
+  final String? exteriorPhoto;
+  final bool? verified;
+  final String? deletedAt;
+  final String? createdAt;
+  final String? updatedAt;
   final CourierType? courierType;
 
   VehicleModel({
@@ -13,21 +21,62 @@ class VehicleModel {
     required this.courierTypeId,
     this.brand,
     required this.status,
+    this.availabilityStatus,
     this.model,
     required this.regNum,
     this.year,
+    this.userId,
+    this.interiorPhoto,
+    this.exteriorPhoto,
+    this.verified,
+    this.deletedAt,
+    this.createdAt,
+    this.updatedAt,
     this.courierType,
   });
 
+  // Helper to parse int from dynamic (handles String or int)
+  static int _parseInt(dynamic value) {
+    if (value == null) return 0;
+    if (value is int) return value;
+    if (value is String) return int.tryParse(value) ?? 0;
+    return 0;
+  }
+
+  // Helper to parse nullable int
+  static int? _parseNullableInt(dynamic value) {
+    if (value == null) return null;
+    if (value is int) return value;
+    if (value is String) return int.tryParse(value);
+    return null;
+  }
+
+  // Helper to parse bool from dynamic (handles int 0/1, String, or bool)
+  static bool? _parseBool(dynamic value) {
+    if (value == null) return null;
+    if (value is bool) return value;
+    if (value is int) return value == 1;
+    if (value is String) return value.toLowerCase() == 'true' || value == '1';
+    return null;
+  }
+
   factory VehicleModel.fromJson(Map<String, dynamic> json) {
     return VehicleModel(
-      id: json['id'] as int,
-      courierTypeId: json['courier_type_id'] as int,
-      brand: json['brand'] as String?,
-      model: json['model'] as String?,
-      regNum: json['reg_num'] as String,
-      status: json['status'] as String,
-      year: json['year'] as int?,
+      id: _parseInt(json['id']),
+      courierTypeId: _parseInt(json['courier_type_id']),
+      brand: json['brand']?.toString(),
+      model: json['model']?.toString(),
+      regNum: json['reg_num']?.toString() ?? '',
+      status: json['status']?.toString() ?? '',
+      availabilityStatus: json['availability_status']?.toString(),
+      year: _parseNullableInt(json['year']),
+      userId: _parseNullableInt(json['user_id']),
+      interiorPhoto: json['interior_photo']?.toString(),
+      exteriorPhoto: json['exterior_photo']?.toString(),
+      verified: _parseBool(json['verified']),
+      deletedAt: json['deleted_at']?.toString(),
+      createdAt: json['created_at']?.toString(),
+      updatedAt: json['updated_at']?.toString(),
       courierType: json['courier_type'] != null
           ? CourierType.fromJson(json['courier_type'] as Map<String, dynamic>)
           : null,
@@ -42,7 +91,15 @@ class VehicleModel {
       'model': model,
       'reg_num': regNum,
       'status': status,
+      'availability_status': availabilityStatus,
       'year': year,
+      'user_id': userId,
+      'interior_photo': interiorPhoto,
+      'exterior_photo': exteriorPhoto,
+      'verified': verified,
+      'deleted_at': deletedAt,
+      'created_at': createdAt,
+      'updated_at': updatedAt,
       'courier_type': courierType?.toJson(),
     };
   }
@@ -63,11 +120,19 @@ class CourierType {
 
   factory CourierType.fromJson(Map<String, dynamic> json) {
     return CourierType(
-      id: json['id'] as int,
-      name: json['name'] as String,
-      description: json['description'] as String,
-      pricePerKilometer: json['price_per_kilometer'] as String,
+      id: _parseInt(json['id']),
+      name: json['name']?.toString() ?? '',
+      description: json['description']?.toString() ?? '',
+      pricePerKilometer: json['price_per_kilometer']?.toString() ?? '0',
     );
+  }
+
+  // Helper to parse int from dynamic
+  static int _parseInt(dynamic value) {
+    if (value == null) return 0;
+    if (value is int) return value;
+    if (value is String) return int.tryParse(value) ?? 0;
+    return 0;
   }
 
   Map<String, dynamic> toJson() {

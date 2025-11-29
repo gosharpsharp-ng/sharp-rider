@@ -37,9 +37,7 @@ class BankDetailsItem extends StatelessWidget {
                   value,
                   color: AppColors.blackColor,
                   fontSize: 15.sp,
-                  fontFamily: isCurrency
-                      ? GoogleFonts.montserrat().fontFamily!
-                      : 'Satoshi',
+                  fontFamily: GoogleFonts.inter().fontFamily,
                   fontWeight: FontWeight.w500,
                   overflow: TextOverflow.visible,
                 ),
@@ -56,9 +54,7 @@ class BankDetailsItem extends StatelessWidget {
                 customText(
                   value,
                   color: AppColors.blackColor,
-                  fontFamily: isCurrency
-                      ? GoogleFonts.montserrat().fontFamily!
-                      : 'Satoshi',
+                 fontFamily: GoogleFonts.inter().fontFamily,
                   fontSize: 15.sp,
                   fontWeight: FontWeight.w500,
                   overflow: TextOverflow.visible,

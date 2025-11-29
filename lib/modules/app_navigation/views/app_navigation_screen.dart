@@ -49,7 +49,7 @@ class AppNavigationScreen extends StatelessWidget {
                     child: BottomNavItem(
                       index: 2,
                       title: "Profile",
-                      activeIcon: SvgAssets.settingsIcon,
+                      activeIcon: SvgAssets.userIcon,
                     ),
                   ),
                 ],

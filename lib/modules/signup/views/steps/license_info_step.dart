@@ -155,9 +155,8 @@ class LicenseInfoStep extends GetView<SignUpController> {
                               isControlled: false,
                               child: CustomImagePickerBottomSheet(
                                 title: "License Back Image",
-                                takePhotoFunction: () =>
-                                    controller.pickLicenseBackImage(
-                                        pickFromCamera: true),
+                                takePhotoFunction: () => controller
+                                    .pickLicenseBackImage(pickFromCamera: true),
                                 selectFromGalleryFunction: () =>
                                     controller.pickLicenseBackImage(
                                         pickFromCamera: false),

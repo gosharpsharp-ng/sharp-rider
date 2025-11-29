@@ -128,6 +128,12 @@ class AppPages {
       middlewares: [AuthMiddleware()],
       binding: DeliveriesBindings(),
     ),
+    GetPage(
+      name: Routes.DELIVERY_ACCEPTANCE_RESULT_SCREEN,
+      page: () => const DeliveryAcceptanceResultScreen(),
+      middlewares: [AuthMiddleware()],
+      binding: DeliveriesBindings(),
+    ),
 
     GetPage(
       name: Routes.SETTINGS_HOME_SCREEN,
@@ -202,10 +208,18 @@ class AppPages {
       binding: PayoutBindings(),
     ),
     GetPage(
+      name: Routes.BANK_DETAILS_SCREEN,
+      page: () => const BankDetailsScreen(),
+      middlewares: [AuthMiddleware()],
+      binding: SettingsBindings(),
+      transition: Transition.rightToLeft,
+    ),
+    GetPage(
       name: Routes.ADD_WITHDRAWAL_ACCOUNT_SCREEN,
       page: () => const AddWithdrawalAccountScreen(),
       middlewares: [AuthMiddleware()],
       binding: WalletBindings(),
+      transition: Transition.rightToLeft,
     ),
     GetPage(
       name: Routes.FUND_WALLET_AMOUNT_SCREEN,

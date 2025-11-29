@@ -71,7 +71,7 @@ class DeliveryHistoryWidget extends StatelessWidget {
                   ),
                   customText(
                     formatToCurrency(double.parse(history.earning)),
-                    fontFamily: GoogleFonts.montserrat().fontFamily!,
+                    fontFamily: GoogleFonts.inter().fontFamily!,
                     fontWeight: FontWeight.w500,
                     fontSize: 16.sp,
                     overflow: TextOverflow.visible,

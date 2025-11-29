@@ -29,6 +29,16 @@ class AppNavigationController extends GetxController {
     if (locationEnabled) {
       currentScreenIndex = index;
       update();
+
+      // Fetch deliveries when switching to Deliveries tab (index 1)
+      if (index == 1 && Get.isRegistered<DeliveriesController>()) {
+        final controller = Get.find<DeliveriesController>();
+        // Reset pagination and fetch fresh data
+        controller.currentDeliveriesPage = 1;
+        controller.allDeliveries.clear();
+        controller.totalDeliveries = 0;
+        controller.fetchDeliveries();
+      }
     }
   }
 

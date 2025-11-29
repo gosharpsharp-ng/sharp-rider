@@ -1,23 +1,11 @@
-import 'package:json_annotation/json_annotation.dart';
-
-part 'wallet_balance_data_model.g.dart';
-
-@JsonSerializable()
 class WalletBalanceDataModel {
   final int id;
-  @JsonKey(name: 'available_balance')
   final String availableBalance;
-  @JsonKey(name: 'pending_balance')
   final String pendingBalance;
-  @JsonKey(name: 'bonus_balance')
   final String bonusBalance;
-  @JsonKey(name: 'currency_id')
   final int? currencyId;
-  @JsonKey(name: 'user_id')
   final int userId;
-  @JsonKey(name: 'created_at')
   final String createdAt;
-  @JsonKey(name: 'updated_at')
   final String updatedAt;
 
   WalletBalanceDataModel({
@@ -31,9 +19,47 @@ class WalletBalanceDataModel {
     required this.updatedAt,
   });
 
-  // Factory method to create an instance from JSON
-  factory WalletBalanceDataModel.fromJson(Map<String, dynamic> json) => _$WalletBalanceDataModelFromJson(json);
+  static int _parseInt(dynamic value) {
+    if (value == null) return 0;
+    if (value is int) return value;
+    if (value is num) return value.toInt();
+    return int.tryParse(value.toString()) ?? 0;
+  }
 
-  // Method to convert an instance to JSON
-  Map<String, dynamic> toJson() => _$WalletBalanceDataModelToJson(this);
+  static int? _parseNullableInt(dynamic value) {
+    if (value == null) return null;
+    if (value is int) return value;
+    if (value is num) return value.toInt();
+    return int.tryParse(value.toString());
+  }
+
+  static String _parseString(dynamic value) {
+    return value?.toString() ?? '0.00';
+  }
+
+  factory WalletBalanceDataModel.fromJson(Map<String, dynamic> json) {
+    return WalletBalanceDataModel(
+      id: _parseInt(json['id']),
+      availableBalance: _parseString(json['available_balance']),
+      pendingBalance: _parseString(json['pending_balance']),
+      bonusBalance: _parseString(json['bonus_balance']),
+      currencyId: _parseNullableInt(json['currency_id']),
+      userId: _parseInt(json['user_id']),
+      createdAt: _parseString(json['created_at']),
+      updatedAt: _parseString(json['updated_at']),
+    );
+  }
+
+  Map<String, dynamic> toJson() {
+    return {
+      'id': id,
+      'available_balance': availableBalance,
+      'pending_balance': pendingBalance,
+      'bonus_balance': bonusBalance,
+      'currency_id': currencyId,
+      'user_id': userId,
+      'created_at': createdAt,
+      'updated_at': updatedAt,
+    };
+  }
 }

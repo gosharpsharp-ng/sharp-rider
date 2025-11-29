@@ -33,6 +33,45 @@ class VehicleAndLicenseDetailsScreen extends StatelessWidget {
                       TitleSectionBox(
                         title: "Bike Details",
                         backgroundColor: AppColors.backgroundColor,
+                        trailing: settingsController.userProfile?.vehicle != null
+                            ? InkWell(
+                                onTap: () {
+                                  settingsController.setVehicleFieldsForEdit();
+                                  Get.toNamed(Routes.ADD_VEHICLE_SCREEN);
+                                },
+                                child: Container(
+                                  padding: EdgeInsets.symmetric(
+                                    horizontal: 12.w,
+                                    vertical: 6.h,
+                                  ),
+                                  decoration: BoxDecoration(
+                                    color: AppColors.primaryColor.withOpacity(0.1),
+                                    borderRadius: BorderRadius.circular(8.r),
+                                  ),
+                                  child: Row(
+                                    mainAxisSize: MainAxisSize.min,
+                                    children: [
+                                      SvgPicture.asset(
+                                        SvgAssets.editIcon,
+                                        height: 14.sp,
+                                        width: 14.sp,
+                                        colorFilter: ColorFilter.mode(
+                                          AppColors.primaryColor,
+                                          BlendMode.srcIn,
+                                        ),
+                                      ),
+                                      SizedBox(width: 4.w),
+                                      customText(
+                                        "Edit",
+                                        fontSize: 12.sp,
+                                        fontWeight: FontWeight.w600,
+                                        color: AppColors.primaryColor,
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              )
+                            : null,
                         children: [
                           VehicleDetailItem(
                             title: "Bike Type",
@@ -57,6 +96,45 @@ class VehicleAndLicenseDetailsScreen extends StatelessWidget {
                       TitleSectionBox(
                         title: "License Details",
                         backgroundColor: AppColors.backgroundColor,
+                        trailing: settingsController.vehicleLicense != null
+                            ? InkWell(
+                                onTap: () {
+                                  settingsController.setLicenseFieldsForEdit();
+                                  Get.toNamed(Routes.ADD_LICENSE_SCREEN);
+                                },
+                                child: Container(
+                                  padding: EdgeInsets.symmetric(
+                                    horizontal: 12.w,
+                                    vertical: 6.h,
+                                  ),
+                                  decoration: BoxDecoration(
+                                    color: AppColors.primaryColor.withOpacity(0.1),
+                                    borderRadius: BorderRadius.circular(8.r),
+                                  ),
+                                  child: Row(
+                                    mainAxisSize: MainAxisSize.min,
+                                    children: [
+                                      SvgPicture.asset(
+                                        SvgAssets.editIcon,
+                                        height: 14.sp,
+                                        width: 14.sp,
+                                        colorFilter: ColorFilter.mode(
+                                          AppColors.primaryColor,
+                                          BlendMode.srcIn,
+                                        ),
+                                      ),
+                                      SizedBox(width: 4.w),
+                                      customText(
+                                        "Edit",
+                                        fontSize: 12.sp,
+                                        fontWeight: FontWeight.w600,
+                                        color: AppColors.primaryColor,
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              )
+                            : null,
                         children: settingsController.vehicleLicense == null
                             ? [
                                 SizedBox(
@@ -64,6 +142,8 @@ class VehicleAndLicenseDetailsScreen extends StatelessWidget {
                                 ),
                                 InkWell(
                                   onTap: () {
+                                    settingsController.isEditingLicense = false;
+                                    settingsController.clearLicenseTextFields();
                                     Get.toNamed(Routes.ADD_LICENSE_SCREEN);
                                   },
                                   highlightColor: AppColors.transparent,
@@ -86,15 +166,15 @@ class VehicleAndLicenseDetailsScreen extends StatelessWidget {
                                 ),
                                 VehicleDetailItem(
                                   title: "Issue Date",
-                                  value: settingsController
-                                          .vehicleLicense?.issuedAt ??
-                                      "",
+                                  value: settingsController.vehicleLicense?.issuedAt != null
+                                      ? formatDate(settingsController.vehicleLicense!.issuedAt)
+                                      : "",
                                 ),
                                 VehicleDetailItem(
                                   title: "Expiry Date",
-                                  value: settingsController
-                                          .vehicleLicense?.expiryDate ??
-                                      "",
+                                  value: settingsController.vehicleLicense?.expiryDate != null
+                                      ? formatDate(settingsController.vehicleLicense!.expiryDate)
+                                      : "",
                                 ),
                               ],
                       ),

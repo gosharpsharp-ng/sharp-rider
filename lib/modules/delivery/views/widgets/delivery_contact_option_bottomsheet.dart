@@ -53,31 +53,32 @@ class DeliveryContactOptionBottomSheet extends StatelessWidget {
             SizedBox(
               height: 20.h,
             ),
-            Row(
-              children: [
-                ZegoSendCallInvitationButton(
-                  isVideoCall: false,
-                  buttonSize: Size(35.sp, 35.sp),
-                  iconSize: Size(35.sp, 35.sp),
-                  invitees: [
-                    ZegoUIKitUser(
-                      id: ordersController.selectedDelivery?.sender?.id
-                              .toString() ??
-                          "",
-                      name:
-                          "Client: ${ordersController.selectedDelivery?.sender?.firstName ?? ""} ${ordersController.selectedDelivery?.sender?.lastName ?? ""}",
-                    ),
-                  ],
-                ),
-                SizedBox(
-                  width: 25.sp,
-                ),
-                customText("Call in-app",
-                    fontSize: 18.sp,
-                    fontWeight: FontWeight.w600,
-                    color: AppColors.blackColor),
-              ],
-            ),
+            // Zego Cloud temporarily disabled - in-app calling
+            // Row(
+            //   children: [
+            //     ZegoSendCallInvitationButton(
+            //       isVideoCall: false,
+            //       buttonSize: Size(35.sp, 35.sp),
+            //       iconSize: Size(35.sp, 35.sp),
+            //       invitees: [
+            //         // ZegoUIKitUser(
+            //         //   id: ordersController.selectedDelivery?.sender?.id
+            //         //           .toString() ??
+            //         //       "",
+            //         //   name:
+            //         //       "Client: ${ordersController.selectedDelivery?.sender?.firstName ?? ""} ${ordersController.selectedDelivery?.sender?.lastName ?? ""}",
+            //         // ),
+            //       ],
+            //     ),
+            //     SizedBox(
+            //       width: 25.sp,
+            //     ),
+            //     customText("Call in-app",
+            //         fontSize: 18.sp,
+            //         fontWeight: FontWeight.w600,
+            //         color: AppColors.blackColor),
+            //   ],
+            // ),
             SizedBox(
               height: 5.h,
             ),
@@ -89,7 +90,7 @@ class DeliveryContactOptionBottomSheet extends StatelessWidget {
               child: InkWell(
                 onTap: () {
                   makePhoneCall(
-                      ordersController.selectedDelivery?.sender?.phone ?? "");
+                       "");
                 },
                 child: Row(
                   children: [

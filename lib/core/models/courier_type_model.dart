@@ -25,19 +25,36 @@ class CourierTypeModel {
     required this.updatedAt,
   });
 
+  // Helper to parse dynamic value to double
+  static double _parseDouble(dynamic value) {
+    if (value == null) return 0.0;
+    if (value is num) return value.toDouble();
+    if (value is String) return double.tryParse(value) ?? 0.0;
+    return 0.0;
+  }
+
+  // Helper to parse dynamic value to int
+  static int _parseInt(dynamic value) {
+    if (value == null) return 0;
+    if (value is int) return value;
+    if (value is num) return value.toInt();
+    if (value is String) return int.tryParse(value) ?? 0;
+    return 0;
+  }
+
   factory CourierTypeModel.fromJson(Map<String, dynamic> json) {
     return CourierTypeModel(
-      id: json['id'],
-      name: json['name'],
-      description: json['description'],
-      pricePerKilometer: (json['price_per_kilometer'] as num).toDouble(),
-      maxDistanceForDiscount: json['max_distance_for_discount'],
-      discountAmount: (json['discount_amount'] as num).toDouble(),
-      discountType: json['discount_type'],
-      commission: (json['commission'] as num).toDouble(),
-      additionalCharge: (json['additional_charge'] as num).toDouble(),
-      createdAt: json['created_at'],
-      updatedAt: json['updated_at'],
+      id: _parseInt(json['id']),
+      name: json['name'] ?? '',
+      description: json['description'] ?? '',
+      pricePerKilometer: _parseDouble(json['price_per_kilometer']),
+      maxDistanceForDiscount: _parseInt(json['max_distance_for_discount']),
+      discountAmount: _parseDouble(json['discount_amount']),
+      discountType: json['discount_type'] ?? '',
+      commission: _parseDouble(json['commission']),
+      additionalCharge: _parseDouble(json['additional_charge']),
+      createdAt: json['created_at'] ?? '',
+      updatedAt: json['updated_at'] ?? '',
     );
   }
 

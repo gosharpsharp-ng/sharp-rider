@@ -70,7 +70,8 @@ class BankSelectionBottomSheet extends StatelessWidget {
                                 width: 40.sp,
                                 height: 40.sp,
                                 decoration: BoxDecoration(
-                                  color: AppColors.primaryColor.withOpacity(0.1),
+                                  color: AppColors.primaryColor
+                                      .withOpacity(0.1),
                                   borderRadius: BorderRadius.circular(8.r),
                                 ),
                                 child: Icon(
@@ -204,4 +205,3 @@ class BankSelectionBottomSheet extends StatelessWidget {
     );
   }
 }
-

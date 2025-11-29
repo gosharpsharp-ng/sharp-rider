@@ -30,7 +30,9 @@ class SettingsHomeScreen extends StatelessWidget {
                   backgroundColor: AppColors.whiteColor,
                   children: [
                     Visibility(
-                      visible: settingsController.userProfile?.avatar != null,
+                      visible:
+                          settingsController.userProfile?.avatarUrl != null &&
+                          settingsController.userProfile!.avatarUrl!.isNotEmpty,
                       replacement: Visibility(
                         visible: settingsController.userProfilePicture != null,
                         replacement: CircleAvatar(
@@ -55,7 +57,7 @@ class SettingsHomeScreen extends StatelessWidget {
                       ),
                       child: CircleAvatar(
                         backgroundImage: NetworkImage(
-                            settingsController.userProfile?.avatar ?? ''),
+                            settingsController.userProfile?.avatarUrl ?? ''),
                         radius: 55.r,
                       ),
                     ),
@@ -89,28 +91,35 @@ class SettingsHomeScreen extends StatelessWidget {
                       Get.toNamed(Routes.EDIT_PROFILE_SCREEN);
                     },
                     title: "Edit Profile",
-                    icon: SvgAssets.profileIcon,
+                    icon: SvgAssets.userIcon,
                   ),
                   SettingsItem(
                     onPressed: () {
-                      Get.toNamed(Routes.ADD_WITHDRAWAL_ACCOUNT_SCREEN);
+                      Get.toNamed(Routes.FUND_WALLET_AMOUNT_SCREEN);
                     },
-                    title: "Update Bank Account",
+                    title: "Fund Wallet",
                     icon: SvgAssets.walletIcon,
+                  ),
+                  SettingsItem(
+                    onPressed: () {
+                      Get.toNamed(Routes.BANK_DETAILS_SCREEN);
+                    },
+                    title: "Bank Details",
+                    icon: SvgAssets.bankAccountIcon,
                   ),
                   SettingsItem(
                     onPressed: () {
                       Get.toNamed(Routes.TRANSACTIONS_SCREEN);
                     },
                     title: "Transaction History",
-                    icon: SvgAssets.walletIcon,
+                    icon: SvgAssets.transactionsIcon,
                   ),
                   SettingsItem(
                     onPressed: () {
                       Get.toNamed(Routes.PAYOUT_HISTORY_SCREEN);
                     },
                     title: "Payout History",
-                    icon: SvgAssets.walletIcon,
+                    icon: SvgAssets.payoutIcon,
                   ),
                   // SettingsItem(
                   //   onPressed: () {
@@ -141,7 +150,6 @@ class SettingsHomeScreen extends StatelessWidget {
                           onPressed: () {
                             Get.toNamed(Routes.ADD_LICENSE_SCREEN);
                           },
-                          isShouting: true,
                           title: "Add License",
                           icon: SvgAssets.licenseIcon,
                         )

@@ -83,10 +83,11 @@ class LocationService extends GetxService {
     });
 
     // Then start the position stream for updates
+    // Emit location every 5 meters
     _positionStream = Geolocator.getPositionStream(
       locationSettings: const LocationSettings(
         accuracy: LocationAccuracy.bestForNavigation,
-        distanceFilter: 15,
+        distanceFilter: 5,
       ),
     );
 
@@ -143,10 +144,11 @@ class LocationService extends GetxService {
 
   void startEmittingParcelLocation({required DeliveryModel deliveryModel}) {
     // start the position stream for updates when a parcel is picked
+    // Emit location every 5 meters
     _positionStream = Geolocator.getPositionStream(
       locationSettings: const LocationSettings(
         accuracy: LocationAccuracy.bestForNavigation,
-        distanceFilter: 15,
+        distanceFilter: 5,
       ),
     );
     if (Get.isRegistered<SocketService>()) {

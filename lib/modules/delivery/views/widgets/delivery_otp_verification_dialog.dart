@@ -2,7 +2,7 @@ import 'package:gorider/core/utils/exports.dart';
 
 class DeliveryOTPVerificationDialog extends StatefulWidget {
   final String trackingId;
-  final VoidCallback onVerificationSuccess;
+  final Function(String deliveryCode) onVerificationSuccess;
 
   const DeliveryOTPVerificationDialog({
     super.key,
@@ -23,7 +23,8 @@ class _DeliveryOTPVerificationDialogState
 
   Future<void> _verifyOTP() async {
     if (otpController.text.length < 4) {
-      showToast(message: "Please enter the complete OTP code", isError: true);
+      showToast(
+          message: "Please enter the complete delivery code", isError: true);
       return;
     }
 
@@ -32,23 +33,11 @@ class _DeliveryOTPVerificationDialogState
     });
 
     try {
-      final response = await deliveriesController.deliveryService.verifyDeliveryOTP({
-        'tracking_id': widget.trackingId,
-        'otp': otpController.text,
-      });
-
-      if (response.status == "success") {
-        showToast(message: "Delivery verified successfully!", isError: false);
-        Get.back(); // Close dialog
-        widget.onVerificationSuccess();
-      } else {
-        showToast(
-            message: response.message.isNotEmpty ? response.message : "Invalid OTP code",
-            isError: true);
-      }
+      // Pass the delivery code to the callback for use in the trigger API
+      Get.back(); // Close dialog first
+      widget.onVerificationSuccess(otpController.text);
     } catch (e) {
-      showToast(message: "Error verifying OTP: ${e.toString()}", isError: true);
-    } finally {
+      showToast(message: "Error: ${e.toString()}", isError: true);
       setState(() {
         isVerifying = false;
       });
@@ -66,7 +55,8 @@ class _DeliveryOTPVerificationDialogState
         fontWeight: FontWeight.w600,
       ),
       decoration: BoxDecoration(
-        border: Border.all(color: AppColors.primaryColor.withOpacity(0.3)),
+        border:
+            Border.all(color: AppColors.primaryColor.withOpacity(0.3)),
         borderRadius: BorderRadius.circular(12.r),
         color: AppColors.backgroundColor,
       ),

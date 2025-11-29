@@ -1,40 +1,21 @@
-import 'package:json_annotation/json_annotation.dart';
-
-part 'rider_stats_model.g.dart';
-
-// DeliveryHistory class definition
-@JsonSerializable()
 class DeliveryHistory {
   final int id;
-  @JsonKey(name: 'tracking_id')
   final String trackingId;
   final String status;
-  @JsonKey(name: 'payment_status')
   final String paymentStatus;
   final String distance;
   final String cost;
   final String earning;
-  @JsonKey(name: 'user_id')
   final int userId;
-  @JsonKey(name: 'rider_id')
   final int riderId;
-  @JsonKey(name: 'currency_id')
   final dynamic currencyId;
-  @JsonKey(name: 'payment_method_id')
   final dynamic paymentMethodId;
-  @JsonKey(name: 'courier_type_id')
   final int courierTypeId;
-  @JsonKey(name: 'originable_type')
   final String originableType;
-  @JsonKey(name: 'originable_id')
   final int originableId;
-  @JsonKey(name: 'destinationable_type')
   final String destinationableType;
-  @JsonKey(name: 'destinationable_id')
   final int destinationableId;
-  @JsonKey(name: 'created_at')
   final String createdAt;
-  @JsonKey(name: 'updated_at')
   final String updatedAt;
 
   DeliveryHistory({
@@ -58,22 +39,68 @@ class DeliveryHistory {
     required this.updatedAt,
   });
 
-  factory DeliveryHistory.fromJson(Map<String, dynamic> json) =>
-      _$DeliveryHistoryFromJson(json);
+  static int _parseInt(dynamic value) {
+    if (value == null) return 0;
+    if (value is int) return value;
+    if (value is num) return value.toInt();
+    return int.tryParse(value.toString()) ?? 0;
+  }
 
-  Map<String, dynamic> toJson() => _$DeliveryHistoryToJson(this);
+  static String _parseString(dynamic value) {
+    return value?.toString() ?? '';
+  }
+
+  factory DeliveryHistory.fromJson(Map<String, dynamic> json) {
+    return DeliveryHistory(
+      id: _parseInt(json['id']),
+      trackingId: _parseString(json['tracking_id']),
+      status: _parseString(json['status']),
+      paymentStatus: _parseString(json['payment_status']),
+      distance: _parseString(json['distance']),
+      cost: _parseString(json['cost']),
+      earning: _parseString(json['earning']),
+      userId: _parseInt(json['user_id']),
+      riderId: _parseInt(json['rider_id']),
+      currencyId: json['currency_id'],
+      paymentMethodId: json['payment_method_id'],
+      courierTypeId: _parseInt(json['courier_type_id']),
+      originableType: _parseString(json['originable_type']),
+      originableId: _parseInt(json['originable_id']),
+      destinationableType: _parseString(json['destinationable_type']),
+      destinationableId: _parseInt(json['destinationable_id']),
+      createdAt: _parseString(json['created_at']),
+      updatedAt: _parseString(json['updated_at']),
+    );
+  }
+
+  Map<String, dynamic> toJson() {
+    return {
+      'id': id,
+      'tracking_id': trackingId,
+      'status': status,
+      'payment_status': paymentStatus,
+      'distance': distance,
+      'cost': cost,
+      'earning': earning,
+      'user_id': userId,
+      'rider_id': riderId,
+      'currency_id': currencyId,
+      'payment_method_id': paymentMethodId,
+      'courier_type_id': courierTypeId,
+      'originable_type': originableType,
+      'originable_id': originableId,
+      'destinationable_type': destinationableType,
+      'destinationable_id': destinationableId,
+      'created_at': createdAt,
+      'updated_at': updatedAt,
+    };
+  }
 }
 
-// RiderStatsModel class definition
-@JsonSerializable()
 class RiderStatsModel {
-  @JsonKey(name: 'total_distance')
   final dynamic totalDistance;
-  @JsonKey(name: 'total_earnings')
   final dynamic totalEarnings;
-  @JsonKey(name: 'total_orders')
   final dynamic totalOrders;
-  @JsonKey(name: 'shipments') // Adding the List of DeliveryHistory
   final List<DeliveryHistory> shipments;
 
   RiderStatsModel({
@@ -83,10 +110,24 @@ class RiderStatsModel {
     required this.shipments,
   });
 
-  /// Factory method to generate a `RiderStatsModel` instance from JSON
-  factory RiderStatsModel.fromJson(Map<String, dynamic> json) =>
-      _$RiderStatsModelFromJson(json);
+  factory RiderStatsModel.fromJson(Map<String, dynamic> json) {
+    return RiderStatsModel(
+      totalDistance: json['total_distance'],
+      totalEarnings: json['total_earnings'],
+      totalOrders: json['total_orders'],
+      shipments: (json['shipments'] as List<dynamic>?)
+              ?.map((e) => DeliveryHistory.fromJson(e as Map<String, dynamic>))
+              .toList() ??
+          [],
+    );
+  }
 
-  /// Method to convert `RiderStatsModel` instance to JSON
-  Map<String, dynamic> toJson() => _$RiderStatsModelToJson(this);
+  Map<String, dynamic> toJson() {
+    return {
+      'total_distance': totalDistance,
+      'total_earnings': totalEarnings,
+      'total_orders': totalOrders,
+      'shipments': shipments.map((e) => e.toJson()).toList(),
+    };
+  }
 }

@@ -59,16 +59,16 @@ class SocketService extends GetxService {
   }
 
   /// Join rider delivery room
-  /// Emits to: "delivery:join" with payload { "driverId": riderId, "courierTypeId": courierTypeId }
+  /// Emits to: "delivery:join" with payload { "riderId": riderId, "courierTypeId": courierTypeId }
   void joinRiderRoom() {
     if (isConnected.value) {
-      final courierTypeId = _userProfile.vehicle?.courierType?.id ?? 1;
+      final courierTypeId = _userProfile.vehicle?.courierTypeId ?? 1;
       socket.emit('delivery:join', {
-        'driverId': _userProfile.id,
+        'riderId': _userProfile.id,
         'courierTypeId': courierTypeId,
       });
       _hasJoinedRiderRoom = true;
-      log('🚴 Rider joined delivery room - Driver ID: ${_userProfile.id}, Courier Type ID: $courierTypeId');
+      log('🚴 Rider joined delivery room - Rider ID: ${_userProfile.id}, Courier Type ID: $courierTypeId');
     }
   }
 
@@ -80,16 +80,15 @@ class SocketService extends GetxService {
   }
 
   /// Emit rider's current location to join/update in delivery room
-  /// Emits to: "delivery:location-update" with payload { driverId, location: {latitude, longitude, degrees, timestamp} }
+  /// Emits to: "delivery:location-update" with payload { riderId, location: {latitude, longitude, timestamp} }
   /// This allows the rider to receive new delivery requests based on their location
   void emitRiderLocationUpdateByCurrierType(Position position) {
     if (isConnected.value) {
       dynamic data = {
-        "driverId": _userProfile.id,
+        "riderId": _userProfile.id,
         "location": {
           "latitude": position.latitude,
           "longitude": position.longitude,
-          "degrees": position.heading,
           "timestamp": DateTime.now().toUtc().toIso8601String(),
         }
       };

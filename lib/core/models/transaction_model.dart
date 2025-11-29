@@ -1,25 +1,14 @@
-import 'package:json_annotation/json_annotation.dart';
-
-part 'transaction_model.g.dart';
-
-@JsonSerializable()
 class Transaction {
   final int id;
-  @JsonKey(name: 'payment_reference')
   final String paymentReference;
   final String amount;
   final String type;
   final String description;
   final String status;
-  @JsonKey(name: 'currency_id')
   final int? currencyId;
-  @JsonKey(name: 'gateway_id')
   final int? gatewayId;
-  @JsonKey(name: 'user_id')
   final int userId;
-  @JsonKey(name: 'created_at')
   final String createdAt;
-  @JsonKey(name: 'updated_at')
   final String updatedAt;
 
   Transaction({
@@ -36,13 +25,57 @@ class Transaction {
     required this.updatedAt,
   });
 
-  // Factory method to create an instance from JSON
-  factory Transaction.fromJson(Map<String, dynamic> json) => _$TransactionFromJson(json);
+  static int _parseInt(dynamic value) {
+    if (value == null) return 0;
+    if (value is int) return value;
+    if (value is num) return value.toInt();
+    return int.tryParse(value.toString()) ?? 0;
+  }
 
-  // Method to convert an instance to JSON
-  Map<String, dynamic> toJson() => _$TransactionToJson(this);
+  static int? _parseNullableInt(dynamic value) {
+    if (value == null) return null;
+    if (value is int) return value;
+    if (value is num) return value.toInt();
+    return int.tryParse(value.toString());
+  }
 
-  // ==================== Sharp-vendor Convenience Getters ====================
+  static String _parseString(dynamic value) {
+    return value?.toString() ?? '';
+  }
+
+  factory Transaction.fromJson(Map<String, dynamic> json) {
+    return Transaction(
+      id: _parseInt(json['id']),
+      paymentReference: _parseString(json['payment_reference']),
+      amount: _parseString(json['amount']),
+      type: _parseString(json['type']),
+      description: _parseString(json['description']),
+      status: _parseString(json['status']),
+      currencyId: _parseNullableInt(json['currency_id']),
+      gatewayId: _parseNullableInt(json['gateway_id']),
+      userId: _parseInt(json['user_id']),
+      createdAt: _parseString(json['created_at']),
+      updatedAt: _parseString(json['updated_at']),
+    );
+  }
+
+  Map<String, dynamic> toJson() {
+    return {
+      'id': id,
+      'payment_reference': paymentReference,
+      'amount': amount,
+      'type': type,
+      'description': description,
+      'status': status,
+      'currency_id': currencyId,
+      'gateway_id': gatewayId,
+      'user_id': userId,
+      'created_at': createdAt,
+      'updated_at': updatedAt,
+    };
+  }
+
+  // ==================== Convenience Getters ====================
 
   /// Parse amount as double for calculations
   double get amountDouble => double.tryParse(amount) ?? 0.0;

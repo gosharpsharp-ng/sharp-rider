@@ -32,7 +32,7 @@ class TransactionDetailSummaryItem extends StatelessWidget {
                   value,
                   color: AppColors.blackColor,
                   fontFamily: title == "Amount"
-                      ? GoogleFonts.montserrat().fontFamily!
+                      ? GoogleFonts.inter().fontFamily!
                       : "Satoshi",
                   fontSize: 14.sp,
                   fontWeight:
@@ -54,7 +54,7 @@ class TransactionDetailSummaryItem extends StatelessWidget {
                   color: AppColors.blackColor,
                   fontSize: 14.sp,
                   fontFamily: title == "Amount"
-                      ? GoogleFonts.montserrat().fontFamily!
+                      ? GoogleFonts.inter().fontFamily!
                       : "Satoshi",
                   fontWeight:
                       title == "Amount" ? FontWeight.w600 : FontWeight.w500,

@@ -310,8 +310,7 @@ class SkeletonLoaders {
                             children: [
                               Container(
                                 height: 12.sp,
-                                width:
-                                    [100.w, 120.w, 80.w, 140.w][index % 4],
+                                width: [100.w, 120.w, 80.w, 140.w][index % 4],
                                 decoration: BoxDecoration(
                                   color: Colors.grey[300],
                                   borderRadius: BorderRadius.circular(4.r),
@@ -444,7 +443,8 @@ class SkeletonLoaders {
                 4,
                 (index) => Container(
                   margin: EdgeInsets.only(right: 8.w, bottom: 8.h),
-                  padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 8.h),
+                  padding:
+                      EdgeInsets.symmetric(horizontal: 16.w, vertical: 8.h),
                   decoration: BoxDecoration(
                     color: Colors.grey[300],
                     borderRadius: BorderRadius.circular(20.r),

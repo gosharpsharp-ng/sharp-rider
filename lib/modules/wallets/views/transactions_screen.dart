@@ -49,8 +49,7 @@ class _TransactionsScreenState extends State<TransactionsScreen> {
                         height: 1.sh -
                             kToolbarHeight -
                             MediaQuery.of(context).padding.top,
-                        child: Center(
-                            child: customText("No transactions yet")),
+                        child: Center(child: customText("No transactions yet")),
                       )
                     else ...[
                       ...List.generate(
@@ -77,8 +76,7 @@ class _TransactionsScreenState extends State<TransactionsScreen> {
                         Center(
                           child: Padding(
                             padding: const EdgeInsets.all(8.0),
-                            child: customText("No more data to load",
-                                color: AppColors.blueColor),
+                            child: customText("", color: AppColors.blueColor),
                           ),
                         ),
                     ]

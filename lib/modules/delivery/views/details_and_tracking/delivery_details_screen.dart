@@ -68,25 +68,25 @@ class DeliveryDetailsScreen extends StatelessWidget {
                                   originLatitude: ordersController
                                       .selectedDelivery!
                                       .originLocation
-                                      .latitude,
+                                      .latitude ?? '0.0',
                                   originLongitude: ordersController
                                       .selectedDelivery!
                                       .originLocation
-                                      .longitude,
+                                      .longitude ?? '0.0',
                                   originAddress: ordersController
-                                      .selectedDelivery!.originLocation.name,
+                                      .selectedDelivery!.originLocation.name ?? '',
                                   destinationLatitude: ordersController
                                       .selectedDelivery!
                                       .destinationLocation
-                                      .latitude,
+                                      .latitude ?? '0.0',
                                   destinationLongitude: ordersController
                                       .selectedDelivery!
                                       .destinationLocation
-                                      .longitude,
+                                      .longitude ?? '0.0',
                                   destinationAddress: ordersController
                                       .selectedDelivery!
                                       .destinationLocation
-                                      .name);
+                                      .name ?? '');
                             } else if (['accepted'].contains(
                                 ordersController.selectedDelivery!.status)) {
                               ordersController
@@ -95,11 +95,11 @@ class DeliveryDetailsScreen extends StatelessWidget {
                                           double.parse(ordersController
                                               .selectedDelivery!
                                               .originLocation
-                                              .latitude),
+                                              .latitude ?? '0.0'),
                                           double.parse(ordersController
                                               .selectedDelivery!
                                               .originLocation
-                                              .longitude)));
+                                              .longitude ?? '0.0')));
                             } else if (['picked'].contains(
                                 ordersController.selectedDelivery!.status)) {
                               ordersController
@@ -108,11 +108,11 @@ class DeliveryDetailsScreen extends StatelessWidget {
                                           double.parse(ordersController
                                               .selectedDelivery!
                                               .destinationLocation
-                                              .latitude),
+                                              .latitude ?? '0.0'),
                                           double.parse(ordersController
                                               .selectedDelivery!
                                               .destinationLocation
-                                              .longitude)));
+                                              .longitude ?? '0.0')));
                             }
                           },
                           title: "View Progress",
@@ -149,19 +149,19 @@ class DeliveryDetailsScreen extends StatelessWidget {
                           DeliverySummaryDetailItem(
                             title: "Pick up address",
                             value: ordersController
-                                    .selectedDelivery?.originLocation.name ??
+                                    .selectedDelivery?.originLocation.displayName ??
                                 "",
                           ),
                           DeliverySummaryDetailItem(
                             title: "Sender",
                             value:
-                                '${ordersController.selectedDelivery?.sender?.firstName ?? ""} ${ordersController.selectedDelivery?.sender?.lastName ?? ""}',
+                                '${ordersController.selectedDelivery?.user?.firstName ?? ""} ${ordersController.selectedDelivery?.user?.lastName ?? ""}',
                           ),
                           DeliverySummaryDetailItem(
                             title: "Sender's phone",
                             isPhone: true,
                             value: ordersController
-                                    .selectedDelivery?.sender?.phone ??
+                                    .selectedDelivery?.user?.phone ??
                                 "",
                           ),
                         ],
@@ -173,21 +173,21 @@ class DeliveryDetailsScreen extends StatelessWidget {
                             titleIconAsset: SvgAssets.profileIcon,
                             title: "Receiver's name",
                             value: ordersController
-                                    .selectedDelivery?.receiver.name ??
+                                    .selectedDelivery?.receiver?.name ??
                                 "",
                           ),
                           DeliverySummaryDetailItem(
                             titleIconAsset: SvgAssets.locationIcon,
                             title: "Drop off address",
                             value: ordersController.selectedDelivery
-                                    ?.destinationLocation.name ??
+                                    ?.destinationLocation.displayName ??
                                 "",
                           ),
                           DeliverySummaryDetailItem(
                             titleIconAsset: SvgAssets.contactIcon,
                             title: "Receiver's phone",
                             value: ordersController
-                                    .selectedDelivery?.receiver.phone ??
+                                    .selectedDelivery?.receiver?.phone ??
                                 "",
                           ),
                         ],
@@ -197,10 +197,10 @@ class DeliveryDetailsScreen extends StatelessWidget {
                         title: "Delivery Items",
                         children: [
                           ...List.generate(
-                              ordersController.selectedDelivery!.items.length,
+                              ordersController.selectedDelivery?.items?.length ?? 0,
                               (i) => DeliveryItemAccordion(
                                   shipmentItemData: ordersController
-                                      .selectedDelivery!.items[i]))
+                                      .selectedDelivery!.items![i]))
                         ],
                       ),
                       SectionBox(

@@ -1,24 +1,11 @@
-import 'package:json_annotation/json_annotation.dart';
-
-part 'rating_stats_model.g.dart';
-
-@JsonSerializable()
 class RatingStatsModel {
-  @JsonKey(name: 'start_date')
   final String? startDate;
-  @JsonKey(name: 'end_date')
   final String? endDate;
-  @JsonKey(name: 'total_orders')
   final int? totalOrders;
-  @JsonKey(name: 'completed_orders')
   final int? completedOrders;
-  @JsonKey(name: 'total_ratings')
   final int? totalRatings;
-  @JsonKey(name: 'average_rating')
   final num? averageRating;
-  @JsonKey(name: 'rating_breakdown')
   final RatingBreakdown? ratingBreakdown;
-  @JsonKey(name: 'rating_percentage')
   final num? ratingPercentage;
 
   RatingStatsModel({
@@ -32,23 +19,53 @@ class RatingStatsModel {
     this.ratingPercentage,
   });
 
-  factory RatingStatsModel.fromJson(Map<String, dynamic> json) =>
-      _$RatingStatsModelFromJson(json);
+  static int? _parseNullableInt(dynamic value) {
+    if (value == null) return null;
+    if (value is int) return value;
+    if (value is num) return value.toInt();
+    return int.tryParse(value.toString());
+  }
 
-  Map<String, dynamic> toJson() => _$RatingStatsModelToJson(this);
+  static num? _parseNullableNum(dynamic value) {
+    if (value == null) return null;
+    if (value is num) return value;
+    return num.tryParse(value.toString());
+  }
+
+  factory RatingStatsModel.fromJson(Map<String, dynamic> json) {
+    return RatingStatsModel(
+      startDate: json['start_date']?.toString(),
+      endDate: json['end_date']?.toString(),
+      totalOrders: _parseNullableInt(json['total_orders']),
+      completedOrders: _parseNullableInt(json['completed_orders']),
+      totalRatings: _parseNullableInt(json['total_ratings']),
+      averageRating: _parseNullableNum(json['average_rating']),
+      ratingBreakdown: json['rating_breakdown'] != null
+          ? RatingBreakdown.fromJson(json['rating_breakdown'] as Map<String, dynamic>)
+          : null,
+      ratingPercentage: _parseNullableNum(json['rating_percentage']),
+    );
+  }
+
+  Map<String, dynamic> toJson() {
+    return {
+      'start_date': startDate,
+      'end_date': endDate,
+      'total_orders': totalOrders,
+      'completed_orders': completedOrders,
+      'total_ratings': totalRatings,
+      'average_rating': averageRating,
+      'rating_breakdown': ratingBreakdown?.toJson(),
+      'rating_percentage': ratingPercentage,
+    };
+  }
 }
 
-@JsonSerializable()
 class RatingBreakdown {
-  @JsonKey(name: '5_star')
   final int? fiveStar;
-  @JsonKey(name: '4_star')
   final int? fourStar;
-  @JsonKey(name: '3_star')
   final int? threeStar;
-  @JsonKey(name: '2_star')
   final int? twoStar;
-  @JsonKey(name: '1_star')
   final int? oneStar;
 
   RatingBreakdown({
@@ -59,8 +76,30 @@ class RatingBreakdown {
     this.oneStar,
   });
 
-  factory RatingBreakdown.fromJson(Map<String, dynamic> json) =>
-      _$RatingBreakdownFromJson(json);
+  static int? _parseNullableInt(dynamic value) {
+    if (value == null) return null;
+    if (value is int) return value;
+    if (value is num) return value.toInt();
+    return int.tryParse(value.toString());
+  }
 
-  Map<String, dynamic> toJson() => _$RatingBreakdownToJson(this);
+  factory RatingBreakdown.fromJson(Map<String, dynamic> json) {
+    return RatingBreakdown(
+      fiveStar: _parseNullableInt(json['5_star']),
+      fourStar: _parseNullableInt(json['4_star']),
+      threeStar: _parseNullableInt(json['3_star']),
+      twoStar: _parseNullableInt(json['2_star']),
+      oneStar: _parseNullableInt(json['1_star']),
+    );
+  }
+
+  Map<String, dynamic> toJson() {
+    return {
+      '5_star': fiveStar,
+      '4_star': fourStar,
+      '3_star': threeStar,
+      '2_star': twoStar,
+      '1_star': oneStar,
+    };
+  }
 }

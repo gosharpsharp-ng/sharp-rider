@@ -41,9 +41,12 @@ class SettingsItem extends StatelessWidget {
           children: [
             SvgPicture.asset(
               icon,
-              color: isShouting ? AppColors.redColor : AppColors.blackColor,
               height: 22.sp,
               width: 22.sp,
+              colorFilter: ColorFilter.mode(
+                isShouting ? AppColors.redColor : AppColors.blackColor,
+                BlendMode.srcIn,
+              ),
             ),
             SizedBox(
               width: 20.sp,

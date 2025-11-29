@@ -1,123 +1,273 @@
-import 'package:gorider/core/models/delivery_model.dart';
-import 'package:json_annotation/json_annotation.dart';
-
-part 'delivery_notification_model.g.dart';
-
-@JsonSerializable()
 class DeliveryNotificationModel {
   final int id;
-  @JsonKey(name: 'order_id')
   final int? orderId;
-  @JsonKey(name: 'tracking_id')
   final String trackingId;
-  final String status;
-  @JsonKey(name: 'payment_status', defaultValue: "")
+  final String? status;
   final String paymentStatus;
   final String distance;
   final String cost;
-  @JsonKey(name: 'user_id', defaultValue: 1)
   final int userId;
-  @JsonKey(name: 'rider_id')
   final int? riderId;
-  @JsonKey(name: 'currency_id')
-  final int? currencyId;
-  @JsonKey(name: 'pickup_location')
-  final ShipmentLocation originLocation;
-  @JsonKey(name: 'destination_location')
-  final ShipmentLocation destinationLocation;
-  @JsonKey(name: 'receiver')
+  final int? courierTypeId;
+  final NotificationLocation originLocation;
+  final NotificationLocation destinationLocation;
   final DeliveryReceiver? receiver;
-  @JsonKey(name: 'user')
+  final DeliveryNotificationSender? sender;
   final DeliveryUser? user;
-  @JsonKey(name: 'currency')
   final DeliveryCurrency? currency;
+  final String? message;
 
   DeliveryNotificationModel({
     required this.id,
     this.orderId,
     required this.trackingId,
-    required this.status,
+    this.status,
     required this.paymentStatus,
     required this.distance,
     required this.cost,
     required this.userId,
     this.riderId,
-    this.currencyId,
+    this.courierTypeId,
     required this.originLocation,
     required this.destinationLocation,
     this.receiver,
+    this.sender,
     this.user,
     this.currency,
+    this.message,
   });
 
-  // Factory method to create an instance from JSON
-  factory DeliveryNotificationModel.fromJson(Map<String, dynamic> json) =>
-      _$DeliveryNotificationModelFromJson(json);
+  factory DeliveryNotificationModel.fromJson(Map<String, dynamic> json) {
+    return DeliveryNotificationModel(
+      id: json['deliveryId'] as int? ?? 0,
+      orderId: json['orderId'] as int?,
+      trackingId: json['trackingId'] as String? ?? '',
+      status: json['status'] as String? ?? 'confirmed',
+      paymentStatus: json['paymentStatus'] as String? ?? 'pending',
+      distance: _parseToString(json['distance']),
+      cost: _parseToString(json['price']),
+      userId: json['userId'] as int? ?? 1,
+      riderId: json['riderId'] as int?,
+      courierTypeId: json['courierTypeId'] as int?,
+      originLocation: json['pickupLocation'] != null
+          ? NotificationLocation.fromJson(json['pickupLocation'])
+          : NotificationLocation.empty(),
+      destinationLocation: json['destinationLocation'] != null
+          ? NotificationLocation.fromJson(json['destinationLocation'])
+          : NotificationLocation.empty(),
+      receiver: json['receiver'] != null
+          ? DeliveryReceiver.fromJson(json['receiver'])
+          : null,
+      sender: json['sender'] != null
+          ? DeliveryNotificationSender.fromJson(json['sender'])
+          : null,
+      user: json['user'] != null ? DeliveryUser.fromJson(json['user']) : null,
+      currency: json['currency'] != null
+          ? DeliveryCurrency.fromJson(json['currency'])
+          : null,
+      message: json['message'] as String?,
+    );
+  }
 
-  // Method to convert an instance to JSON
-  Map<String, dynamic> toJson() => _$DeliveryNotificationModelToJson(this);
+  Map<String, dynamic> toJson() {
+    return {
+      'deliveryId': id,
+      'orderId': orderId,
+      'trackingId': trackingId,
+      'status': status,
+      'paymentStatus': paymentStatus,
+      'distance': distance,
+      'price': cost,
+      'userId': userId,
+      'riderId': riderId,
+      'courierTypeId': courierTypeId,
+      'pickupLocation': originLocation.toJson(),
+      'destinationLocation': destinationLocation.toJson(),
+      'receiver': receiver?.toJson(),
+      'sender': sender?.toJson(),
+      'user': user?.toJson(),
+      'currency': currency?.toJson(),
+      'message': message,
+    };
+  }
+
+  static String _parseToString(dynamic value) {
+    if (value == null) return '0';
+    if (value is String) return value;
+    return value.toString();
+  }
 }
 
-@JsonSerializable()
 class DeliveryReceiver {
-  final int id;
-  final String name;
-  final String address;
-  final String phone;
+  final int? id;
+  final String? name;
+  final String? address;
+  final String? phone;
   final String? email;
 
   DeliveryReceiver({
-    required this.id,
-    required this.name,
-    required this.address,
-    required this.phone,
+    this.id,
+    this.name,
+    this.address,
+    this.phone,
     this.email,
   });
 
-  factory DeliveryReceiver.fromJson(Map<String, dynamic> json) =>
-      _$DeliveryReceiverFromJson(json);
-  Map<String, dynamic> toJson() => _$DeliveryReceiverToJson(this);
+  factory DeliveryReceiver.fromJson(Map<String, dynamic> json) {
+    return DeliveryReceiver(
+      id: json['id'] as int?,
+      name: json['name'] as String?,
+      address: json['address'] as String?,
+      phone: json['phone'] as String?,
+      email: json['email'] as String?,
+    );
+  }
+
+  Map<String, dynamic> toJson() {
+    return {
+      'id': id,
+      'name': name,
+      'address': address,
+      'phone': phone,
+      'email': email,
+    };
+  }
 }
 
-@JsonSerializable()
 class DeliveryUser {
-  final int id;
-  final String fname;
-  final String lname;
-  final String email;
-  final String phone;
+  final int? id;
+  final String? fname;
+  final String? lname;
+  final String? email;
+  final String? phone;
 
   DeliveryUser({
-    required this.id,
-    required this.fname,
-    required this.lname,
-    required this.email,
-    required this.phone,
+    this.id,
+    this.fname,
+    this.lname,
+    this.email,
+    this.phone,
   });
 
-  factory DeliveryUser.fromJson(Map<String, dynamic> json) =>
-      _$DeliveryUserFromJson(json);
-  Map<String, dynamic> toJson() => _$DeliveryUserToJson(this);
+  factory DeliveryUser.fromJson(Map<String, dynamic> json) {
+    return DeliveryUser(
+      id: json['id'] as int?,
+      fname: json['fname'] as String?,
+      lname: json['lname'] as String?,
+      email: json['email'] as String?,
+      phone: json['phone'] as String?,
+    );
+  }
+
+  Map<String, dynamic> toJson() {
+    return {
+      'id': id,
+      'fname': fname,
+      'lname': lname,
+      'email': email,
+      'phone': phone,
+    };
+  }
 }
 
-@JsonSerializable()
 class DeliveryCurrency {
-  final int id;
-  final String code;
-  final String name;
-  final String symbol;
-  @JsonKey(name: 'exchange_rate')
-  final String exchangeRate;
+  final int? id;
+  final String? code;
+  final String? name;
+  final String? symbol;
+  final String? exchangeRate;
 
   DeliveryCurrency({
-    required this.id,
-    required this.code,
-    required this.name,
-    required this.symbol,
-    required this.exchangeRate,
+    this.id,
+    this.code,
+    this.name,
+    this.symbol,
+    this.exchangeRate,
   });
 
-  factory DeliveryCurrency.fromJson(Map<String, dynamic> json) =>
-      _$DeliveryCurrencyFromJson(json);
-  Map<String, dynamic> toJson() => _$DeliveryCurrencyToJson(this);
+  factory DeliveryCurrency.fromJson(Map<String, dynamic> json) {
+    return DeliveryCurrency(
+      id: json['id'] as int?,
+      code: json['code'] as String?,
+      name: json['name'] as String?,
+      symbol: json['symbol'] as String?,
+      exchangeRate: json['exchange_rate'] as String?,
+    );
+  }
+
+  Map<String, dynamic> toJson() {
+    return {
+      'id': id,
+      'code': code,
+      'name': name,
+      'symbol': symbol,
+      'exchange_rate': exchangeRate,
+    };
+  }
+}
+
+class NotificationLocation {
+  final String? name;
+  final String? latitude;
+  final String? longitude;
+
+  NotificationLocation({
+    this.name,
+    this.latitude,
+    this.longitude,
+  });
+
+  factory NotificationLocation.empty() => NotificationLocation(
+        name: '',
+        latitude: '0.0',
+        longitude: '0.0',
+      );
+
+  factory NotificationLocation.fromJson(Map<String, dynamic> json) {
+    return NotificationLocation(
+      name: json['name'] as String?,
+      latitude: json['latitude']?.toString(),
+      longitude: json['longitude']?.toString(),
+    );
+  }
+
+  Map<String, dynamic> toJson() {
+    return {
+      'name': name,
+      'latitude': latitude,
+      'longitude': longitude,
+    };
+  }
+}
+
+class DeliveryNotificationSender {
+  final int? id;
+  final String? name;
+  final String? phone;
+  final String? email;
+
+  DeliveryNotificationSender({
+    this.id,
+    this.name,
+    this.phone,
+    this.email,
+  });
+
+  factory DeliveryNotificationSender.fromJson(Map<String, dynamic> json) {
+    return DeliveryNotificationSender(
+      id: json['id'] as int?,
+      name: json['name'] as String?,
+      phone: json['phone'] as String?,
+      email: json['email'] as String?,
+    );
+  }
+
+  Map<String, dynamic> toJson() {
+    return {
+      'id': id,
+      'name': name,
+      'phone': phone,
+      'email': email,
+    };
+  }
 }

@@ -74,8 +74,8 @@ class VehicleCategoryBottomSheet extends StatelessWidget {
                                     ),
                                   ),
                                   Divider(
-                                    color:
-                                        AppColors.primaryColor.withOpacity(0.1),
+                                    color: AppColors.primaryColor
+                                        .withOpacity(0.1),
                                   )
                                 ],
                         ),

@@ -7,8 +7,6 @@ class DeliveriesHistoryScreen extends StatelessWidget {
     switch (status.toLowerCase()) {
       case 'all':
         return 'All';
-      case 'pending':
-        return 'Pending';
       case 'accepted':
         return 'Accepted';
       case 'picked':
@@ -18,7 +16,7 @@ class DeliveriesHistoryScreen extends StatelessWidget {
       case 'cancelled':
         return 'Cancelled';
       default:
-        return status;
+        return status.toUpperCase();
     }
   }
 
@@ -32,39 +30,35 @@ class DeliveriesHistoryScreen extends StatelessWidget {
           implyLeading: false,
         ),
         backgroundColor: AppColors.backgroundColor,
-        body: RefreshIndicator(
-          backgroundColor: AppColors.primaryColor,
-          color: Colors.white,
-          onRefresh: () async {
-            await Get.find<DeliveriesController>().fetchDeliveries();
-          },
-          child: Container(
-            padding: EdgeInsets.symmetric(horizontal: 15.sp, vertical: 5.h),
-            height: 1.sh,
-            width: 1.sw,
-            color: AppColors.backgroundColor,
-            child: SingleChildScrollView(
+        body: Column(
+          children: [
+            // Status Filter Tabs - Fixed at top
+            Container(
+              padding: EdgeInsets.symmetric(horizontal: 15.sp, vertical: 5.h),
+              color: AppColors.backgroundColor,
               child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   SizedBox(height: 20.h),
-
-                  // Status Filter Tabs
-                  Container(
+                  SizedBox(
                     height: 45.h,
                     child: ListView.separated(
                       scrollDirection: Axis.horizontal,
                       itemCount: ordersController.deliveryStatuses.length,
-                      separatorBuilder: (context, index) => SizedBox(width: 12.w),
+                      separatorBuilder: (context, index) =>
+                          SizedBox(width: 12.w),
                       itemBuilder: (context, index) {
                         final status = ordersController.deliveryStatuses[index];
-                        final isSelected = ordersController.selectedDeliveryStatus == status;
-                        final deliveryCount = ordersController.getDeliveryCountByStatus(status);
+                        final isSelected =
+                            ordersController.selectedDeliveryStatus == status;
+                        final deliveryCount =
+                            ordersController.getDeliveryCountByStatus(status);
                         final displayName = _getStatusDisplayName(status);
 
                         return InkWell(
-                          onTap: () {
+                          onTap: () async {
                             ordersController.setSelectedDeliveryStatus(status);
+                            // Reload deliveries when switching tabs
+                            await ordersController.fetchDeliveries();
                           },
                           child: Container(
                             padding: EdgeInsets.symmetric(
@@ -123,99 +117,121 @@ class DeliveriesHistoryScreen extends StatelessWidget {
                       },
                     ),
                   ),
-
-                  SizedBox(
-                    height: 15.h,
-                  ),
-                  ordersController.fetchingDeliveries &&
-                          ordersController.filteredDeliveries.isEmpty
-                      ? SizedBox(
-                          width: 1.sw,
-                          height: 1.sh * 0.674,
-                          child: SingleChildScrollView(
-                            child: SkeletonLoaders.deliveryItem(count: 5),
-                          ),
-                        )
-                      : ordersController.filteredDeliveries.isEmpty
-                          ? SizedBox(
-                              width: 1.sw,
-                              height: 1.sh * 0.674,
-                              child: Column(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: [
-                                  Icon(
-                                    Icons.local_shipping_outlined,
-                                    size: 64.sp,
-                                    color: AppColors.greyColor.withOpacity(0.5),
-                                  ),
-                                  SizedBox(height: 16.h),
-                                  customText(
-                                    "No deliveries yet",
-                                    fontSize: 16.sp,
-                                    color: AppColors.greyColor,
-                                    fontWeight: FontWeight.w500,
-                                  ),
-                                  SizedBox(height: 8.h),
-                                  customText(
-                                    "Your delivery history will appear here",
-                                    fontSize: 14.sp,
-                                    color: AppColors.greyColor,
-                                  ),
-                                ],
-                              ),
-                            )
-                      : Container(
-                          width: 1.sw,
-                          height: 1.sh * 0.674,
-                          child: SingleChildScrollView(
-                            controller:
-                                ordersController.deliveriesScrollController,
-                            child: Column(children: [
-                              ...List.generate(
-                                ordersController.filteredDeliveries.length,
-                                (i) => DeliveryItemWidget(
-                                  onSelected: () {
-                                    ordersController.setSelectedDelivery(
-                                        ordersController.filteredDeliveries[i]);
-                                    // Navigate to tracking screen
-                                    Get.toNamed(Routes.DELIVERY_TRACKING_SCREEN);
-                                  },
-                                  shipment: ordersController.filteredDeliveries[i],
-                                ),
-                              ),
-                              Visibility(
-                                visible: ordersController.fetchingDeliveries &&
-                                    ordersController.allDeliveries.isNotEmpty,
-                                child: Center(
-                                  child: Padding(
-                                    padding: const EdgeInsets.all(8.0),
-                                    child: customText("Loading more...",
-                                        color: AppColors.blueColor),
-                                  ),
-                                ),
-                              ),
-                              Visibility(
-                                visible:
-                                    ordersController.allDeliveries.length ==
-                                        ordersController.totalDeliveries,
-                                child: Center(
-                                  child: Padding(
-                                    padding: const EdgeInsets.all(8.0),
-                                    child: customText("No more data to load",
-                                        color: AppColors.blueColor),
-                                  ),
-                                ),
-                              ),
-                            ]),
-                          ),
-                        ),
-                  SizedBox(
-                    height: 3.h,
-                  ),
+                  SizedBox(height: 15.h),
                 ],
               ),
             ),
-          ),
+
+            // Scrollable delivery list with RefreshIndicator
+            Expanded(
+              child: RefreshIndicator(
+                backgroundColor: AppColors.primaryColor,
+                color: Colors.white,
+                onRefresh: () async {
+                  await ordersController.fetchDeliveries();
+                },
+                child: ordersController.fetchingDeliveries &&
+                        ordersController.filteredDeliveries.isEmpty
+                    ? ListView(
+                        physics: const AlwaysScrollableScrollPhysics(),
+                        padding: EdgeInsets.symmetric(horizontal: 15.sp),
+                        children: [
+                          SkeletonLoaders.deliveryItem(count: 5),
+                        ],
+                      )
+                    : ordersController.filteredDeliveries.isEmpty
+                        ? ListView(
+                            physics: const AlwaysScrollableScrollPhysics(),
+                            children: [
+                              SizedBox(
+                                height: 1.sh * 0.5,
+                                child: Center(
+                                  child: Column(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    children: [
+                                      Icon(
+                                        Icons.electric_bike_sharp,
+                                        size: 64.sp,
+                                        color: AppColors.greyColor
+                                            .withOpacity(0.5),
+                                      ),
+                                      SizedBox(height: 16.h),
+                                      customText(
+                                        "No deliveries yet",
+                                        fontSize: 16.sp,
+                                        color: AppColors.greyColor,
+                                        fontWeight: FontWeight.w500,
+                                      ),
+                                      SizedBox(height: 8.h),
+                                      customText(
+                                        "Your delivery history will appear here",
+                                        fontSize: 14.sp,
+                                        color: AppColors.greyColor,
+                                      ),
+                                      SizedBox(height: 16.h),
+                                      customText(
+                                        "Pull down to refresh",
+                                        fontSize: 12.sp,
+                                        color: AppColors.greyColor
+                                            .withOpacity(0.7),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              ),
+                            ],
+                          )
+                        : ListView.builder(
+                            controller:
+                                ordersController.deliveriesScrollController,
+                            physics: const AlwaysScrollableScrollPhysics(),
+                            padding: EdgeInsets.symmetric(horizontal: 15.sp),
+                            itemCount:
+                                ordersController.filteredDeliveries.length + 1,
+                            itemBuilder: (context, index) {
+                              if (index ==
+                                  ordersController.filteredDeliveries.length) {
+                                // Footer item
+                                if (ordersController.fetchingDeliveries &&
+                                    ordersController.allDeliveries.isNotEmpty) {
+                                  return Center(
+                                    child: Padding(
+                                      padding: const EdgeInsets.all(8.0),
+                                      child: customText("Loading more...",
+                                          color: AppColors.blueColor),
+                                    ),
+                                  );
+                                } else if (ordersController
+                                        .allDeliveries.length ==
+                                    ordersController.totalDeliveries) {
+                                  return Center(
+                                    child: Padding(
+                                      padding: const EdgeInsets.all(8.0),
+                                      child: customText("",
+                                          color: AppColors.blueColor),
+                                    ),
+                                  );
+                                }
+                                return const SizedBox.shrink();
+                              }
+
+                              return DeliveryItemWidget(
+                                onSelected: () async {
+                                  ordersController.setSelectedDelivery(
+                                      ordersController
+                                          .filteredDeliveries[index]);
+                                  // Fetch full delivery details before navigating
+                                  await ordersController.getDelivery();
+                                  Get.toNamed(Routes.DELIVERY_DETAILS);
+                                },
+                                shipment:
+                                    ordersController.filteredDeliveries[index],
+                              );
+                            },
+                          ),
+              ),
+            ),
+          ],
         ),
       );
     });

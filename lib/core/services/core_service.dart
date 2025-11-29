@@ -372,7 +372,7 @@ class CoreService extends GetConnect {
 
       dio_pack.FormData payload = dio_pack.FormData.fromMap(formDataMap);
       // Perform the PUT request
-      final res = await _dio.post(url, data: payload);
+      final res = await _dio.put(url, data: payload);
       if (res.statusCode == 200 || res.statusCode == 201) {
         return _parseResponse(res.data);
       }

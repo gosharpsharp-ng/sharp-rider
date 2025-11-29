@@ -481,8 +481,8 @@ class SignUpController extends GetxController {
       if (response.status == "success") {
         // Send OTP for email verification
         await sendOtp();
-        // Navigate to OTP screen
-        Get.offAndToNamed(Routes.SIGNUP_OTP_SCREEN);
+        // Navigate to OTP screen - Use Get.toNamed instead of Get.offAndToNamed to keep controller alive
+        Get.toNamed(Routes.SIGNUP_OTP_SCREEN);
       }
     } catch (e) {
       showToast(
@@ -522,6 +522,8 @@ class SignUpController extends GetxController {
       );
       setLoadingState(false);
       if (response.status == "success") {
+        // Delete the controller before navigating away
+        Get.delete<SignUpController>(force: true);
         // Navigate to login screen
         Get.offAllNamed(Routes.SIGN_IN);
       }
