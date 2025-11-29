@@ -411,7 +411,7 @@ class _RatingsScreenState extends State<RatingsScreen> {
                               child: _buildStatCard(
                                 title: "Total Orders",
                                 value: "${stats?.totalOrders ?? 0}",
-                                icon: Icons.local_shipping_outlined,
+                                icon: Icons.electric_bike_outlined,
                                 color: Colors.blue,
                               ),
                             ),

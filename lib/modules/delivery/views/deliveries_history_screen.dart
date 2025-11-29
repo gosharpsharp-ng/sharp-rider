@@ -216,12 +216,11 @@ class DeliveriesHistoryScreen extends StatelessWidget {
                               }
 
                               return DeliveryItemWidget(
-                                onSelected: () async {
+                                onSelected: () {
                                   ordersController.setSelectedDelivery(
                                       ordersController
                                           .filteredDeliveries[index]);
-                                  // Fetch full delivery details before navigating
-                                  await ordersController.getDelivery();
+                                  // Navigate to details screen - it will fetch details on init
                                   Get.toNamed(Routes.DELIVERY_DETAILS);
                                 },
                                 shipment:

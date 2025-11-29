@@ -199,3 +199,8 @@ export 'package:gorider/modules/settings/views/ratings_screen.dart';
 
 // Base64 Image Utils
 export 'package:gorider/core/utils/base64_image_utils.dart';
+
+// Shared delivery widgets
+export 'package:gorider/modules/delivery/views/widgets/delivery_tracking_id_widget.dart';
+export 'package:gorider/modules/delivery/views/widgets/delivery_locations_card.dart';
+export 'package:gorider/modules/delivery/views/widgets/delivery_contact_card.dart';

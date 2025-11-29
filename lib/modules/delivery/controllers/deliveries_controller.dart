@@ -121,7 +121,7 @@ class DeliveriesController extends GetxController with WidgetsBindingObserver {
     update();
 
     APIResponse response = await deliveryService.getDelivery({
-      'id': selectedDelivery!.id,
+      'tracking_id': selectedDelivery!.trackingId,
     });
     fetchingDeliveries = false;
     update();
