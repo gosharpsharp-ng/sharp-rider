@@ -13,6 +13,9 @@ class DashboardController extends GetxController {
   // Stream subscription for location updates
   StreamSubscription<Position>? _locationSubscription;
 
+  // Flag to track if map is visible/mounted
+  bool isMapVisible = false;
+
   // Light map style (standard Google Maps)
   static const String _lightMapStyle = '[]';
 
@@ -88,16 +91,23 @@ class DashboardController extends GetxController {
   }
 
   void _updateMapCamera(Position position) {
-    try {
-      mapController?.animateCamera(
+    // Only animate camera if map is visible and controller is available
+    if (isMapVisible && mapController != null) {
+      mapController!.animateCamera(
         CameraUpdate.newLatLng(
           LatLng(position.latitude, position.longitude),
         ),
-      );
-    } catch (e) {
-      debugPrint("Error animating camera: $e");
+      ).catchError((e) {
+        // Silently handle error when map is not available
+        debugPrint("Error animating camera: $e");
+      });
     }
     _updateRiderMarker(position);
+  }
+
+  /// Call this when the map becomes visible (e.g., on dashboard screen)
+  void setMapVisible(bool visible) {
+    isMapVisible = visible;
   }
 
   void _updateRiderMarker(Position position) {
@@ -141,10 +151,16 @@ class DashboardController extends GetxController {
 
   void onMapCreated(GoogleMapController controller) {
     mapController = controller;
+    isMapVisible = true;
     if (currentPosition != null) {
       _updateMapCamera(currentPosition!);
       _updateRiderMarker(currentPosition!);
     }
+  }
+
+  /// Call this when leaving the dashboard screen to prevent camera animation errors
+  void onMapDisposed() {
+    isMapVisible = false;
   }
 
   String get currentMapStyle =>
@@ -165,6 +181,7 @@ class DashboardController extends GetxController {
 
   @override
   void onClose() {
+    isMapVisible = false;
     _locationSubscription?.cancel();
     mapController?.dispose();
     super.onClose();

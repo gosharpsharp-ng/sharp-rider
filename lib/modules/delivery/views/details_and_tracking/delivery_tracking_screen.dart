@@ -31,17 +31,21 @@ class _DeliveryTrackingScreenState extends State<DeliveryTrackingScreen> {
       deliveriesController.drawPolyLineFromOriginToDestination(
         context,
         originLatitude:
-            deliveriesController.selectedDelivery!.originLocation.latitude ?? '0.0',
+            deliveriesController.selectedDelivery!.originLocation.latitude ??
+                '0.0',
         originLongitude:
-            deliveriesController.selectedDelivery!.originLocation.longitude ?? '0.0',
-        destinationLatitude:
-            deliveriesController.selectedDelivery!.destinationLocation.latitude ?? '0.0',
+            deliveriesController.selectedDelivery!.originLocation.longitude ??
+                '0.0',
+        destinationLatitude: deliveriesController
+                .selectedDelivery!.destinationLocation.latitude ??
+            '0.0',
         destinationLongitude: deliveriesController
-            .selectedDelivery!.destinationLocation.longitude ?? '0.0',
+                .selectedDelivery!.destinationLocation.longitude ??
+            '0.0',
         originAddress:
             deliveriesController.selectedDelivery!.originLocation.displayName,
-        destinationAddress:
-            deliveriesController.selectedDelivery!.destinationLocation.displayName,
+        destinationAddress: deliveriesController
+            .selectedDelivery!.destinationLocation.displayName,
       );
     }
   }
@@ -57,6 +61,17 @@ class _DeliveryTrackingScreenState extends State<DeliveryTrackingScreen> {
       return '${deliveriesController.selectedDelivery!.destinationLocation.latitude},${deliveriesController.selectedDelivery!.destinationLocation.longitude}';
     }
     return '';
+  }
+
+  // Get navigation button label based on delivery status
+  String _getNavigationButtonLabel() {
+    final status = deliveriesController.selectedDelivery?.status?.toLowerCase();
+    if (status == 'accepted') {
+      return 'Go to Pickup';
+    } else if (status == 'picked') {
+      return 'Go to Delivery';
+    }
+    return 'Navigate';
   }
 
   // Get button text based on delivery status
@@ -113,6 +128,26 @@ class _DeliveryTrackingScreenState extends State<DeliveryTrackingScreen> {
         status: _getStatusAction(),
       );
     }
+  }
+
+  // Helper to get sender initials
+  String _getSenderInitials() {
+    final delivery = deliveriesController.selectedDelivery;
+    final first = delivery?.user?.firstName?.isNotEmpty == true
+        ? delivery!.user!.firstName!.substring(0, 1)
+        : "";
+    final last = delivery?.user?.lastName?.isNotEmpty == true
+        ? delivery!.user!.lastName!.substring(0, 1)
+        : "";
+    return "$first$last";
+  }
+
+  // Helper to get receiver initials
+  String _getReceiverInitials() {
+    final name = deliveriesController.selectedDelivery?.receiver?.name ?? "";
+    return name.length >= 2
+        ? name.substring(0, 2).toUpperCase()
+        : name.toUpperCase();
   }
 
   static const CameraPosition _kLagosPosition = CameraPosition(
@@ -176,7 +211,7 @@ class _DeliveryTrackingScreenState extends State<DeliveryTrackingScreen> {
                             size: 20.sp,
                           ),
                           label: customText(
-                            "Navigate",
+                            _getNavigationButtonLabel(),
                             fontSize: 14.sp,
                             fontWeight: FontWeight.w600,
                             color: AppColors.whiteColor,
@@ -221,196 +256,16 @@ class _DeliveryTrackingScreenState extends State<DeliveryTrackingScreen> {
                               ),
                             ),
 
-                            // Tracking ID
-                            Container(
-                              padding: EdgeInsets.symmetric(
-                                  horizontal: 16.sp, vertical: 10.sp),
-                              margin: EdgeInsets.symmetric(horizontal: 16.sp),
-                              decoration: BoxDecoration(
-                                borderRadius: BorderRadius.circular(8.r),
-                                color: AppColors.backgroundColor,
-                              ),
-                              child: Row(
-                                mainAxisAlignment:
-                                    MainAxisAlignment.spaceBetween,
-                                children: [
-                                  Row(
-                                    children: [
-                                      Icon(
-                                        Icons.local_shipping_outlined,
-                                        color: AppColors.primaryColor,
-                                        size: 20.sp,
-                                      ),
-                                      SizedBox(width: 8.w),
-                                      customText(
-                                        "Tracking ID:",
-                                        color: AppColors.obscureTextColor,
-                                        fontSize: 13.sp,
-                                        fontWeight: FontWeight.w400,
-                                      ),
-                                    ],
-                                  ),
-                                  Row(
-                                    children: [
-                                      customText(
-                                        deliveriesController
-                                                .selectedDelivery?.trackingId ??
-                                            "",
-                                        color: AppColors.primaryColor,
-                                        fontSize: 14.sp,
-                                        fontWeight: FontWeight.w600,
-                                      ),
-                                      SizedBox(width: 8.w),
-                                      InkWell(
-                                        onTap: () {
-                                          Clipboard.setData(ClipboardData(
-                                            text: deliveriesController
-                                                    .selectedDelivery
-                                                    ?.trackingId ??
-                                                "",
-                                          ));
-                                          showToast(
-                                              message:
-                                                  "Tracking ID copied to clipboard");
-                                        },
-                                        child: Icon(
-                                          Icons.copy_rounded,
-                                          color: AppColors.primaryColor,
-                                          size: 18.sp,
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                ],
+                            // Tracking ID - using shared widget
+                            Padding(
+                              padding: EdgeInsets.symmetric(horizontal: 16.sp),
+                              child: DeliveryTrackingIdWidget(
+                                trackingId: deliveriesController
+                                        .selectedDelivery?.trackingId ??
+                                    "",
                               ),
                             ),
                             SizedBox(height: 12.h),
-
-                            // Pickup and Delivery Locations Card
-                            Container(
-                              padding: EdgeInsets.all(16.sp),
-                              margin: EdgeInsets.symmetric(horizontal: 16.sp),
-                              decoration: BoxDecoration(
-                                borderRadius: BorderRadius.circular(12.r),
-                                color: AppColors.primaryColor,
-                              ),
-                              child: Column(
-                                children: [
-                                  // Pickup Location
-                                  Row(
-                                    children: [
-                                      Container(
-                                        padding: EdgeInsets.all(8.sp),
-                                        decoration: BoxDecoration(
-                                          shape: BoxShape.circle,
-                                          border: Border.all(
-                                            color: AppColors.whiteColor,
-                                            width: 2.sp,
-                                          ),
-                                        ),
-                                        child: SvgPicture.asset(
-                                          SvgAssets.parcelIcon,
-                                          colorFilter: const ColorFilter.mode(
-                                            AppColors.whiteColor,
-                                            BlendMode.srcIn,
-                                          ),
-                                          width: 20.sp,
-                                          height: 20.sp,
-                                        ),
-                                      ),
-                                      SizedBox(width: 12.w),
-                                      Expanded(
-                                        child: Column(
-                                          crossAxisAlignment:
-                                              CrossAxisAlignment.start,
-                                          children: [
-                                            customText(
-                                              "Pick up Address",
-                                              color: AppColors.whiteColor,
-                                              fontSize: 12.sp,
-                                              fontWeight: FontWeight.w400,
-                                            ),
-                                            SizedBox(height: 4.h),
-                                            customText(
-                                              deliveriesController
-                                                      .selectedDelivery
-                                                      ?.originLocation
-                                                      .displayName ??
-                                                  "",
-                                              color: AppColors.whiteColor,
-                                              fontSize: 14.sp,
-                                              fontWeight: FontWeight.w600,
-                                              overflow: TextOverflow.visible,
-                                            ),
-                                          ],
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                  SizedBox(height: 12.h),
-                                  const DottedLine(
-                                    dashLength: 4,
-                                    dashGapLength: 4,
-                                    lineThickness: 2,
-                                    dashColor: AppColors.whiteColor,
-                                  ),
-                                  SizedBox(height: 12.h),
-
-                                  // Delivery Location
-                                  Row(
-                                    children: [
-                                      Container(
-                                        padding: EdgeInsets.all(8.sp),
-                                        decoration: BoxDecoration(
-                                          shape: BoxShape.circle,
-                                          border: Border.all(
-                                            color: AppColors.whiteColor,
-                                            width: 2.sp,
-                                          ),
-                                        ),
-                                        child: SvgPicture.asset(
-                                          SvgAssets.locationIcon,
-                                          colorFilter: const ColorFilter.mode(
-                                            AppColors.secondaryColor,
-                                            BlendMode.srcIn,
-                                          ),
-                                          width: 20.sp,
-                                          height: 20.sp,
-                                        ),
-                                      ),
-                                      SizedBox(width: 12.w),
-                                      Expanded(
-                                        child: Column(
-                                          crossAxisAlignment:
-                                              CrossAxisAlignment.start,
-                                          children: [
-                                            customText(
-                                              "Drop off Address",
-                                              color: AppColors.whiteColor,
-                                              fontSize: 12.sp,
-                                              fontWeight: FontWeight.w400,
-                                            ),
-                                            SizedBox(height: 4.h),
-                                            customText(
-                                              deliveriesController
-                                                      .selectedDelivery
-                                                      ?.destinationLocation
-                                                      .displayName ??
-                                                  "",
-                                              color: AppColors.whiteColor,
-                                              fontSize: 14.sp,
-                                              fontWeight: FontWeight.w600,
-                                              overflow: TextOverflow.visible,
-                                            ),
-                                          ],
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                ],
-                              ),
-                            ),
-                            SizedBox(height: 16.h),
 
                             // Status indicator text
                             if (!isDeliveryComplete)
@@ -437,229 +292,13 @@ class _DeliveryTrackingScreenState extends State<DeliveryTrackingScreen> {
                                   ),
                                 ),
                               ),
-                            SizedBox(height: 12.h),
+                            SizedBox(height: 16.h),
 
-                            // Sender and Receiver Info Card
-                            Container(
-                              padding: EdgeInsets.all(16.sp),
-                              margin: EdgeInsets.symmetric(horizontal: 16.sp),
-                              decoration: BoxDecoration(
-                                borderRadius: BorderRadius.circular(12.r),
-                                color: AppColors.backgroundColor,
-                              ),
-                              child: Column(
-                                children: [
-                                  // Sender Info
-                                  Row(
-                                    children: [
-                                      CircleAvatar(
-                                        radius: 24.r,
-                                        backgroundColor: AppColors.primaryColor
-                                            .withOpacity(0.1),
-                                        backgroundImage: deliveriesController
-                                                    .selectedDelivery
-                                                    ?.user
-                                                    ?.avatar !=
-                                                null
-                                            ? CachedNetworkImageProvider(
-                                                deliveriesController
-                                                        .selectedDelivery
-                                                        ?.user
-                                                        ?.avatar ??
-                                                    '',
-                                              )
-                                            : null,
-                                        child: deliveriesController
-                                                    .selectedDelivery
-                                                    ?.user
-                                                    ?.avatar ==
-                                                null
-                                            ? customText(
-                                                "${deliveriesController.selectedDelivery?.user?.firstName?.substring(0, 1) ?? ""}${deliveriesController.selectedDelivery?.user?.lastName?.substring(0, 1) ?? ""}",
-                                                fontSize: 16.sp,
-                                                fontWeight: FontWeight.bold,
-                                                color: AppColors.primaryColor,
-                                              )
-                                            : null,
-                                      ),
-                                      SizedBox(width: 12.w),
-                                      Expanded(
-                                        child: Column(
-                                          crossAxisAlignment:
-                                              CrossAxisAlignment.start,
-                                          children: [
-                                            customText(
-                                              "${deliveriesController.selectedDelivery?.user?.firstName ?? ""} ${deliveriesController.selectedDelivery?.user?.lastName ?? ""}",
-                                              color: AppColors.blackColor,
-                                              fontSize: 16.sp,
-                                              fontWeight: FontWeight.w600,
-                                            ),
-                                            SizedBox(height: 4.h),
-                                            customText(
-                                              "Sender",
-                                              color: AppColors.obscureTextColor,
-                                              fontSize: 12.sp,
-                                              fontWeight: FontWeight.w400,
-                                            ),
-                                          ],
-                                        ),
-                                      ),
-                                      InkWell(
-                                        onTap: () {
-                                          showAnyBottomSheet(
-                                            isControlled: false,
-                                            child:
-                                                const DeliveryContactOptionBottomSheet(),
-                                          );
-                                        },
-                                        child: Container(
-                                          padding: EdgeInsets.all(8.sp),
-                                          decoration: BoxDecoration(
-                                            color: AppColors.primaryColor,
-                                            shape: BoxShape.circle,
-                                          ),
-                                          child: SvgPicture.asset(
-                                            SvgAssets.callIcon,
-                                            height: 20.sp,
-                                            width: 20.sp,
-                                            colorFilter: const ColorFilter.mode(
-                                              AppColors.whiteColor,
-                                              BlendMode.srcIn,
-                                            ),
-                                          ),
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                  SizedBox(height: 16.h),
-
-                                  // Receiver Info
-                                  Row(
-                                    children: [
-                                      CircleAvatar(
-                                        radius: 24.r,
-                                        backgroundColor: AppColors.greenColor
-                                            .withOpacity(0.1),
-                                        child: customText(
-                                          (deliveriesController.selectedDelivery
-                                                  ?.receiver?.name ?? "")
-                                                  .length >= 2
-                                              ? deliveriesController.selectedDelivery!
-                                                  .receiver!.name!
-                                                  .substring(0, 2)
-                                                  .toUpperCase()
-                                              : (deliveriesController.selectedDelivery
-                                                  ?.receiver?.name ?? "").toUpperCase(),
-                                          fontSize: 16.sp,
-                                          fontWeight: FontWeight.bold,
-                                          color: AppColors.greenColor,
-                                        ),
-                                      ),
-                                      SizedBox(width: 12.w),
-                                      Expanded(
-                                        child: Column(
-                                          crossAxisAlignment:
-                                              CrossAxisAlignment.start,
-                                          children: [
-                                            customText(
-                                              deliveriesController
-                                                      .selectedDelivery
-                                                      ?.receiver
-                                                      ?.name ??
-                                                  "",
-                                              color: AppColors.blackColor,
-                                              fontSize: 16.sp,
-                                              fontWeight: FontWeight.w600,
-                                            ),
-                                            SizedBox(height: 4.h),
-                                            customText(
-                                              "Receiver",
-                                              color: AppColors.obscureTextColor,
-                                              fontSize: 12.sp,
-                                              fontWeight: FontWeight.w400,
-                                            ),
-                                          ],
-                                        ),
-                                      ),
-                                      InkWell(
-                                        onTap: () {
-                                          makePhoneCall(
-                                            deliveriesController
-                                                    .selectedDelivery
-                                                    ?.receiver
-                                                    ?.phone ??
-                                                "",
-                                          );
-                                        },
-                                        child: Container(
-                                          padding: EdgeInsets.all(8.sp),
-                                          decoration: BoxDecoration(
-                                            color: AppColors.greenColor,
-                                            shape: BoxShape.circle,
-                                          ),
-                                          child: SvgPicture.asset(
-                                            SvgAssets.callIcon,
-                                            height: 20.sp,
-                                            width: 20.sp,
-                                            colorFilter: const ColorFilter.mode(
-                                              AppColors.whiteColor,
-                                              BlendMode.srcIn,
-                                            ),
-                                          ),
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                  SizedBox(height: 16.h),
-
-                                  const DottedLine(
-                                    dashLength: 4,
-                                    dashGapLength: 4,
-                                    lineThickness: 2,
-                                    dashColor: AppColors.primaryColor,
-                                  ),
-                                  SizedBox(height: 16.h),
-
-                                  // Delivery Stats
-                                  Row(
-                                    mainAxisAlignment:
-                                        MainAxisAlignment.spaceBetween,
-                                    children: [
-                                      DeliveryTrackingMiniInfoItem(
-                                        title: "Order status",
-                                        value: deliveriesController
-                                                .selectedDelivery
-                                                ?.status
-                                                ?.capitalizeFirst ??
-                                            "",
-                                        isStatus: true,
-                                      ),
-                                      DeliveryTrackingMiniInfoItem(
-                                        title: "Distance",
-                                        value: deliveriesController
-                                                .selectedDelivery?.distance ??
-                                            "",
-                                      ),
-                                      DeliveryTrackingMiniInfoItem(
-                                        title: "Amount",
-                                        value: formatToCurrency(
-                                          double.tryParse(deliveriesController
-                                                      .selectedDelivery?.cost ??
-                                                  "0") ??
-                                              0,
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                ],
-                              ),
-                            ),
-                            SizedBox(height: 20.h),
-
-                            // Action Button (only if not delivered)
+                            // Action Button (immediately under tracking ID)
                             if (!isDeliveryComplete) ...[
                               Padding(
-                                padding: EdgeInsets.symmetric(horizontal: 16.sp),
+                                padding:
+                                    EdgeInsets.symmetric(horizontal: 16.sp),
                                 child: SizedBox(
                                   width: double.infinity,
                                   child: CustomButton(
@@ -672,8 +311,95 @@ class _DeliveryTrackingScreenState extends State<DeliveryTrackingScreen> {
                                   ),
                                 ),
                               ),
-                              SizedBox(height: 16.h),
+                              SizedBox(height: 12.h),
                             ],
+
+                            // Pickup and Delivery Locations Card - using shared widget
+                            DeliveryLocationsCard(
+                              pickupAddress: deliveriesController
+                                      .selectedDelivery
+                                      ?.originLocation
+                                      .displayName ??
+                                  "",
+                              dropoffAddress: deliveriesController
+                                      .selectedDelivery
+                                      ?.destinationLocation
+                                      .displayName ??
+                                  "",
+                              margin: EdgeInsets.symmetric(horizontal: 16.sp),
+                            ),
+
+                            SizedBox(height: 12.h),
+
+                            // Sender and Receiver Info Card - using shared widget
+                            Padding(
+                              padding: EdgeInsets.symmetric(horizontal: 16.sp),
+                              child: DeliveryContactCard(
+                                senderName:
+                                    "${deliveriesController.selectedDelivery?.user?.firstName ?? ""} ${deliveriesController.selectedDelivery?.user?.lastName ?? ""}",
+                                senderInitials: _getSenderInitials(),
+                                senderPhone: deliveriesController
+                                        .selectedDelivery?.user?.phone ??
+                                    "",
+                                senderAvatar: deliveriesController
+                                    .selectedDelivery?.user?.avatarUrl,
+                                receiverName: deliveriesController
+                                        .selectedDelivery?.receiver?.name ??
+                                    "",
+                                receiverInitials: _getReceiverInitials(),
+                                receiverPhone: deliveriesController
+                                        .selectedDelivery?.receiver?.phone ??
+                                    "",
+                                useCircleCallButton: true,
+                                onSenderCall: () {
+                                  showAnyBottomSheet(
+                                    isControlled: false,
+                                    child:
+                                        const DeliveryContactOptionBottomSheet(),
+                                  );
+                                },
+                              ),
+                            ),
+                            SizedBox(height: 16.h),
+
+                            // Delivery Stats
+                            Container(
+                              padding: EdgeInsets.all(16.sp),
+                              margin: EdgeInsets.symmetric(horizontal: 16.sp),
+                              decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(12.r),
+                                color: AppColors.whiteColor,
+                              ),
+                              child: Row(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
+                                children: [
+                                  DeliveryTrackingMiniInfoItem(
+                                    title: "Order status",
+                                    value: deliveriesController.selectedDelivery
+                                            ?.status?.capitalizeFirst ??
+                                        "",
+                                    isStatus: true,
+                                  ),
+                                  DeliveryTrackingMiniInfoItem(
+                                    title: "Distance",
+                                    value:
+                                        "${deliveriesController.selectedDelivery?.distance} km" ??
+                                            "",
+                                  ),
+                                  DeliveryTrackingMiniInfoItem(
+                                    title: "Amount",
+                                    value: formatToCurrency(
+                                      double.tryParse(deliveriesController
+                                                  .selectedDelivery?.cost ??
+                                              "0") ??
+                                          0,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                            SizedBox(height: 20.h),
                           ],
                         ),
                       ),

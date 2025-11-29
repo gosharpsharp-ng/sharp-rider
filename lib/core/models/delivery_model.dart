@@ -292,6 +292,7 @@ class Receiver {
 class User {
   final int? id;
   final String? avatar;
+  final String? avatarUrl;
   final String? firstName;
   final String? lastName;
   final String? phone;
@@ -312,6 +313,7 @@ class User {
   User({
     this.id,
     this.avatar,
+    this.avatarUrl,
     this.firstName,
     this.lastName,
     this.phone,
@@ -334,6 +336,7 @@ class User {
     return User(
       id: json['id'] as int?,
       avatar: json['avatar'] as String?,
+      avatarUrl: json['avatar_url'] as String?,
       firstName: json['fname'] as String?,
       lastName: json['lname'] as String?,
       phone: json['phone'] as String?,
@@ -357,6 +360,7 @@ class User {
     return {
       'id': id,
       'avatar': avatar,
+      'avatar_url': avatarUrl,
       'fname': firstName,
       'lname': lastName,
       'phone': phone,

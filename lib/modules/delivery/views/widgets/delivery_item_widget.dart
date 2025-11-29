@@ -91,7 +91,7 @@ class DeliveryItemWidget extends StatelessWidget {
             Row(
               children: [
                 Icon(
-                  Icons.local_shipping_outlined,
+                  Icons.electric_bike_outlined,
                   color: AppColors.obscureTextColor,
                   size: 16.sp,
                 ),
@@ -251,7 +251,7 @@ class DeliveryItemWidget extends StatelessWidget {
                     ),
                     SizedBox(width: 4.w),
                     customText(
-                      shipment.distance.isNotEmpty ? shipment.distance : '--',
+                      shipment.distance.isNotEmpty ? "${shipment.distance} km" : '--',
                       fontSize: 11.sp,
                       color: AppColors.obscureTextColor,
                       fontWeight: FontWeight.w500,

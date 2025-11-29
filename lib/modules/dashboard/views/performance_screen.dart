@@ -101,8 +101,7 @@ class PerformanceScreen extends StatelessWidget {
                             formatToCurrency(
                               double.parse(
                                     ordersController
-                                            .riderStatsModel
-                                            ?.totalEarnings
+                                            .riderStatsModel?.totalEarnings
                                             .toString() ??
                                         "0",
                                   ) ??
@@ -146,10 +145,8 @@ class PerformanceScreen extends StatelessWidget {
                           ),
                           SizedBox(height: 10.h),
                           RatingBarIndicator(
-                            rating:
-                                ordersController
-                                    .riderRatingStatsModel
-                                    ?.averageRating ??
+                            rating: ordersController
+                                    .riderRatingStatsModel?.averageRating ??
                                 0.0,
                             itemBuilder: (context, index) => Icon(
                               Icons.star,
@@ -193,9 +190,7 @@ class PerformanceScreen extends StatelessWidget {
                         ? Column(
                             children: [
                               ordersController
-                                      .riderStatsModel!
-                                      .shipments
-                                      .isEmpty
+                                      .riderStatsModel!.shipments.isEmpty
                                   ? SizedBox(
                                       width: 1.sw,
                                       height: 1.sh * 0.4,
@@ -214,14 +209,11 @@ class PerformanceScreen extends StatelessWidget {
                                   : Column(
                                       children: [
                                         ...List.generate(
-                                          ordersController
-                                              .riderStatsModel!
-                                              .shipments
-                                              .length,
+                                          ordersController.riderStatsModel!
+                                              .shipments.length,
                                           (i) => DeliveryHistoryWidget(
                                             history: ordersController
-                                                .riderStatsModel!
-                                                .shipments[i],
+                                                .riderStatsModel!.shipments[i],
                                           ),
                                         ),
                                       ],

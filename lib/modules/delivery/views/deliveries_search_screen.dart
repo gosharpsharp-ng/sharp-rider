@@ -74,13 +74,12 @@ class SearchDeliveriesScreen extends StatelessWidget {
                             ...List.generate(
                               ordersController.deliverySearchResults.length,
                               (i) => DeliveryItemWidget(
-                                onSelected: () async {
+                                onSelected: () {
                                   Get.back();
                                   ordersController.setSelectedDelivery(
                                       ordersController
                                           .deliverySearchResults[i]);
-                                  // Fetch full delivery details before navigating
-                                  await ordersController.getDelivery();
+                                  // Navigate to details screen - it will fetch details on init
                                   Get.toNamed(Routes.DELIVERY_DETAILS);
                                 },
                                 shipment:

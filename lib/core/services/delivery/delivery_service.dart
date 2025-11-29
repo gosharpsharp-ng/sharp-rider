@@ -44,7 +44,7 @@ class DeliveryService extends CoreService {
   }
 
   Future<APIResponse> getDelivery(dynamic data) async {
-    return await fetch("/riders/deliveries/${data['id']}");
+    return await fetch("/riders/deliveries/${data['tracking_id']}");
   }
 
   Future<APIResponse> getRider(dynamic data) async {
