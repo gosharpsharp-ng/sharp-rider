@@ -130,7 +130,7 @@ Future<bool> showLocationPermissionDialog() async {
                   }
 
                   // Wait and recheck if location is now enabled
-                  await Future.delayed(Duration(seconds: 3));
+                  await Future.delayed(const Duration(seconds: 3));
                   isLocationEnabled =
                       await Geolocator.isLocationServiceEnabled();
 
@@ -179,19 +179,19 @@ class DottedDivider extends StatelessWidget {
   final double length;
 
   const DottedDivider({
-    Key? key,
+    super.key,
     this.dotSize = 8.0,
     this.spacing = 2.0,
     this.color = AppColors.primaryColor,
     this.axis = Axis.vertical, // Default to horizontal
     required this.length,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {
     final int dotCount = (length / (dotSize + spacing)).floor();
 
-    return Container(
+    return SizedBox(
       height: axis == Axis.horizontal ? 2 : length + 2,
       width: axis == Axis.horizontal ? length : 2.sp,
       child: axis == Axis.horizontal
@@ -665,7 +665,7 @@ class PartialViewHeader extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
+    return SizedBox(
       width: 1.sw,
       child: Row(
         children: [
@@ -706,7 +706,7 @@ class SectionHeader extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
+    return SizedBox(
       width: 1.sw,
       child: Row(
         mainAxisAlignment: MainAxisAlignment.start,
@@ -769,9 +769,9 @@ class TitleSectionBox extends StatelessWidget {
 
 class SectionBox extends StatelessWidget {
   final Color backgroundColor;
-  CrossAxisAlignment crossAxisAlignment;
+  final CrossAxisAlignment crossAxisAlignment;
   final List<Widget> children;
-  SectionBox(
+  const SectionBox(
       {super.key,
       required this.children,
       this.backgroundColor = AppColors.whiteColor,
@@ -1180,7 +1180,7 @@ showAdminApprovalDialog() async {
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(8),
         ),
-        padding: EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+        padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
       ),
       child: customText(
         "OK",
@@ -1380,19 +1380,6 @@ class PaymentWebViewController {
             await _checkPaymentStatus();
           },
           onUrlChange: (UrlChange? urlChange) {
-            if (urlChange?.url != null) {
-              final url = urlChange!.url!.toLowerCase();
-              debugPrint('Paystack URL changed to: $url');
-
-              // Check if URL contains success callback indicators
-              // Paystack typically redirects to callback_url with trxref or reference parameter
-              if ((url.contains('trxref=') || url.contains('reference=')) &&
-                  !url.contains('paystack.co')) {
-                // This is likely a callback URL redirect after successful payment
-                debugPrint(
-                    'Detected callback URL with transaction reference - checking status');
-              }
-            }
             // Additional check on URL change
             _checkPaymentStatus();
           },
@@ -1404,7 +1391,7 @@ class PaymentWebViewController {
       );
 
     // Periodic status check (backup method) - check every 2 seconds
-    statusCheckTimer = Timer.periodic(Duration(seconds: 2), (timer) {
+    statusCheckTimer = Timer.periodic(const Duration(seconds: 2), (timer) {
       if (!paymentCompleted) {
         _checkPaymentStatus();
       }
@@ -1415,27 +1402,8 @@ class PaymentWebViewController {
     if (paymentCompleted) return;
 
     try {
-      // Method 1: Check current URL for callback indicators
-      final currentUrl = await controller.currentUrl();
-      if (currentUrl != null) {
-        final urlLower = currentUrl.toLowerCase();
-        debugPrint('Checking payment status - URL: $urlLower');
-
-        // Check if URL contains success callback indicators
-        // Paystack typically redirects to callback_url with trxref or reference parameter
-        if ((urlLower.contains('trxref=') || urlLower.contains('reference=')) &&
-            !urlLower.contains('paystack.co')) {
-          // This is likely a callback URL redirect after successful payment
-          debugPrint(
-              'Detected callback URL with transaction reference - treating as success');
-          _handleSuccess();
-          return;
-        }
-      }
-
-      // Method 2: Check page title
+      // Method 1: Check page title
       final title = await controller.getTitle();
-      debugPrint('Checking payment status - Title: $title');
 
       if (title != null) {
         final titleLower = title.toLowerCase();
@@ -1443,7 +1411,6 @@ class PaymentWebViewController {
         // Check for success indicators in title
         if (titleLower.contains('success') ||
             titleLower.contains('successful') ||
-            titleLower.contains('approved') ||
             titleLower.contains('complete')) {
           _handleSuccess();
           return;
@@ -1468,50 +1435,36 @@ class PaymentWebViewController {
         }
       }
 
-      // Method 3: Check page content via JavaScript
+      // Method 2: Check page content via JavaScript
       final result = await controller.runJavaScriptReturningResult('''
         (function() {
           const bodyText = document.body.innerText.toLowerCase();
 
-          // Success patterns
-          if (bodyText.includes('payment successful') ||
-              bodyText.includes('transaction successful') ||
-              bodyText.includes('payment complete') ||
-              bodyText.includes('transaction complete') ||
-              bodyText.includes('was successful') ||
-              bodyText.includes('has been successful') ||
-              bodyText.includes('approved') ||
-              bodyText.includes('payment received') ||
-              bodyText.includes('thank you for your payment') ||
-              bodyText.includes('your payment of')) {
-            return 'success';
-          }
-
-          // Cancellation patterns
+          // Check for cancellation
           if (bodyText.includes('payment cancelled') ||
-              bodyText.includes('payment canceled') ||
               bodyText.includes('transaction cancelled') ||
-              bodyText.includes('transaction canceled') ||
-              bodyText.includes('you cancelled') ||
-              bodyText.includes('cancel this payment') ||
-              bodyText.includes('payment was cancelled')) {
+              bodyText.includes('you cancelled')) {
             return 'cancelled';
           }
 
-          // Declined patterns
+          // Check for declined
           if (bodyText.includes('declined') ||
               bodyText.includes('card declined')) {
             return 'declined';
           }
 
-          // Failure patterns
+          // Check for failure
           if (bodyText.includes('payment failed') ||
-              bodyText.includes('transaction failed') ||
-              bodyText.includes('payment declined') ||
-              bodyText.includes('transaction declined') ||
-              bodyText.includes('could not be processed') ||
               bodyText.includes('payment error')) {
             return 'failed';
+          }
+
+          // Check for success
+          if (bodyText.includes('payment successful') ||
+              bodyText.includes('transaction successful') ||
+              bodyText.includes('payment complete') ||
+              bodyText.includes('transaction complete')) {
+            return 'success';
           }
 
           return 'unknown';
@@ -1519,7 +1472,6 @@ class PaymentWebViewController {
       ''');
 
       final status = result.toString().replaceAll('"', '');
-      debugPrint('JavaScript content check result: $status');
 
       if (status == 'success') {
         _handleSuccess();
@@ -1548,7 +1500,7 @@ class PaymentWebViewController {
     debugPrint('Payment successful - auto-closing in 3 seconds');
 
     // Auto-close after 3 seconds to let user see success message
-    autoCloseTimer = Timer(Duration(seconds: 3), () {
+    autoCloseTimer = Timer(const Duration(seconds: 3), () {
       Get.back();
       onSuccess();
     });
@@ -1572,7 +1524,7 @@ class PaymentWebViewController {
         'Payment ${isDeclined ? 'declined' : 'failed'} - auto-closing in 2 seconds');
 
     // Auto-close after 2 seconds
-    autoCloseTimer = Timer(Duration(seconds: 2), () {
+    autoCloseTimer = Timer(const Duration(seconds: 2), () {
       Get.back();
       onFailure(
           failureReason ?? 'Payment was not completed. Please try again.');
@@ -1593,7 +1545,7 @@ class PaymentWebViewController {
     debugPrint('Payment cancelled - auto-closing in 2 seconds');
 
     // Auto-close after 2 seconds
-    autoCloseTimer = Timer(Duration(seconds: 2), () {
+    autoCloseTimer = Timer(const Duration(seconds: 2), () {
       Get.back();
       onFailure(failureReason ?? 'Payment was cancelled.');
     });

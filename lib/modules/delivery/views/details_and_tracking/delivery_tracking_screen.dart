@@ -100,7 +100,7 @@ class _DeliveryTrackingScreenState extends State<DeliveryTrackingScreen> {
   void _showOTPVerificationDialog() {
     Get.dialog(
       DeliveryOTPVerificationDialog(
-        trackingId: deliveriesController.selectedDelivery!.trackingId,
+        trackingId: deliveriesController.selectedDelivery!.trackingId ?? '',
         onVerificationSuccess: (String deliveryCode) {
           // After collecting delivery code, update delivery status with the code
           deliveriesController.updateDeliveryStatus(
@@ -130,16 +130,35 @@ class _DeliveryTrackingScreenState extends State<DeliveryTrackingScreen> {
     }
   }
 
+  // Helper to get sender name (prefer sender, fallback to user)
+  String _getSenderName() {
+    final delivery = deliveriesController.selectedDelivery;
+    // Prefer sender.displayName (handles both name and fname/lname formats)
+    if (delivery?.sender != null) {
+      return delivery!.sender!.displayName;
+    }
+    // Fallback to user
+    if (delivery?.user != null) {
+      return delivery!.user!.displayName;
+    }
+    return "";
+  }
+
   // Helper to get sender initials
   String _getSenderInitials() {
+    final name = _getSenderName();
+    if (name.isEmpty) return "";
+    final parts = name.split(' ');
+    if (parts.length >= 2) {
+      return "${parts[0].substring(0, 1)}${parts[1].substring(0, 1)}".toUpperCase();
+    }
+    return name.length >= 2 ? name.substring(0, 2).toUpperCase() : name.toUpperCase();
+  }
+
+  // Helper to get sender phone (prefer sender, fallback to user)
+  String _getSenderPhone() {
     final delivery = deliveriesController.selectedDelivery;
-    final first = delivery?.user?.firstName?.isNotEmpty == true
-        ? delivery!.user!.firstName!.substring(0, 1)
-        : "";
-    final last = delivery?.user?.lastName?.isNotEmpty == true
-        ? delivery!.user!.lastName!.substring(0, 1)
-        : "";
-    return "$first$last";
+    return delivery?.sender?.phone ?? delivery?.user?.phone ?? "";
   }
 
   // Helper to get receiver initials
@@ -169,7 +188,7 @@ class _DeliveryTrackingScreenState extends State<DeliveryTrackingScreen> {
           body: Stack(
             children: [
               // Google Map showing pickup and delivery locations
-              Container(
+              SizedBox(
                 width: 1.sw,
                 height: 1.sh * 0.65,
                 child: Stack(
@@ -178,7 +197,7 @@ class _DeliveryTrackingScreenState extends State<DeliveryTrackingScreen> {
                       mapType: MapType.normal,
                       myLocationEnabled: false,
                       myLocationButtonEnabled: false,
-                      zoomControlsEnabled: true,
+                      zoomControlsEnabled: false,
                       zoomGesturesEnabled: true,
                       scrollGesturesEnabled: true,
                       trafficEnabled: true,
@@ -191,6 +210,111 @@ class _DeliveryTrackingScreenState extends State<DeliveryTrackingScreen> {
                         _initializeMap();
                       },
                     ),
+
+                    // Active Delivery Info Overlay (top)
+                    if (!isDeliveryComplete)
+                      Positioned(
+                        top: 10.h,
+                        left: 16.w,
+                        right: 16.w,
+                        child: Container(
+                          padding: EdgeInsets.symmetric(horizontal: 12.sp, vertical: 10.sp),
+                          decoration: BoxDecoration(
+                            color: AppColors.whiteColor,
+                            borderRadius: BorderRadius.circular(10.r),
+                            boxShadow: [
+                              BoxShadow(
+                                color: Colors.black.withAlpha(20),
+                                blurRadius: 8,
+                                offset: const Offset(0, 2),
+                              ),
+                            ],
+                          ),
+                          child: Row(
+                            children: [
+                              Container(
+                                padding: EdgeInsets.all(8.sp),
+                                decoration: BoxDecoration(
+                                  color: deliveriesController.selectedDelivery?.status?.toLowerCase() == 'accepted'
+                                      ? AppColors.amberColor.withAlpha(30)
+                                      : AppColors.primaryColor.withAlpha(30),
+                                  borderRadius: BorderRadius.circular(8.r),
+                                ),
+                                child: Icon(
+                                  deliveriesController.selectedDelivery?.status?.toLowerCase() == 'accepted'
+                                      ? Icons.inventory_2_outlined
+                                      : Icons.local_shipping_outlined,
+                                  color: deliveriesController.selectedDelivery?.status?.toLowerCase() == 'accepted'
+                                      ? AppColors.amberColor
+                                      : AppColors.primaryColor,
+                                  size: 20.sp,
+                                ),
+                              ),
+                              SizedBox(width: 10.w),
+                              Expanded(
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  mainAxisSize: MainAxisSize.min,
+                                  children: [
+                                    customText(
+                                      deliveriesController.selectedDelivery?.status?.toLowerCase() == 'accepted'
+                                          ? 'Heading to Pickup'
+                                          : 'Heading to Delivery',
+                                      fontSize: 12.sp,
+                                      fontWeight: FontWeight.w600,
+                                      color: AppColors.blackColor,
+                                    ),
+                                    SizedBox(height: 2.h),
+                                    customText(
+                                      deliveriesController.selectedDelivery?.status?.toLowerCase() == 'accepted'
+                                          ? deliveriesController.selectedDelivery?.originLocation.displayName ?? ''
+                                          : deliveriesController.selectedDelivery?.destinationLocation.displayName ?? '',
+                                      fontSize: 11.sp,
+                                      color: AppColors.greyColor,
+                                      overflow: TextOverflow.ellipsis,
+                                      maxLines: 1,
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+
+                    // Recenter Button (right side)
+                    Positioned(
+                      top: isDeliveryComplete ? 10.h : 80.h,
+                      right: 16.w,
+                      child: GestureDetector(
+                        onTap: () {
+                          // Recenter to show full route
+                          if (deliveriesController.pLineCoordinatedList.isNotEmpty) {
+                            deliveriesController.fitMapToBounds();
+                          }
+                        },
+                        child: Container(
+                          padding: EdgeInsets.all(10.sp),
+                          decoration: BoxDecoration(
+                            color: AppColors.whiteColor,
+                            borderRadius: BorderRadius.circular(8.r),
+                            boxShadow: [
+                              BoxShadow(
+                                color: Colors.black.withAlpha(15),
+                                blurRadius: 6,
+                                offset: const Offset(0, 2),
+                              ),
+                            ],
+                          ),
+                          child: Icon(
+                            Icons.fullscreen,
+                            color: AppColors.blackColor,
+                            size: 22.sp,
+                          ),
+                        ),
+                      ),
+                    ),
+
                     // Navigate Button on map - Google Maps style
                     if (!isDeliveryComplete)
                       Positioned(
@@ -336,12 +460,9 @@ class _DeliveryTrackingScreenState extends State<DeliveryTrackingScreen> {
                             Padding(
                               padding: EdgeInsets.symmetric(horizontal: 16.sp),
                               child: DeliveryContactCard(
-                                senderName:
-                                    "${deliveriesController.selectedDelivery?.user?.firstName ?? ""} ${deliveriesController.selectedDelivery?.user?.lastName ?? ""}",
+                                senderName: _getSenderName(),
                                 senderInitials: _getSenderInitials(),
-                                senderPhone: deliveriesController
-                                        .selectedDelivery?.user?.phone ??
-                                    "",
+                                senderPhone: _getSenderPhone(),
                                 senderAvatar: deliveriesController
                                     .selectedDelivery?.user?.avatarUrl,
                                 receiverName: deliveriesController
@@ -385,8 +506,7 @@ class _DeliveryTrackingScreenState extends State<DeliveryTrackingScreen> {
                                   DeliveryTrackingMiniInfoItem(
                                     title: "Distance",
                                     value:
-                                        "${deliveriesController.selectedDelivery?.distance} km" ??
-                                            "",
+                                        "${deliveriesController.selectedDelivery?.distance ?? '0'} km",
                                   ),
                                   DeliveryTrackingMiniInfoItem(
                                     title: "Amount",

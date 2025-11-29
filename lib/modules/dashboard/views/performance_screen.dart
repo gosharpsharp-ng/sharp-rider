@@ -99,7 +99,7 @@ class PerformanceScreen extends StatelessWidget {
                           SizedBox(height: 20.h),
                           customText(
                             formatToCurrency(
-                              double.parse(
+                              double.tryParse(
                                     ordersController
                                             .riderStatsModel?.totalEarnings
                                             .toString() ??
@@ -220,7 +220,7 @@ class PerformanceScreen extends StatelessWidget {
                                     ),
                             ],
                           )
-                        : SizedBox.shrink(),
+                        : const SizedBox.shrink(),
                     SizedBox(height: 15.h),
                   ],
                 ),

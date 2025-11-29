@@ -258,7 +258,7 @@ class VehicleInfoStep extends GetView<SignUpController> {
                       crossAxisAlignment: CrossAxisAlignment.center,
                       children: [
                         Container(
-                          decoration: BoxDecoration(
+                          decoration: const BoxDecoration(
                             shape: BoxShape.circle,
                             color: AppColors.whiteColor,
                           ),
@@ -301,7 +301,7 @@ class VehicleInfoStep extends GetView<SignUpController> {
                           bottom: 8.sp,
                           right: 8.sp,
                           child: Container(
-                            decoration: BoxDecoration(
+                            decoration: const BoxDecoration(
                               shape: BoxShape.circle,
                               color: AppColors.whiteColor,
                             ),
@@ -353,9 +353,9 @@ class VehicleInfoStep extends GetView<SignUpController> {
         return GetBuilder<SignUpController>(
           builder: (controller) {
             if (controller.isLoadingCourierTypes) {
-              return Container(
+              return SizedBox(
                 height: 300.sp,
-                child: Center(
+                child: const Center(
                   child: CircularProgressIndicator(
                     color: AppColors.primaryColor,
                   ),
@@ -379,7 +379,7 @@ class VehicleInfoStep extends GetView<SignUpController> {
                   Expanded(
                     child: ListView.separated(
                       itemCount: controller.courierTypes.length,
-                      separatorBuilder: (context, index) => Divider(),
+                      separatorBuilder: (context, index) => const Divider(),
                       itemBuilder: (context, index) {
                         final courierType = controller.courierTypes[index];
                         final isSelected = controller.selectedCourierType?.id ==
@@ -398,12 +398,12 @@ class VehicleInfoStep extends GetView<SignUpController> {
                                 : AppColors.blackColor,
                           ),
                           subtitle: customText(
-                            courierType.description ?? "",
+                            courierType.description,
                             fontSize: 12.sp,
                             color: AppColors.obscureTextColor,
                           ),
                           trailing: isSelected
-                              ? Icon(
+                              ? const Icon(
                                   Icons.check_circle,
                                   color: AppColors.primaryColor,
                                 )

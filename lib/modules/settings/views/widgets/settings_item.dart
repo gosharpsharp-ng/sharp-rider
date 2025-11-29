@@ -6,7 +6,7 @@ class SettingsItem extends StatelessWidget {
   final bool isLast;
   final bool isShouting;
   final Function onPressed;
-  SettingsItem(
+  const SettingsItem(
       {super.key,
       this.title = "Edit Profile",
       this.isShouting = false,

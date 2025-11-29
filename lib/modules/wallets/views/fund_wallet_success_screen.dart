@@ -33,7 +33,7 @@ class FundWalletSuccessScreen extends StatelessWidget {
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                Spacer(),
+                const Spacer(),
 
                 // Success Icon
                 Icon(
@@ -63,7 +63,7 @@ class FundWalletSuccessScreen extends StatelessWidget {
                   maxLines: 2,
                 ),
 
-                Spacer(),
+                const Spacer(),
 
                 // Action Buttons
                 Column(

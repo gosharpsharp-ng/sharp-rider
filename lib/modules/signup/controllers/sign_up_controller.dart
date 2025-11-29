@@ -1,5 +1,3 @@
-import 'dart:async';
-import 'dart:convert';
 import 'dart:developer';
 import 'dart:io';
 import 'package:gorider/core/utils/exports.dart';
@@ -125,7 +123,7 @@ class SignUpController extends GetxController {
       } else {
         print("Failed to load courier types: ${response.message}");
         showToast(
-          message: response.message ?? "Failed to load courier types",
+          message: response.message.isNotEmpty ? response.message : "Failed to load courier types",
           isError: true,
         );
       }
@@ -162,7 +160,7 @@ class SignUpController extends GetxController {
         );
 
         // Convert to base64
-        vehicleInteriorPhotoBase64 = await convertImageToBase64(compressed.path);
+        vehicleInteriorPhotoBase64 = await Base64ImageUtils.convertImageToBase64(compressed.path);
         vehicleInteriorPhoto = File(compressed.path);
         update();
       }
@@ -190,7 +188,7 @@ class SignUpController extends GetxController {
         );
 
         // Convert to base64
-        vehicleExteriorPhotoBase64 = await convertImageToBase64(compressed.path);
+        vehicleExteriorPhotoBase64 = await Base64ImageUtils.convertImageToBase64(compressed.path);
         vehicleExteriorPhoto = File(compressed.path);
         update();
       }
@@ -229,9 +227,9 @@ class SignUpController extends GetxController {
   Future<void> selectLicenseExpiryDate(BuildContext context) async {
     final DateTime? picked = await showDatePicker(
       context: context,
-      initialDate: licenseExpiryDate ?? DateTime.now().add(Duration(days: 365)),
+      initialDate: licenseExpiryDate ?? DateTime.now().add(const Duration(days: 365)),
       firstDate: DateTime.now(),
-      lastDate: DateTime.now().add(Duration(days: 365 * 10)),
+      lastDate: DateTime.now().add(const Duration(days: 365 * 10)),
     );
     if (picked != null) {
       licenseExpiryDate = picked;
@@ -244,7 +242,7 @@ class SignUpController extends GetxController {
     final DateTime? picked = await showDatePicker(
       context: context,
       initialDate:
-          licenseIssuedDate ?? DateTime.now().subtract(Duration(days: 365)),
+          licenseIssuedDate ?? DateTime.now().subtract(const Duration(days: 365)),
       firstDate: DateTime(1950),
       lastDate: DateTime.now(),
     );
@@ -275,7 +273,7 @@ class SignUpController extends GetxController {
         );
 
         // Convert to base64
-        licenseFrontImageBase64 = await convertImageToBase64(compressed.path);
+        licenseFrontImageBase64 = await Base64ImageUtils.convertImageToBase64(compressed.path);
         licenseFrontImage = File(compressed.path);
         update();
       }
@@ -303,7 +301,7 @@ class SignUpController extends GetxController {
         );
 
         // Convert to base64
-        licenseBackImageBase64 = await convertImageToBase64(compressed.path);
+        licenseBackImageBase64 = await Base64ImageUtils.convertImageToBase64(compressed.path);
         licenseBackImage = File(compressed.path);
         update();
       }

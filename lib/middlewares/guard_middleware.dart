@@ -1,4 +1,3 @@
-import 'package:gorider/providers/auth_provider.dart';
 
 import 'package:gorider/core/utils/exports.dart';
 

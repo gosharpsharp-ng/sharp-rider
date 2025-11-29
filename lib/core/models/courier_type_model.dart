@@ -3,7 +3,7 @@ class CourierTypeModel {
   final String name;
   final String description;
   final double pricePerKilometer;
-  final int maxDistanceForDiscount;
+  final double maxDistanceForDiscount;
   final double discountAmount;
   final String discountType;
   final double commission;
@@ -48,7 +48,7 @@ class CourierTypeModel {
       name: json['name'] ?? '',
       description: json['description'] ?? '',
       pricePerKilometer: _parseDouble(json['price_per_kilometer']),
-      maxDistanceForDiscount: _parseInt(json['max_distance_for_discount']),
+      maxDistanceForDiscount: _parseDouble(json['max_distance_for_discount']),
       discountAmount: _parseDouble(json['discount_amount']),
       discountType: json['discount_type'] ?? '',
       commission: _parseDouble(json['commission']),

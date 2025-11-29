@@ -55,7 +55,7 @@ class VehicleAndLicenseDetailsScreen extends StatelessWidget {
                                         SvgAssets.editIcon,
                                         height: 14.sp,
                                         width: 14.sp,
-                                        colorFilter: ColorFilter.mode(
+                                        colorFilter: const ColorFilter.mode(
                                           AppColors.primaryColor,
                                           BlendMode.srcIn,
                                         ),
@@ -77,6 +77,24 @@ class VehicleAndLicenseDetailsScreen extends StatelessWidget {
                             title: "Bike Type",
                             value: settingsController
                                     .userProfile?.vehicle?.courierType?.name ??
+                                "",
+                          ),
+                          VehicleDetailItem(
+                            title: "Brand",
+                            value: settingsController
+                                    .userProfile?.vehicle?.brand ??
+                                "",
+                          ),
+                          VehicleDetailItem(
+                            title: "Model",
+                            value: settingsController
+                                    .userProfile?.vehicle?.model ??
+                                "",
+                          ),
+                          VehicleDetailItem(
+                            title: "Year",
+                            value: settingsController
+                                    .userProfile?.vehicle?.year?.toString() ??
                                 "",
                           ),
                           VehicleDetailItem(
@@ -118,7 +136,7 @@ class VehicleAndLicenseDetailsScreen extends StatelessWidget {
                                         SvgAssets.editIcon,
                                         height: 14.sp,
                                         width: 14.sp,
-                                        colorFilter: ColorFilter.mode(
+                                        colorFilter: const ColorFilter.mode(
                                           AppColors.primaryColor,
                                           BlendMode.srcIn,
                                         ),

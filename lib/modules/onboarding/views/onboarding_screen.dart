@@ -1,4 +1,3 @@
-import 'package:flutter/services.dart';
 import 'package:gorider/core/utils/exports.dart';
 
 class OnboardingScreen extends StatelessWidget {

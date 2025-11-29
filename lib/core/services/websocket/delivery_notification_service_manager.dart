@@ -31,7 +31,7 @@ class DeliveryNotificationServiceManager extends GetxService {
       await Get.putAsync(() => LocationService().init());
       // Initialize notification service
       final notificationService = DeliveryNotificationService();
-      await Get.put(notificationService);
+      Get.put(notificationService);
       notificationService.initialize();
 
       _isServicesInitialized = true;

@@ -29,7 +29,7 @@ class AppPages {
     ),
     GetPage(
       name: Routes.SIGNUP_OTP_SCREEN,
-      page: () => SignUpOtpScreen(),
+      page: () => const SignUpOtpScreen(),
     ),
     GetPage(
       name: Routes.SIGN_IN,
@@ -43,7 +43,7 @@ class AppPages {
     ),
     GetPage(
       name: Routes.RESET_PASSWORD_OTP_SCREEN,
-      page: () => ResetPasswordOtpScreen(),
+      page: () => const ResetPasswordOtpScreen(),
       binding: PasswordResetBinding(),
     ),
     GetPage(
@@ -58,7 +58,7 @@ class AppPages {
     ),
     GetPage(
       name: Routes.APP_NAVIGATION,
-      page: () => AppNavigationScreen(),
+      page: () => const AppNavigationScreen(),
       middlewares: [AuthMiddleware()],
       binding: AppNavigationBinding(),
     ),

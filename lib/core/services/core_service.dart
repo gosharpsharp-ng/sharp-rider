@@ -23,22 +23,9 @@ class CoreService extends GetConnect {
   Map<String, String> multipartHeaders = {};
 
   void setConfig() {
-    bool hasUnauthorizedErrorOccurred = false; // Flag to track 401 errors
-
     _dio.interceptors.add(
       dio_pack.InterceptorsWrapper(
         onRequest: (options, handler) {
-          if (hasUnauthorizedErrorOccurred) {
-            // If a 401 error has occurred, cancel this request
-            return handler.reject(
-              dio_pack.DioException(
-                requestOptions: options,
-                type: dio_pack.DioExceptionType.cancel,
-                error: 'Request cancelled due to previous 401 error',
-              ),
-            );
-          }
-
           var token = getStorage.read('token');
           options.headers['content-Type'] = 'application/json';
           if (token != null) {

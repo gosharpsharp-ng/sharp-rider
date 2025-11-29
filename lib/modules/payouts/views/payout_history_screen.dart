@@ -1,5 +1,4 @@
 import 'package:gorider/core/utils/exports.dart';
-import 'widgets/payout_item.dart';
 
 class PayoutHistoryScreen extends StatefulWidget {
   const PayoutHistoryScreen({super.key});

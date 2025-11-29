@@ -1,4 +1,3 @@
-import 'dart:async';
 import 'dart:convert';
 import 'package:dio/dio.dart';
 import 'package:flutter_google_maps_webservices/places.dart';
@@ -351,7 +350,7 @@ class _SelectLocationState extends State<SelectLocation> {
                   child: Column(
                     mainAxisSize: MainAxisSize.min,
                     children: [
-                      CircularProgressIndicator(
+                      const CircularProgressIndicator(
                         color: AppColors.primaryColor,
                         strokeWidth: 3,
                       ),
@@ -445,7 +444,7 @@ class _SelectLocationState extends State<SelectLocation> {
                             focusedBorder: OutlineInputBorder(
                               borderRadius: BorderRadius.circular(25.r),
                               borderSide:
-                                  BorderSide(color: AppColors.primaryColor),
+                                  const BorderSide(color: AppColors.primaryColor),
                             ),
                           ),
                         ),
@@ -480,7 +479,7 @@ class _SelectLocationState extends State<SelectLocation> {
                           SizedBox(
                             width: 18.sp,
                             height: 18.sp,
-                            child: CircularProgressIndicator(
+                            child: const CircularProgressIndicator(
                               color: AppColors.whiteColor,
                               strokeWidth: 2,
                             ),
@@ -542,7 +541,7 @@ class _SelectLocationState extends State<SelectLocation> {
                                 SizedBox(
                                   width: 20.sp,
                                   height: 20.sp,
-                                  child: CircularProgressIndicator(
+                                  child: const CircularProgressIndicator(
                                     color: AppColors.primaryColor,
                                     strokeWidth: 2,
                                   ),

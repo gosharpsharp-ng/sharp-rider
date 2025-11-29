@@ -1,6 +1,5 @@
 import 'dart:io';
 import 'package:gorider/core/models/rider_profile_response.dart';
-import 'package:gorider/core/models/rider_stats_model.dart';
 import 'package:gorider/core/utils/exports.dart';
 import 'package:intl/intl.dart';
 
@@ -40,21 +39,13 @@ class SettingsController extends GetxController {
       }
 
       update();
-      // Zego Cloud temporarily disabled
-      // ZegoUIKitPrebuiltCallInvitationService().init(
-      //   appID: int.parse(Secret.zegoCloudAppID),
-      //   appSign: Secret.zegoCloudAppSign,
-      //   userID: userProfile!.id.toString(),
-      //   userName: "${userProfile?.fname ?? ""} ${userProfile?.lname ?? ""}",
-      //   plugins: [ZegoUIKitSignalingPlugin()],
-      //   notificationConfig: ZegoCallInvitationNotificationConfig(
-      //       androidNotificationConfig: ZegoCallAndroidNotificationConfig(
-      //         sound: null,
-      //         showFullScreen: true,
-      //       ),
-      //       iOSNotificationConfig:
-      //           ZegoCallIOSNotificationConfig(appName: "gosharpsharp_mobile")),
-      // );
+
+      // Sync wallet and bank account data to WalletController after profile loads
+      if (Get.isRegistered<WalletController>()) {
+        Get.find<WalletController>().loadWalletFromProfile();
+        Get.find<WalletController>().loadBankAccountFromProfile();
+      }
+
       setProfileFields();
     } else {
       if (getStorage.read('token') != null) {
@@ -414,20 +405,30 @@ class SettingsController extends GetxController {
         APIResponse response = await profileService.addVehicle(data);
 
         if (response.status == "success") {
-          showToast(message: response.message);
+          // showToast(message: response.message);
           getProfile();
           // getMyVehicle();
           clearVehicleTextFields();
           Navigator.pop(Get.context!);
+          showSuccessSheet(
+            title: "Vehicle Added",
+            message: response.message,
+          );
         } else {
           if (getStorage.read("token") != null) {
-            showToast(
-                message: response.message,
-                isError: response.status != "success");
+            // showToast(message: response.message, isError: response.status != "success");
+            showErrorSheet(
+              title: "Failed to Add Vehicle",
+              message: response.message,
+            );
           }
         }
       } catch (e) {
-        showToast(message: "Error adding vehicle: $e", isError: true);
+        // showToast(message: "Error adding vehicle: $e", isError: true);
+        showErrorSheet(
+          title: "Error",
+          message: "Error adding vehicle: $e",
+        );
       } finally {
         setLoadingVehicleState(false);
       }
@@ -461,31 +462,14 @@ class SettingsController extends GetxController {
       setLoadingVehicleState(true);
 
       try {
+        // Build data with all required fields
         dynamic data = {
+          "courier_type_id": selectedCourierType?.id ?? userProfile?.vehicle?.courierTypeId,
+          "brand": vehicleBrandController.text,
+          "model": vehicleModelController.text,
           "reg_num": vehicleRegNumController.text,
+          "year": int.tryParse(vehicleYearController.text),
         };
-
-        // Add courier type if selected, otherwise use existing vehicle's courier type
-        if (selectedCourierType != null) {
-          data["courier_type_id"] = selectedCourierType!.id;
-        } else if (userProfile?.vehicle?.courierTypeId != null) {
-          data["courier_type_id"] = userProfile!.vehicle!.courierTypeId;
-        }
-
-        // Add brand if provided
-        if (vehicleBrandController.text.isNotEmpty) {
-          data["brand"] = vehicleBrandController.text;
-        }
-
-        // Add model if provided
-        if (vehicleModelController.text.isNotEmpty) {
-          data["model"] = vehicleModelController.text;
-        }
-
-        // Add year if provided
-        if (vehicleYearController.text.isNotEmpty) {
-          data["year"] = int.tryParse(vehicleYearController.text);
-        }
 
         // Add interior photo if available (optional)
         if (vehicleInteriorPhotoBase64 != null) {
@@ -500,18 +484,28 @@ class SettingsController extends GetxController {
         APIResponse response = await profileService.updateVehicle(data);
 
         if (response.status == "success") {
-          showToast(message: response.message);
+          // showToast(message: response.message);
           getProfile();
           clearVehicleTextFields();
           isEditingVehicle = false;
           Navigator.pop(Get.context!);
+          showSuccessSheet(
+            title: "Vehicle Updated",
+            message: response.message,
+          );
         } else {
-          showToast(
-              message: response.message,
-              isError: response.status != "success");
+          // showToast(message: response.message, isError: response.status != "success");
+          showErrorSheet(
+            title: "Update Failed",
+            message: response.message,
+          );
         }
       } catch (e) {
-        showToast(message: "Error updating vehicle: $e", isError: true);
+        // showToast(message: "Error updating vehicle: $e", isError: true);
+        showErrorSheet(
+          title: "Error",
+          message: "Error updating vehicle: $e",
+        );
       } finally {
         setLoadingVehicleState(false);
       }
@@ -692,17 +686,28 @@ class SettingsController extends GetxController {
         APIResponse response = await profileService.addLicense(data);
 
         if (response.status == "success") {
-          showToast(message: response.message);
+          // showToast(message: response.message);
           clearLicenseTextFields();
           getMyVehicleLicense();
           getProfile();
           Navigator.pop(Get.context!);
+          showSuccessSheet(
+            title: "License Added",
+            message: response.message,
+          );
         } else {
-          showToast(
-              message: response.message, isError: response.status != "success");
+          // showToast(message: response.message, isError: response.status != "success");
+          showErrorSheet(
+            title: "Failed to Add License",
+            message: response.message,
+          );
         }
       } catch (e) {
-        showToast(message: "Error adding license: $e", isError: true);
+        // showToast(message: "Error adding license: $e", isError: true);
+        showErrorSheet(
+          title: "Error",
+          message: "Error adding license: $e",
+        );
       } finally {
         setLoadingVehicleState(false);
       }
@@ -715,9 +720,9 @@ class SettingsController extends GetxController {
     isEditingLicense = true;
     final license = vehicleLicense;
     if (license != null) {
-      licenseNumberController.text = license.number ?? "";
-      licenseIssuedDateController.text = license.issuedAt ?? "";
-      licenseExpiryDateController.text = license.expiryDate ?? "";
+      licenseNumberController.text = license.number;
+      licenseIssuedDateController.text = license.issuedAt;
+      licenseExpiryDateController.text = license.expiryDate;
     }
     update();
   }
@@ -747,18 +752,29 @@ class SettingsController extends GetxController {
         APIResponse response = await profileService.updateLicense(data);
 
         if (response.status == "success") {
-          showToast(message: response.message);
+          // showToast(message: response.message);
           clearLicenseTextFields();
           getMyVehicleLicense();
           getProfile();
           isEditingLicense = false;
           Navigator.pop(Get.context!);
+          showSuccessSheet(
+            title: "License Updated",
+            message: response.message,
+          );
         } else {
-          showToast(
-              message: response.message, isError: response.status != "success");
+          // showToast(message: response.message, isError: response.status != "success");
+          showErrorSheet(
+            title: "Update Failed",
+            message: response.message,
+          );
         }
       } catch (e) {
-        showToast(message: "Error updating license: $e", isError: true);
+        // showToast(message: "Error updating license: $e", isError: true);
+        showErrorSheet(
+          title: "Error",
+          message: "Error updating license: $e",
+        );
       } finally {
         setLoadingVehicleState(false);
       }
@@ -772,8 +788,6 @@ class SettingsController extends GetxController {
     serviceManager.disposeServices();
     getStorage.remove('token');
     Get.offAllNamed(Routes.SIGN_IN);
-    // Zego Cloud temporarily disabled
-    // ZegoUIKitPrebuiltCallInvitationService().uninit();
   }
 
   bool deletePasswordVisibility = false;
@@ -797,8 +811,6 @@ class SettingsController extends GetxController {
         DeliveryNotificationServiceManager serviceManager =
             DeliveryNotificationServiceManager();
         serviceManager.disposeServices();
-        // Zego Cloud temporarily disabled
-        // ZegoUIKitPrebuiltCallInvitationService().uninit();
       } else {
         showToast(message: "could not delete your account", isError: true);
       }
@@ -899,11 +911,10 @@ class SettingsController extends GetxController {
   }
 
   @override
-  void onInit() {
-    super.onInit();
-    // Load profile when the controller is initialized
+  void onReady() {
+    super.onReady();
+    // Load profile after the widget tree is built
     getMyVehicleLicense();
-    // getMyVehicle();
     getProfile();
   }
 }

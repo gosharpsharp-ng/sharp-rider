@@ -28,7 +28,7 @@ if (keystorePropertiesFile.exists()) {
     keystoreProperties.load(new FileInputStream(keystorePropertiesFile))
 }
 android {
-    namespace = "com.driver.gologistics.gorider"
+    namespace = "com.gosharpsharp.rider"
     compileSdk = 36
     ndkVersion = "26.1.10909125"
 
@@ -50,7 +50,7 @@ android {
     }
     defaultConfig {
         // TODO: Specify your own unique Application ID (https://developer.android.com/studio/build/application-id.html).
-        applicationId = "com.driver.gologistics.gorider"
+        applicationId = "com.gosharpsharp.rider"
         // You can update the following values to match your application needs.
         // For more information, see: https://docs.flutter.dev/deployment/android#reviewing-the-gradle-build-configuration.
         minSdkVersion = flutter.minSdkVersion

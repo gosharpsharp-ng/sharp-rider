@@ -1,4 +1,4 @@
-package com.driver.gologistics.gorider
+package com.gosharpsharp.rider
 
 import io.flutter.embedding.android.FlutterActivity
 

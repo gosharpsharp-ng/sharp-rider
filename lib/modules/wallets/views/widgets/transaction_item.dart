@@ -3,7 +3,7 @@ import 'package:gorider/core/utils/exports.dart';
 class TransactionItem extends StatelessWidget {
   final Transaction transaction;
   final Function onTap;
-  TransactionItem({super.key, required this.transaction, required this.onTap});
+  const TransactionItem({super.key, required this.transaction, required this.onTap});
 
   @override
   Widget build(BuildContext context) {

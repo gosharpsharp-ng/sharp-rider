@@ -1,4 +1,5 @@
 import 'package:gorider/core/utils/exports.dart';
+import 'package:wakelock_plus/wakelock_plus.dart';
 
 final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
 void main() async {
@@ -11,14 +12,10 @@ void main() async {
     DeviceOrientation.portraitUp,
   ]);
   setupServiceLocator();
-  // Zego Cloud temporarily disabled
-  // //  1.1.2: set navigator key to ZegoUIKitPrebuiltCallInvitationService
-  // ZegoUIKitPrebuiltCallInvitationService().setNavigatorKey(navigatorKey);
 
-  // // call the useSystemCallingUI
-  // ZegoUIKitPrebuiltCallInvitationService().useSystemCallingUI(
-  //   [ZegoUIKitSignalingPlugin()],
-  // );
+  // Keep screen on while app is in foreground
+  WakelockPlus.enable();
+
   runApp(GoSharpDriver(navigatorKey: navigatorKey));
 }
 

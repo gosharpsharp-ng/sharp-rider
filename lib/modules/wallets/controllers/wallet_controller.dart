@@ -32,7 +32,9 @@ class WalletController extends GetxController {
 
   getTransactions({bool isLoadMore = false}) async {
     if (fetchingTransactions ||
-        (isLoadMore && transactions.length >= totalTransactions)) return;
+        (isLoadMore && transactions.length >= totalTransactions)) {
+      return;
+    }
 
     fetchingTransactions = true;
     update();
@@ -235,7 +237,11 @@ class WalletController extends GetxController {
   bool verifyingAccountNumber = false;
   verifyPayoutBank() async {
     if (selectedBank == null) {
-      showToast(message: "Please select a bank first", isError: true);
+      // showToast(message: "Please select a bank first", isError: true);
+      showWarningSheet(
+        title: "Select Bank",
+        message: "Please select a bank first",
+      );
       return;
     }
 
@@ -255,15 +261,27 @@ class WalletController extends GetxController {
 
       if (response.status == "success") {
         resolvedBankAccountName.text = response.data['account_details']['account_name'];
-        showToast(message: "Account verified successfully", isError: false);
+        // showToast(message: "Account verified successfully", isError: false);
+        showSuccessSheet(
+          title: "Account Verified",
+          message: "Your bank account has been verified successfully.",
+        );
         update();
       } else {
         resolvedBankAccountName.clear();
-        showToast(message: response.message, isError: true);
+        // showToast(message: response.message, isError: true);
+        showErrorSheet(
+          title: "Verification Failed",
+          message: response.message,
+        );
       }
     } catch (e) {
       resolvedBankAccountName.clear();
-      showToast(message: "Error verifying account: ${e.toString()}", isError: true);
+      // showToast(message: "Error verifying account: ${e.toString()}", isError: true);
+      showErrorSheet(
+        title: "Error",
+        message: "Error verifying account: ${e.toString()}",
+      );
     } finally {
       verifyingAccountNumber = false;
       update();
@@ -284,12 +302,20 @@ class WalletController extends GetxController {
     if (!payoutAccountFormKey.currentState!.validate()) return;
 
     if (selectedBank == null) {
-      showToast(message: "Please select a bank", isError: true);
+      // showToast(message: "Please select a bank", isError: true);
+      showWarningSheet(
+        title: "Select Bank",
+        message: "Please select a bank",
+      );
       return;
     }
 
     if (resolvedBankAccountName.text.isEmpty) {
-      showToast(message: "Please verify your account number first", isError: true);
+      // showToast(message: "Please verify your account number first", isError: true);
+      showWarningSheet(
+        title: "Verify Account",
+        message: "Please verify your account number first",
+      );
       return;
     }
 
@@ -307,17 +333,29 @@ class WalletController extends GetxController {
       APIResponse response = await walletService.updatePayoutAccount(data);
 
       if (response.status == "success") {
-        showToast(message: "Bank account updated successfully", isError: false);
+        // showToast(message: "Bank account updated successfully", isError: false);
         await refreshBankAccountFromProfile(); // Refresh bank account data from profile
         filterBanks("");
         banksFilterController.clear();
         clearImputedBankFields();
         Get.back();
+        showSuccessSheet(
+          title: "Bank Account Updated",
+          message: "Your bank account has been updated successfully.",
+        );
       } else {
-        showToast(message: response.message, isError: true);
+        // showToast(message: response.message, isError: true);
+        showErrorSheet(
+          title: "Update Failed",
+          message: response.message,
+        );
       }
     } catch (e) {
-      showToast(message: "Error updating bank account: ${e.toString()}", isError: true);
+      // showToast(message: "Error updating bank account: ${e.toString()}", isError: true);
+      showErrorSheet(
+        title: "Error",
+        message: "Error updating bank account: ${e.toString()}",
+      );
     } finally {
       updatingBankAccount = false;
       update();

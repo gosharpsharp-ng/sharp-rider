@@ -5,6 +5,8 @@ class DashboardController extends GetxController {
   GoogleMapController? mapController;
   Position? currentPosition;
   bool isLightMapStyle = true;
+  bool isTrafficEnabled = false;
+  double currentHeading = 0.0;
 
   // Marker and circle for rider's current position
   Set<Marker> markers = {};
@@ -44,8 +46,8 @@ class DashboardController extends GetxController {
 ''';
 
   @override
-  void onInit() {
-    super.onInit();
+  void onReady() {
+    super.onReady();
     _initializeLocation();
   }
 
@@ -81,6 +83,7 @@ class DashboardController extends GetxController {
     ).listen(
       (Position position) {
         currentPosition = position;
+        updateHeading(position);
         _updateMapCamera(position);
         update();
       },
@@ -169,6 +172,35 @@ class DashboardController extends GetxController {
   void toggleMapStyle() {
     isLightMapStyle = !isLightMapStyle;
     update();
+  }
+
+  /// Toggle traffic layer on/off
+  void toggleTraffic() {
+    isTrafficEnabled = !isTrafficEnabled;
+    update();
+  }
+
+  /// Recenter map to current location
+  void recenterMap() {
+    if (mapController != null && currentPosition != null) {
+      mapController!.animateCamera(
+        CameraUpdate.newCameraPosition(
+          CameraPosition(
+            target: LatLng(currentPosition!.latitude, currentPosition!.longitude),
+            zoom: 16.5,
+            bearing: currentHeading,
+          ),
+        ),
+      );
+    }
+  }
+
+  /// Update compass heading from position
+  void updateHeading(Position position) {
+    if (position.heading != 0.0) {
+      currentHeading = position.heading;
+      update();
+    }
   }
 
   LatLng get initialPosition {

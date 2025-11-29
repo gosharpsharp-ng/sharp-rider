@@ -1,9 +1,11 @@
+import 'wallet_model.dart';
+
 class PayoutRequest {
   final int id;
   final String ref;
   final String amount;
   final String status;
-  final String? note;
+  final String? notes;
   final String requestedAt;
   final String? processedAt;
   final String requestableType;
@@ -12,19 +14,20 @@ class PayoutRequest {
   final int? gatewayId;
   final int? currencyId;
   final int walletId;
-  final String paymentMethod;
+  final String? paymentMethod;
+  final String? paymentDetails;
   final String? deletedAt;
   final String createdAt;
   final String updatedAt;
   final dynamic processor;
-  final dynamic wallet;
+  final Wallet? wallet;
 
   PayoutRequest({
     required this.id,
     required this.ref,
     required this.amount,
     required this.status,
-    this.note,
+    this.notes,
     required this.requestedAt,
     this.processedAt,
     required this.requestableType,
@@ -33,7 +36,8 @@ class PayoutRequest {
     this.gatewayId,
     this.currencyId,
     required this.walletId,
-    required this.paymentMethod,
+    this.paymentMethod,
+    this.paymentDetails,
     this.deletedAt,
     required this.createdAt,
     required this.updatedAt,
@@ -47,7 +51,7 @@ class PayoutRequest {
       ref: json['ref']?.toString() ?? '',
       amount: json['amount']?.toString() ?? '0',
       status: json['status']?.toString() ?? 'pending',
-      note: json['note']?.toString(),
+      notes: json['notes']?.toString() ?? json['note']?.toString(),
       requestedAt: json['requested_at']?.toString() ?? '',
       processedAt: json['processed_at']?.toString(),
       requestableType: json['requestable_type']?.toString() ?? '',
@@ -56,12 +60,13 @@ class PayoutRequest {
       gatewayId: json['gateway_id'] != null ? (json['gateway_id'] is int ? json['gateway_id'] : int.tryParse(json['gateway_id'].toString())) : null,
       currencyId: json['currency_id'] != null ? (json['currency_id'] is int ? json['currency_id'] : int.tryParse(json['currency_id'].toString())) : null,
       walletId: json['wallet_id'] is int ? json['wallet_id'] : int.tryParse(json['wallet_id']?.toString() ?? '0') ?? 0,
-      paymentMethod: json['payment_method']?.toString() ?? 'bank',
+      paymentMethod: json['payment_method']?.toString(),
+      paymentDetails: json['payment_details']?.toString(),
       deletedAt: json['deleted_at']?.toString(),
       createdAt: json['created_at']?.toString() ?? '',
       updatedAt: json['updated_at']?.toString() ?? '',
       processor: json['processor'],
-      wallet: json['wallet'],
+      wallet: json['wallet'] != null ? Wallet.fromJson(json['wallet']) : null,
     );
   }
 
@@ -71,7 +76,7 @@ class PayoutRequest {
       'ref': ref,
       'amount': amount,
       'status': status,
-      'note': note,
+      'notes': notes,
       'requested_at': requestedAt,
       'processed_at': processedAt,
       'requestable_type': requestableType,
@@ -81,11 +86,12 @@ class PayoutRequest {
       'currency_id': currencyId,
       'wallet_id': walletId,
       'payment_method': paymentMethod,
+      'payment_details': paymentDetails,
       'deleted_at': deletedAt,
       'created_at': createdAt,
       'updated_at': updatedAt,
       'processor': processor,
-      'wallet': wallet,
+      'wallet': wallet?.toJson(),
     };
   }
 
@@ -161,7 +167,10 @@ class PayoutRequest {
   }
 
   String get paymentMethodDisplayText {
-    switch (paymentMethod.toLowerCase()) {
+    if (paymentMethod == null || paymentMethod!.isEmpty) {
+      return 'Bank Transfer';
+    }
+    switch (paymentMethod!.toLowerCase()) {
       case 'bank':
         return 'Bank Transfer';
       case 'mobile_money':
@@ -169,7 +178,7 @@ class PayoutRequest {
       case 'card':
         return 'Card';
       default:
-        return paymentMethod.toUpperCase();
+        return paymentMethod!.toUpperCase();
     }
   }
 }
@@ -184,17 +193,8 @@ class PayoutRequestData {
     required this.paymentMethod,
   });
 
-  factory PayoutRequestData.fromJson(Map<String, dynamic> json) {
-    return PayoutRequestData(
-      amount: (json['amount'] ?? 0).toDouble(),
-      paymentMethod: json['payment_method'] ?? 'bank',
-    );
-  }
-
-  Map<String, dynamic> toJson() {
-    return {
-      'amount': amount,
-      'payment_method': paymentMethod,
-    };
-  }
+  Map<String, dynamic> toJson() => {
+    'amount': amount,
+    'payment_method_code': paymentMethod,
+  };
 }
