@@ -47,16 +47,15 @@ class _DeliveryOTPVerificationDialogState
   @override
   Widget build(BuildContext context) {
     final defaultPinTheme = PinTheme(
-      width: 56.sp,
-      height: 56.sp,
+      width: 60.sp,
+      height: 40.sp,
       textStyle: TextStyle(
-        fontSize: 20.sp,
+        fontSize: 18.sp,
         color: AppColors.blackColor,
         fontWeight: FontWeight.w600,
       ),
       decoration: BoxDecoration(
-        border:
-            Border.all(color: AppColors.primaryColor.withOpacity(0.3)),
+        border: Border.all(color: AppColors.primaryColor.withOpacity(0.3)),
         borderRadius: BorderRadius.circular(12.r),
         color: AppColors.backgroundColor,
       ),
@@ -87,8 +86,8 @@ class _DeliveryOTPVerificationDialogState
             children: [
               // Icon at the top
               Container(
-                width: 80.sp,
-                height: 80.sp,
+                width: 70.sp,
+                height: 70.sp,
                 decoration: const BoxDecoration(
                   color: Color(0xFFFFC107), // Yellow color
                   shape: BoxShape.circle,
@@ -96,7 +95,7 @@ class _DeliveryOTPVerificationDialogState
                 child: Center(
                   child: Icon(
                     Icons.lock_outline,
-                    size: 50.sp,
+                    size: 40.sp,
                     color: AppColors.blackColor,
                   ),
                 ),
@@ -133,7 +132,7 @@ class _DeliveryOTPVerificationDialogState
                 showCursor: true,
                 autofocus: true,
                 onCompleted: (pin) => _verifyOTP(),
-                keyboardType: TextInputType.number,
+                keyboardType: TextInputType.text,
                 enabled: !isVerifying,
               ),
               SizedBox(height: 32.h),
