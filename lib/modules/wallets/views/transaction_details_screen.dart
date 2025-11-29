@@ -6,10 +6,31 @@ class TransactionDetailsScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return GetBuilder<WalletController>(builder: (walletController) {
+      final transaction = walletController.selectedTransaction;
+
+      if (transaction == null) {
+        return Scaffold(
+          appBar: defaultAppBar(
+            bgColor: AppColors.backgroundColor,
+            title: "Transaction Details",
+            implyLeading: true,
+          ),
+          body: Center(
+            child: customText(
+              "No transaction selected",
+              fontSize: 16.sp,
+              color: AppColors.greyColor,
+            ),
+          ),
+        );
+      }
+
       return Scaffold(
         appBar: defaultAppBar(
           bgColor: AppColors.backgroundColor,
-          title: "Transaction details",
+          title: "Transaction Details",
+          implyLeading: true,
+          centerTitle: false,
         ),
         backgroundColor: AppColors.backgroundColor,
         body: Container(
@@ -19,40 +40,46 @@ class TransactionDetailsScreen extends StatelessWidget {
           child: SingleChildScrollView(
             child: Column(
               children: [
-                SectionBox(children: [
-                  TransactionDetailSummaryItem(
-                    title: "Amount",
-                    value: formatToCurrency(double.parse(
-                        walletController.selectedTransaction?.amount ?? "0.0")),
-                  ),
-                  TransactionDetailSummaryItem(
-                    title: "Transaction Ref",
-                    value: walletController
-                            .selectedTransaction?.paymentReference ??
-                        "",
-                  ),
-                  TransactionDetailSummaryTypeItem(
-                    title: "Transaction type",
-                    value:
-                        walletController.selectedTransaction?.type.capitalize ??
-                            "",
-                  ),
-                  const TransactionDetailSummaryTypeItem(
-                    title: "Payment Method",
-                    value: "GoWallet",
-                  ),
-                  TransactionDetailSummaryItem(
-                    title: "Date",
-                    value:
-                        "${formatDate(walletController.selectedTransaction!.createdAt)} ${formatTime(walletController.selectedTransaction!.createdAt)}",
-                  ),
-                  TransactionDetailSummaryStatusItem(
-                    title: "Status",
-                    value: walletController
-                            .selectedTransaction!.status.capitalizeFirst ??
-                        '',
-                  ),
-                ]),
+                // Main Details Section
+                SectionBox(
+                  children: [
+                    TransactionDetailSummaryItem(
+                      title: "Amount",
+                      value: formatToCurrency(
+                        double.tryParse(transaction.amount) ?? 0.0,
+                      ),
+                    ),
+                    TransactionDetailSummaryItem(
+                      title: "Reference",
+                      value: transaction.paymentReference,
+                    ),
+                    TransactionDetailSummaryStatusItem(
+                      title: "Status",
+                      value: transaction.status.capitalizeFirst ?? '',
+                    ),
+                    TransactionDetailSummaryTypeItem(
+                      title: "Transaction Type",
+                      value: transaction.type.capitalize ?? "",
+                    ),
+                    const TransactionDetailSummaryItem(
+                      title: "Payment Method",
+                      value: "GoWallet",
+                    ),
+                    TransactionDetailSummaryItem(
+                      title: "Date",
+                      value:
+                          "${formatDate(transaction.createdAt)} ${formatTime(transaction.createdAt)}",
+                    ),
+                    if (transaction.description.isNotEmpty)
+                      TransactionDetailSummaryItem(
+                        title: "Description",
+                        value: transaction.description,
+                        isVertical: true,
+                      ),
+                  ],
+                ),
+
+                SizedBox(height: 10.h),
               ],
             ),
           ),

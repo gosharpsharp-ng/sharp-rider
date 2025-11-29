@@ -27,7 +27,7 @@ class FaqItemWidget extends StatelessWidget {
               overflow: TextOverflow.visible),
           children: [
             Container(
-              decoration: BoxDecoration(color: AppColors.backgroundColor),
+              decoration: const BoxDecoration(color: AppColors.backgroundColor),
               padding: EdgeInsets.symmetric(horizontal: 12.w),
               child: customText(answer,
                   fontWeight: FontWeight.normal,

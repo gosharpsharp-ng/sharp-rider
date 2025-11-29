@@ -1,4 +1,5 @@
 import 'package:gorider/core/utils/exports.dart';
+import 'package:intl/intl.dart';
 
 class PayoutRequestScreen extends StatelessWidget {
   const PayoutRequestScreen({super.key});
@@ -71,6 +72,27 @@ class PayoutRequestScreen extends StatelessWidget {
                           controller: payoutController.amountController,
                           keyboardType: TextInputType.number,
                           validator: payoutController.validateAmount,
+                          onChanged: (value) {
+                            // Remove all non-digit characters
+                            String newValue =
+                                value.replaceAll(RegExp(r'[^0-9]'), '');
+                            if (value.isEmpty || newValue == '00') {
+                              payoutController.amountController.clear();
+                              return;
+                            }
+                            double value1 = int.parse(newValue) / 100;
+                            value = NumberFormat.currency(
+                              locale: 'en_NG',
+                              symbol: '₦',
+                              decimalDigits: 2,
+                            ).format(value1);
+                            payoutController.amountController.value =
+                                TextEditingValue(
+                              text: value,
+                              selection:
+                                  TextSelection.collapsed(offset: value.length),
+                            );
+                          },
                           suffixWidget: Padding(
                             padding: EdgeInsets.all(8.sp),
                             child: customText(

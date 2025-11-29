@@ -5,6 +5,7 @@ class PngAssets {
   static const String onboardingImage1 = 'assets/imgs/deliveryman.png';
   static const String goSharpSharpIcon = 'assets/icons/gosharp_icon.png';
   static const String goSharpSharpTextLogo = 'assets/icons/gosharp_icon.png';
+  static const String goRiderLogo = 'assets/icons/gorider-logo.png';
   static const String avatarIcon = 'assets/imgs/avatar.png';
   static const String mapIcon = 'assets/imgs/map.png';
   static const String parcel = 'assets/imgs/parcel.png';

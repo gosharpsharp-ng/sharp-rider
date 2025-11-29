@@ -49,19 +49,19 @@ class AppNavigationController extends GetxController {
         context: Get.context!,
         builder: (BuildContext context) {
           return AlertDialog(
-            title: Text("Enable Location"),
-            content: Text(
+            title: const Text("Enable Location"),
+            content: const Text(
                 "This app requires location services to function properly."),
             actions: [
               TextButton(
-                child: Text("Settings"),
+                child: const Text("Settings"),
                 onPressed: () async {
                   await Geolocator.openLocationSettings();
                   Navigator.of(context).pop();
                 },
               ),
               TextButton(
-                child: Text("Cancel"),
+                child: const Text("Cancel"),
                 onPressed: () => Navigator.of(context).pop(),
               ),
             ],

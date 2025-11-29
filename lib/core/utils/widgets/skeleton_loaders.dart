@@ -449,7 +449,7 @@ class SkeletonLoaders {
                     color: Colors.grey[300],
                     borderRadius: BorderRadius.circular(20.r),
                   ),
-                  child: Container(
+                  child: SizedBox(
                     height: 14.h,
                     width: [60.w, 80.w, 70.w, 90.w][index],
                   ),
@@ -1073,7 +1073,7 @@ class SkeletonLoaders {
                 BoxShadow(
                   color: Colors.black.withOpacity(0.05),
                   blurRadius: 8,
-                  offset: Offset(0, 2),
+                  offset: const Offset(0, 2),
                 ),
               ],
             ),

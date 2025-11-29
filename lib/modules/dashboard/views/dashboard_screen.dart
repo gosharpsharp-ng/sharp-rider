@@ -118,190 +118,255 @@ class DashboardScreen extends StatelessWidget {
               padding: EdgeInsets.symmetric(vertical: 5.sp, horizontal: 10.sp),
               width: 1.sw,
               color: AppColors.backgroundColor,
-              child: RefreshIndicator(
-                backgroundColor: AppColors.primaryColor,
-                color: AppColors.whiteColor,
-                onRefresh: () async {
-                  // Refresh profile first to get updated wallet balance
-                  await Get.find<SettingsController>().getProfile();
-                  // Sync wallet data from profile
-                  Get.find<WalletController>().loadWalletFromProfile();
-                  Get.find<WalletController>().getTransactions();
-                  Get.find<DeliveriesController>().fetchDeliveries();
-                  Get.find<NotificationsController>().getNotifications();
-                },
-                child: Column(
-                  children: [
-                    // Wallet Section
-                    Padding(
-                      padding: EdgeInsets.symmetric(vertical: 10.h),
-                      child: GetBuilder<WalletController>(
-                          builder: (walletController) {
-                        return WalletWidget(
-                          balance: walletController.availableBalance,
-                          title: "Wallet balance",
-                          canWithdraw: true,
-                        );
-                      }),
-                    ),
+              child: Column(
+                children: [
+                  // Wallet Section
+                  Padding(
+                    padding: EdgeInsets.symmetric(vertical: 10.h),
+                    child: GetBuilder<WalletController>(
+                        builder: (walletController) {
+                      return WalletWidget(
+                        balance: walletController.availableBalance,
+                        title: "Wallet balance",
+                        canWithdraw: true,
+                      );
+                    }),
+                  ),
 
-                    // Map with Go Online Overlay
-                    Expanded(
-                      child: GetBuilder<DashboardController>(
-                        builder: (dashController) {
-                          return GetBuilder<DeliveriesController>(
-                            builder: (ordersController) {
-                              return Stack(
-                                children: [
-                                  // Google Map
-                                  ClipRRect(
-                                    borderRadius: BorderRadius.only(
-                                      topLeft: Radius.circular(20.r),
-                                      topRight: Radius.circular(20.r),
+                  // Map with Go Online Overlay
+                  Expanded(
+                    child: GetBuilder<DashboardController>(
+                      builder: (dashController) {
+                        return GetBuilder<DeliveriesController>(
+                          builder: (ordersController) {
+                            return Stack(
+                              children: [
+                                // Google Map
+                                ClipRRect(
+                                  borderRadius: BorderRadius.only(
+                                    topLeft: Radius.circular(20.r),
+                                    topRight: Radius.circular(20.r),
+                                  ),
+                                  child: GoogleMap(
+                                    initialCameraPosition: CameraPosition(
+                                      target: dashController.initialPosition,
+                                      zoom: 16.5,
                                     ),
-                                    child: GoogleMap(
-                                      initialCameraPosition: CameraPosition(
-                                        target: dashController.initialPosition,
-                                        zoom: 16.5,
+                                    style: dashController.currentMapStyle,
+                                    markers: dashController.markers,
+                                    circles: dashController.circles,
+                                    trafficEnabled: dashController.isTrafficEnabled,
+                                    myLocationEnabled: false,
+                                    myLocationButtonEnabled: false,
+                                    zoomControlsEnabled: false,
+                                    zoomGesturesEnabled: true,
+                                    scrollGesturesEnabled: true,
+                                    rotateGesturesEnabled: true,
+                                    tiltGesturesEnabled: true,
+                                    mapToolbarEnabled: false,
+                                    compassEnabled: true,
+                                    liteModeEnabled: false,
+                                    onMapCreated:
+                                        (GoogleMapController controller) {
+                                      dashController.onMapCreated(controller);
+                                    },
+                                  ),
+                                ),
+
+                                // Map Control Buttons (right side)
+                                Positioned(
+                                  top: 10.h,
+                                  right: 10.w,
+                                  child: Column(
+                                    children: [
+                                      // Map Style Toggle
+                                      _MapControlButton(
+                                        onTap: () => dashController.toggleMapStyle(),
+                                        icon: dashController.isLightMapStyle
+                                            ? Icons.dark_mode_outlined
+                                            : Icons.light_mode_outlined,
                                       ),
-                                      style: dashController.currentMapStyle,
-                                      markers: dashController.markers,
-                                      circles: dashController.circles,
-                                      myLocationEnabled: false,
-                                      myLocationButtonEnabled: false,
-                                      zoomControlsEnabled: true,
-                                      zoomGesturesEnabled: true,
-                                      scrollGesturesEnabled: true,
-                                      rotateGesturesEnabled: true,
-                                      tiltGesturesEnabled: true,
-                                      mapToolbarEnabled: false,
-                                      compassEnabled: true,
-                                      liteModeEnabled: false,
-                                      onMapCreated:
-                                          (GoogleMapController controller) {
-                                        dashController.onMapCreated(controller);
-                                      },
+                                      SizedBox(height: 8.h),
+                                      // Traffic Toggle
+                                      _MapControlButton(
+                                        onTap: () => dashController.toggleTraffic(),
+                                        icon: Icons.traffic_outlined,
+                                        isActive: dashController.isTrafficEnabled,
+                                      ),
+                                      SizedBox(height: 8.h),
+                                      // Recenter Button
+                                      _MapControlButton(
+                                        onTap: () => dashController.recenterMap(),
+                                        icon: Icons.my_location,
+                                      ),
+                                    ],
+                                  ),
+                                ),
+
+                                // Compass Heading Indicator (top left)
+                                if (dashController.currentHeading != 0.0)
+                                  Positioned(
+                                    top: 10.h,
+                                    left: 10.w,
+                                    child: Container(
+                                      padding: EdgeInsets.all(8.sp),
+                                      decoration: BoxDecoration(
+                                        color: AppColors.whiteColor,
+                                        borderRadius: BorderRadius.circular(8.r),
+                                        boxShadow: [
+                                          BoxShadow(
+                                            color: Colors.black.withAlpha(15),
+                                            blurRadius: 6,
+                                            offset: const Offset(0, 2),
+                                          ),
+                                        ],
+                                      ),
+                                      child: Row(
+                                        mainAxisSize: MainAxisSize.min,
+                                        children: [
+                                          Transform.rotate(
+                                            angle: dashController.currentHeading * (3.14159 / 180),
+                                            child: Icon(
+                                              Icons.navigation,
+                                              color: AppColors.primaryColor,
+                                              size: 18.sp,
+                                            ),
+                                          ),
+                                          SizedBox(width: 4.w),
+                                          customText(
+                                            '${dashController.currentHeading.toStringAsFixed(0)}°',
+                                            fontSize: 12.sp,
+                                            fontWeight: FontWeight.w600,
+                                            color: AppColors.blackColor,
+                                          ),
+                                        ],
+                                      ),
                                     ),
                                   ),
 
-                                  // Map Style Toggle Button
-                                  Positioned(
-                                    top: 10.h,
-                                    right: 10.w,
-                                    child: GestureDetector(
-                                      onTap: () {
-                                        dashController.toggleMapStyle();
-                                      },
-                                      child: Container(
-                                        padding: EdgeInsets.all(10.sp),
-                                        decoration: BoxDecoration(
-                                          color: AppColors.whiteColor,
-                                          borderRadius:
-                                              BorderRadius.circular(8.r),
-                                          boxShadow: [
-                                            BoxShadow(
-                                              color: Colors.black.withAlpha(15),
-                                              blurRadius: 6,
-                                              offset: const Offset(0, 2),
+                                // Go Online Widget Overlay
+                                Positioned(
+                                  bottom: 20.h,
+                                  left: 20.w,
+                                  right: 20.w,
+                                  child: Container(
+                                    width: 1.sw,
+                                    decoration: BoxDecoration(
+                                      gradient: const LinearGradient(
+                                        colors: [
+                                          Color(0xFFFFF6E3),
+                                          Color(0xFFFFFFFF),
+                                        ],
+                                        begin: Alignment.topRight,
+                                        end: Alignment.bottomLeft,
+                                      ),
+                                      borderRadius:
+                                          BorderRadius.circular(12.r),
+                                      boxShadow: [
+                                        BoxShadow(
+                                          color:
+                                              Colors.black.withOpacity(0.1),
+                                          blurRadius: 10,
+                                          offset: const Offset(0, 4),
+                                        ),
+                                      ],
+                                    ),
+                                    padding: EdgeInsets.symmetric(
+                                      horizontal: 25.sp,
+                                      vertical: 15.sp,
+                                    ),
+                                    child: Column(
+                                      children: [
+                                        customText(
+                                          ordersController.isOnline
+                                              ? "You're online! Stay active to earn more."
+                                              : "You're offline. Go online to start earning!",
+                                          fontWeight: FontWeight.w500,
+                                          fontSize: 12.sp,
+                                          textAlign: TextAlign.center,
+                                          overflow: TextOverflow.visible,
+                                        ),
+                                        SizedBox(height: 8.h),
+                                        Row(
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.center,
+                                          children: [
+                                            customText(
+                                              ordersController.isOnline
+                                                  ? 'Go Offline'
+                                                  : 'Go Online',
+                                              fontWeight: FontWeight.w600,
+                                              fontSize: 18.sp,
+                                            ),
+                                            SizedBox(width: 10.sp),
+                                            Switch(
+                                              activeColor:
+                                                  AppColors.greenColor,
+                                              value:
+                                                  ordersController.isOnline,
+                                              onChanged: (value) {
+                                                ordersController
+                                                    .toggleOnlineStatus();
+                                              },
                                             ),
                                           ],
                                         ),
-                                        child: Icon(
-                                          dashController.isLightMapStyle
-                                              ? Icons.dark_mode_outlined
-                                              : Icons.light_mode_outlined,
-                                          color: AppColors.blackColor,
-                                          size: 22.sp,
-                                        ),
-                                      ),
+                                      ],
                                     ),
                                   ),
-
-                                  // Go Online Widget Overlay
-                                  Positioned(
-                                    bottom: 20.h,
-                                    left: 20.w,
-                                    right: 20.w,
-                                    child: Container(
-                                      width: 1.sw,
-                                      decoration: BoxDecoration(
-                                        gradient: const LinearGradient(
-                                          colors: [
-                                            Color(0xFFFFF6E3),
-                                            Color(0xFFFFFFFF),
-                                          ],
-                                          begin: Alignment.topRight,
-                                          end: Alignment.bottomLeft,
-                                        ),
-                                        borderRadius:
-                                            BorderRadius.circular(12.r),
-                                        boxShadow: [
-                                          BoxShadow(
-                                            color:
-                                                Colors.black.withOpacity(0.1),
-                                            blurRadius: 10,
-                                            offset: const Offset(0, 4),
-                                          ),
-                                        ],
-                                      ),
-                                      padding: EdgeInsets.symmetric(
-                                        horizontal: 25.sp,
-                                        vertical: 15.sp,
-                                      ),
-                                      child: Column(
-                                        children: [
-                                          customText(
-                                            ordersController.isOnline
-                                                ? "You're online! Stay active to earn more."
-                                                : "You're offline. Go online to start earning!",
-                                            fontWeight: FontWeight.w500,
-                                            fontSize: 12.sp,
-                                            textAlign: TextAlign.center,
-                                            overflow: TextOverflow.visible,
-                                          ),
-                                          SizedBox(height: 8.h),
-                                          Row(
-                                            mainAxisAlignment:
-                                                MainAxisAlignment.center,
-                                            children: [
-                                              customText(
-                                                ordersController.isOnline
-                                                    ? 'Go Offline'
-                                                    : 'Go Online',
-                                                fontWeight: FontWeight.w600,
-                                                fontSize: 18.sp,
-                                              ),
-                                              SizedBox(width: 10.sp),
-                                              Switch(
-                                                activeColor:
-                                                    AppColors.greenColor,
-                                                value:
-                                                    ordersController.isOnline,
-                                                onChanged: (value) {
-                                                  ordersController
-                                                      .toggleOnlineStatus();
-                                                },
-                                              ),
-                                            ],
-                                          ),
-                                        ],
-                                      ),
-                                    ),
-                                  ),
-                                ],
-                              );
-                            },
-                          );
-                        },
-                      ),
+                                ),
+                              ],
+                            );
+                          },
+                        );
+                      },
                     ),
-                  ],
-                ),
+                  ),
+                ],
               ),
             ),
           ),
         ),
       );
     });
+  }
+}
+
+/// Reusable map control button widget
+class _MapControlButton extends StatelessWidget {
+  final VoidCallback onTap;
+  final IconData icon;
+  final bool isActive;
+
+  const _MapControlButton({
+    required this.onTap,
+    required this.icon,
+    this.isActive = false,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
+        padding: EdgeInsets.all(10.sp),
+        decoration: BoxDecoration(
+          color: isActive ? AppColors.primaryColor : AppColors.whiteColor,
+          borderRadius: BorderRadius.circular(8.r),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withAlpha(15),
+              blurRadius: 6,
+              offset: const Offset(0, 2),
+            ),
+          ],
+        ),
+        child: Icon(
+          icon,
+          color: isActive ? AppColors.whiteColor : AppColors.blackColor,
+          size: 22.sp,
+        ),
+      ),
+    );
   }
 }

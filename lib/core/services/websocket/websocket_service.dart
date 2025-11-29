@@ -9,7 +9,6 @@ class SocketService extends GetxService {
   late IO.Socket socket;
   final isConnected = false.obs;
   late UserProfile _userProfile;
-  final Set<String> _joinedRooms = {}; // Track joined rooms
   bool _hasJoinedRiderRoom = false;
 
   Future<SocketService> init(UserProfile profile) async {
@@ -101,7 +100,7 @@ class SocketService extends GetxService {
     if (isConnected.value) {
       // Only emit to delivery tracking location update event
       emitDeliveryTrackingLocationUpdate(
-        trackingId: deliveryModel.trackingId,
+        trackingId: deliveryModel.trackingId ?? '',
         latitude: position.latitude,
         longitude: position.longitude,
         degrees: locationDegrees,
@@ -114,7 +113,7 @@ class SocketService extends GetxService {
     if (isConnected.value) {
       // Only emit to delivery tracking location update event
       emitDeliveryTrackingLocationUpdate(
-        trackingId: deliveryModel.trackingId,
+        trackingId: deliveryModel.trackingId ?? '',
         latitude: position.latitude,
         longitude: position.longitude,
         degrees: locationDegrees,

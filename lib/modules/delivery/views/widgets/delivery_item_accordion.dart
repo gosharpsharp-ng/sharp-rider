@@ -27,8 +27,8 @@ class DeliveryItemAccordion extends StatelessWidget {
           ),
           child: ExpansionTile(
             backgroundColor: AppColors.whiteColor,
-            shape: RoundedRectangleBorder(), // No border when expanded
-            collapsedShape: RoundedRectangleBorder(),
+            shape: const RoundedRectangleBorder(), // No border when expanded
+            collapsedShape: const RoundedRectangleBorder(),
             tilePadding: EdgeInsets.symmetric(horizontal: 8.sp),
             title: Container(
               decoration: BoxDecoration(

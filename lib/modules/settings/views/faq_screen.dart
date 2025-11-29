@@ -1,6 +1,4 @@
 import 'package:gorider/core/utils/exports.dart';
-import 'package:gorider/modules/settings/controllers/faq_controller.dart';
-import 'package:gorider/modules/settings/views/widgets/faq_category_chip.dart';
 
 class FaqScreen extends StatelessWidget {
   const FaqScreen({super.key});

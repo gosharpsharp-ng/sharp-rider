@@ -1,30 +1,36 @@
 class DeliveryModel {
-  final int id;
+  final int? id;
   final int? orderId;
-  final String trackingId;
+  final String? trackingId;
+  final String? deliveryCode;
   final String? status;
   final String? paymentStatus;
-  final String distance;
-  final String cost;
-  final int userId;
+  final String? distance;
+  final String? cost;
+  final int? userId;
   final int? riderId;
-  final int currencyId;
+  final int? currencyId;
   final int? paymentMethodId;
-  final int courierTypeId;
+  final int? courierTypeId;
   final String? originableType;
   final int? originableId;
   final String? destinationableType;
   final int? destinationableId;
   final String? deletedAt;
-  final String createdAt;
-  final String updatedAt;
+  final String? createdAt;
+  final String? updatedAt;
   final User? user;
+  final Sender? sender;
   final Receiver? receiver;
   final List<Item>? items;
   final Currency? currency;
   final CourierType? courierType;
   final Rating? rating;
+  final Rider? rider;
   final List<DeliveryLocation>? locations;
+  final DeliveryLocation? pickupLocationData;
+  final DeliveryLocation? destinationLocationData;
+  final String? paymentMethod;
 
   // Get all pickup locations
   List<DeliveryLocation> get pickupLocations {
@@ -40,6 +46,9 @@ class DeliveryModel {
 
   // Convenience getter for first pickup location
   DeliveryLocation get pickupLocation {
+    // First check if we have direct pickup_location data from API
+    if (pickupLocationData != null) return pickupLocationData!;
+    // Fallback to locations array
     final pickups = pickupLocations;
     if (pickups.isNotEmpty) return pickups.first;
     if (locations != null && locations!.isNotEmpty) return locations!.first;
@@ -48,6 +57,9 @@ class DeliveryModel {
 
   // Convenience getter for first destination location
   DeliveryLocation get destinationLocation {
+    // First check if we have direct destination_location data from API
+    if (destinationLocationData != null) return destinationLocationData!;
+    // Fallback to locations array
     final destinations = destinationLocations;
     if (destinations.isNotEmpty) return destinations.first;
     if (locations != null && locations!.length > 1) return locations!.last;
@@ -63,56 +75,64 @@ class DeliveryModel {
   int get totalStops => (locations?.length ?? 0);
 
   DeliveryModel({
-    required this.id,
+    this.id,
     this.orderId,
-    required this.trackingId,
+    this.trackingId,
+    this.deliveryCode,
     this.status,
     this.paymentStatus,
-    required this.distance,
-    required this.cost,
-    required this.userId,
+    this.distance,
+    this.cost,
+    this.userId,
     this.riderId,
-    required this.currencyId,
+    this.currencyId,
     this.paymentMethodId,
-    required this.courierTypeId,
+    this.courierTypeId,
     this.originableType,
     this.originableId,
     this.destinationableType,
     this.destinationableId,
     this.deletedAt,
-    required this.createdAt,
-    required this.updatedAt,
+    this.createdAt,
+    this.updatedAt,
     this.user,
+    this.sender,
     this.receiver,
     this.items,
     this.currency,
     this.courierType,
     this.rating,
+    this.rider,
     this.locations,
+    this.pickupLocationData,
+    this.destinationLocationData,
+    this.paymentMethod,
   });
 
   factory DeliveryModel.fromJson(Map<String, dynamic> json) {
     return DeliveryModel(
-      id: json['id'] as int,
+      id: json['id'] as int?,
       orderId: json['order_id'] as int?,
-      trackingId: json['tracking_id'] as String,
+      trackingId: json['tracking_id'] as String?,
+      deliveryCode: json['delivery_code'] as String?,
       status: json['status'] as String?,
       paymentStatus: json['payment_status'] as String?,
       distance: _parseToString(json['distance']),
       cost: _parseToString(json['cost']),
-      userId: json['user_id'] as int,
+      userId: json['user_id'] as int?,
       riderId: json['rider_id'] as int?,
-      currencyId: json['currency_id'] as int? ?? 0,
+      currencyId: json['currency_id'] as int?,
       paymentMethodId: json['payment_method_id'] as int?,
-      courierTypeId: json['courier_type_id'] as int? ?? 0,
+      courierTypeId: json['courier_type_id'] as int?,
       originableType: json['originable_type'] as String?,
       originableId: json['originable_id'] as int?,
       destinationableType: json['destinationable_type'] as String?,
       destinationableId: json['destinationable_id'] as int?,
       deletedAt: json['deleted_at'] as String?,
-      createdAt: json['created_at'] as String? ?? '',
-      updatedAt: json['updated_at'] as String? ?? '',
+      createdAt: json['created_at'] as String?,
+      updatedAt: json['updated_at'] as String?,
       user: json['user'] != null ? User.fromJson(json['user']) : null,
+      sender: json['sender'] != null ? Sender.fromJson(json['sender']) : null,
       receiver: json['receiver'] != null ? Receiver.fromJson(json['receiver']) : null,
       items: json['items'] != null
           ? (json['items'] as List).map((e) => Item.fromJson(e)).toList()
@@ -120,9 +140,17 @@ class DeliveryModel {
       currency: json['currency'] != null ? Currency.fromJson(json['currency']) : null,
       courierType: json['courier_type'] != null ? CourierType.fromJson(json['courier_type']) : null,
       rating: json['rating'] != null ? Rating.fromJson(json['rating']) : null,
+      rider: json['rider'] != null ? Rider.fromJson(json['rider']) : null,
       locations: json['locations'] != null
           ? (json['locations'] as List).map((e) => DeliveryLocation.fromJson(e)).toList()
           : null,
+      pickupLocationData: json['pickup_location'] != null
+          ? DeliveryLocation.fromJson(json['pickup_location'])
+          : null,
+      destinationLocationData: json['destination_location'] != null
+          ? DeliveryLocation.fromJson(json['destination_location'])
+          : null,
+      paymentMethod: json['payment_method'] as String?,
     );
   }
 
@@ -131,6 +159,7 @@ class DeliveryModel {
       'id': id,
       'order_id': orderId,
       'tracking_id': trackingId,
+      'delivery_code': deliveryCode,
       'status': status,
       'payment_status': paymentStatus,
       'distance': distance,
@@ -148,17 +177,22 @@ class DeliveryModel {
       'created_at': createdAt,
       'updated_at': updatedAt,
       'user': user?.toJson(),
+      'sender': sender?.toJson(),
       'receiver': receiver?.toJson(),
       'items': items?.map((e) => e.toJson()).toList(),
       'currency': currency?.toJson(),
       'courier_type': courierType?.toJson(),
       'rating': rating?.toJson(),
+      'rider': rider?.toJson(),
       'locations': locations?.map((e) => e.toJson()).toList(),
+      'pickup_location': pickupLocationData?.toJson(),
+      'destination_location': destinationLocationData?.toJson(),
+      'payment_method': paymentMethod,
     };
   }
 
-  static String _parseToString(dynamic value) {
-    if (value == null) return '0';
+  static String? _parseToString(dynamic value) {
+    if (value == null) return null;
     if (value is String) return value;
     return value.toString();
   }
@@ -293,6 +327,7 @@ class User {
   final int? id;
   final String? avatar;
   final String? avatarUrl;
+  final String? name;
   final String? firstName;
   final String? lastName;
   final String? phone;
@@ -314,6 +349,7 @@ class User {
     this.id,
     this.avatar,
     this.avatarUrl,
+    this.name,
     this.firstName,
     this.lastName,
     this.phone,
@@ -332,11 +368,19 @@ class User {
     this.updatedAt,
   });
 
+  /// Returns the display name, preferring 'name' field, falling back to firstName + lastName
+  String get displayName {
+    if (name != null && name!.isNotEmpty) return name!;
+    final parts = [firstName, lastName].where((e) => e != null && e.isNotEmpty);
+    return parts.join(' ');
+  }
+
   factory User.fromJson(Map<String, dynamic> json) {
     return User(
       id: json['id'] as int?,
       avatar: json['avatar'] as String?,
       avatarUrl: json['avatar_url'] as String?,
+      name: json['name'] as String?,
       firstName: json['fname'] as String?,
       lastName: json['lname'] as String?,
       phone: json['phone'] as String?,
@@ -361,6 +405,7 @@ class User {
       'id': id,
       'avatar': avatar,
       'avatar_url': avatarUrl,
+      'name': name,
       'fname': firstName,
       'lname': lastName,
       'phone': phone,
@@ -538,6 +583,7 @@ class Item {
   final String? weight;
   final int? quantity;
   final int? deliveryId;
+  final List<ItemFile>? files;
   final String? deletedAt;
   final String? createdAt;
   final String? updatedAt;
@@ -551,6 +597,7 @@ class Item {
     this.weight,
     this.quantity,
     this.deliveryId,
+    this.files,
     this.deletedAt,
     this.createdAt,
     this.updatedAt,
@@ -566,6 +613,9 @@ class Item {
       weight: json['weight'] as String?,
       quantity: json['quantity'] as int?,
       deliveryId: json['delivery_id'] as int?,
+      files: json['files'] != null
+          ? (json['files'] as List).map((e) => ItemFile.fromJson(e)).toList()
+          : null,
       deletedAt: json['deleted_at'] as String?,
       createdAt: json['created_at'] as String?,
       updatedAt: json['updated_at'] as String?,
@@ -582,9 +632,42 @@ class Item {
       'weight': weight,
       'quantity': quantity,
       'delivery_id': deliveryId,
+      'files': files?.map((e) => e.toJson()).toList(),
       'deleted_at': deletedAt,
       'created_at': createdAt,
       'updated_at': updatedAt,
+    };
+  }
+}
+
+class ItemFile {
+  final int? id;
+  final String? url;
+  final String? type;
+  final String? name;
+
+  ItemFile({
+    this.id,
+    this.url,
+    this.type,
+    this.name,
+  });
+
+  factory ItemFile.fromJson(Map<String, dynamic> json) {
+    return ItemFile(
+      id: json['id'] as int?,
+      url: json['url'] as String?,
+      type: json['type'] as String?,
+      name: json['name'] as String?,
+    );
+  }
+
+  Map<String, dynamic> toJson() {
+    return {
+      'id': id,
+      'url': url,
+      'type': type,
+      'name': name,
     };
   }
 }
@@ -620,6 +703,7 @@ class CourierTypePrice {
 class Sender {
   final int? id;
   final String? avatar;
+  final String? name;
   final String? firstName;
   final String? lastName;
   final String? phone;
@@ -637,6 +721,7 @@ class Sender {
   Sender({
     this.id,
     this.avatar,
+    this.name,
     this.firstName,
     this.lastName,
     this.phone,
@@ -652,10 +737,18 @@ class Sender {
     this.updatedAt,
   });
 
+  /// Returns the display name, preferring 'name' field, falling back to firstName + lastName
+  String get displayName {
+    if (name != null && name!.isNotEmpty) return name!;
+    final parts = [firstName, lastName].where((e) => e != null && e.isNotEmpty);
+    return parts.join(' ');
+  }
+
   factory Sender.fromJson(Map<String, dynamic> json) {
     return Sender(
       id: json['id'] as int?,
       avatar: json['avatar'] as String?,
+      name: json['name'] as String?,
       firstName: json['fname'] as String?,
       lastName: json['lname'] as String?,
       phone: json['phone'] as String?,
@@ -676,6 +769,7 @@ class Sender {
     return {
       'id': id,
       'avatar': avatar,
+      'name': name,
       'fname': firstName,
       'lname': lastName,
       'phone': phone,
@@ -696,6 +790,7 @@ class Sender {
 class Rider {
   final int? id;
   final String? avatar;
+  final String? name;
   final String? firstName;
   final String? lastName;
   final String? phone;
@@ -713,6 +808,7 @@ class Rider {
   Rider({
     this.id,
     this.avatar,
+    this.name,
     this.firstName,
     this.lastName,
     this.phone,
@@ -728,10 +824,18 @@ class Rider {
     this.updatedAt,
   });
 
+  /// Returns the display name, preferring 'name' field, falling back to firstName + lastName
+  String get displayName {
+    if (name != null && name!.isNotEmpty) return name!;
+    final parts = [firstName, lastName].where((e) => e != null && e.isNotEmpty);
+    return parts.join(' ');
+  }
+
   factory Rider.fromJson(Map<String, dynamic> json) {
     return Rider(
       id: json['id'] as int?,
       avatar: json['avatar'] as String?,
+      name: json['name'] as String?,
       firstName: json['fname'] as String?,
       lastName: json['lname'] as String?,
       phone: json['phone'] as String?,
@@ -752,6 +856,7 @@ class Rider {
     return {
       'id': id,
       'avatar': avatar,
+      'name': name,
       'fname': firstName,
       'lname': lastName,
       'phone': phone,

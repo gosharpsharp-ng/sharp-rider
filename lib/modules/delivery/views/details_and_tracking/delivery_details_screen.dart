@@ -10,16 +10,7 @@ class DeliveryDetailsScreen extends StatefulWidget {
 class _DeliveryDetailsScreenState extends State<DeliveryDetailsScreen> {
   final deliveriesController = Get.find<DeliveriesController>();
 
-  @override
-  void initState() {
-    super.initState();
-    // Defer fetch to after the build phase is complete
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      _fetchDeliveryDetails();
-    });
-  }
-
-  Future<void> _fetchDeliveryDetails() async {
+  Future<void> _refreshDeliveryDetails() async {
     await deliveriesController.getDelivery();
   }
 
@@ -53,15 +44,33 @@ class _DeliveryDetailsScreenState extends State<DeliveryDetailsScreen> {
     Get.toNamed(Routes.DELIVERY_TRACKING_SCREEN);
   }
 
+  // Helper to get sender name (prefer sender, fallback to user)
+  String _getSenderName(DeliveryModel delivery) {
+    // Prefer sender.displayName (handles both name and fname/lname formats)
+    if (delivery.sender != null) {
+      return delivery.sender!.displayName;
+    }
+    // Fallback to user
+    if (delivery.user != null) {
+      return delivery.user!.displayName;
+    }
+    return "";
+  }
+
   // Helper to get sender initials
   String _getSenderInitials(DeliveryModel delivery) {
-    final first = delivery.user?.firstName?.isNotEmpty == true
-        ? delivery.user!.firstName!.substring(0, 1)
-        : "";
-    final last = delivery.user?.lastName?.isNotEmpty == true
-        ? delivery.user!.lastName!.substring(0, 1)
-        : "";
-    return "$first$last";
+    final name = _getSenderName(delivery);
+    if (name.isEmpty) return "";
+    final parts = name.split(' ');
+    if (parts.length >= 2) {
+      return "${parts[0].substring(0, 1)}${parts[1].substring(0, 1)}".toUpperCase();
+    }
+    return name.length >= 2 ? name.substring(0, 2).toUpperCase() : name.toUpperCase();
+  }
+
+  // Helper to get sender phone (prefer sender, fallback to user)
+  String _getSenderPhone(DeliveryModel delivery) {
+    return delivery.sender?.phone ?? delivery.user?.phone ?? "";
   }
 
   // Helper to get receiver initials
@@ -130,7 +139,7 @@ class _DeliveryDetailsScreenState extends State<DeliveryDetailsScreen> {
                         ),
                         SizedBox(height: 16.h),
                         TextButton(
-                          onPressed: _fetchDeliveryDetails,
+                          onPressed: _refreshDeliveryDetails,
                           child: customText(
                             "Tap to retry",
                             color: AppColors.primaryColor,
@@ -142,7 +151,7 @@ class _DeliveryDetailsScreenState extends State<DeliveryDetailsScreen> {
                 : RefreshIndicator(
                     backgroundColor: AppColors.primaryColor,
                     color: Colors.white,
-                    onRefresh: _fetchDeliveryDetails,
+                    onRefresh: _refreshDeliveryDetails,
                     child: SingleChildScrollView(
                       physics: const AlwaysScrollableScrollPhysics(),
                       padding: EdgeInsets.all(16.sp),
@@ -155,7 +164,7 @@ class _DeliveryDetailsScreenState extends State<DeliveryDetailsScreen> {
 
                           // Tracking ID - using shared widget
                           DeliveryTrackingIdWidget(
-                            trackingId: delivery.trackingId,
+                            trackingId: delivery.trackingId ?? '',
                             backgroundColor: AppColors.whiteColor,
                           ),
                           SizedBox(height: 16.h),
@@ -169,9 +178,9 @@ class _DeliveryDetailsScreenState extends State<DeliveryDetailsScreen> {
 
                           // Sender & Receiver Card - using shared widget
                           DeliveryContactCard(
-                            senderName: "${delivery.user?.firstName ?? ""} ${delivery.user?.lastName ?? ""}",
+                            senderName: _getSenderName(delivery),
                             senderInitials: _getSenderInitials(delivery),
-                            senderPhone: delivery.user?.phone ?? "",
+                            senderPhone: _getSenderPhone(delivery),
                             senderAvatar: delivery.user?.avatarUrl,
                             receiverName: delivery.receiver?.name ?? "",
                             receiverInitials: _getReceiverInitials(delivery),
@@ -224,7 +233,7 @@ class _DeliveryDetailsScreenState extends State<DeliveryDetailsScreen> {
             ),
           ),
           customText(
-            formatToCurrency(double.tryParse(delivery.cost) ?? 0),
+            formatToCurrency(double.tryParse(delivery.cost ?? '0') ?? 0),
             fontWeight: FontWeight.w700,
             fontSize: 18.sp,
             color: AppColors.primaryColor,
@@ -324,19 +333,19 @@ class _DeliveryDetailsScreenState extends State<DeliveryDetailsScreen> {
         children: [
           _buildSummaryRow(
             "Distance",
-            delivery.distance.isNotEmpty ? "${delivery.distance} km" : "--",
+            (delivery.distance?.isNotEmpty ?? false) ? "${delivery.distance} km" : "--",
           ),
           SizedBox(height: 12.h),
           _buildSummaryRow(
             "Date",
-            "${formatDate(delivery.createdAt)} ${formatTime(delivery.createdAt)}",
+            "${formatDate(delivery.createdAt ?? '')} ${formatTime(delivery.createdAt ?? '')}",
           ),
           SizedBox(height: 12.h),
           const Divider(height: 1, color: AppColors.backgroundColor),
           SizedBox(height: 12.h),
           _buildSummaryRow(
             "Total Amount",
-            formatToCurrency(double.tryParse(delivery.cost) ?? 0),
+            formatToCurrency(double.tryParse(delivery.cost ?? '0') ?? 0),
             isTotal: true,
           ),
         ],

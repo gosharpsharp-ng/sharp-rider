@@ -93,7 +93,7 @@ class AddWithdrawalAccountScreen extends StatelessWidget {
                         },
                         icon: SvgPicture.asset(
                           SvgAssets.downChevronIcon,
-                          colorFilter: ColorFilter.mode(
+                          colorFilter: const ColorFilter.mode(
                             AppColors.primaryColor,
                             BlendMode.srcIn,
                           ),
@@ -141,7 +141,7 @@ class AddWithdrawalAccountScreen extends StatelessWidget {
                               child: SizedBox(
                                 width: 20.sp,
                                 height: 20.sp,
-                                child: CircularProgressIndicator(
+                                child: const CircularProgressIndicator(
                                   strokeWidth: 2.5,
                                   valueColor: AlwaysStoppedAnimation<Color>(
                                     AppColors.primaryColor,
@@ -180,7 +180,7 @@ class AddWithdrawalAccountScreen extends StatelessWidget {
                             SizedBox(
                               width: 16.sp,
                               height: 16.sp,
-                              child: CircularProgressIndicator(
+                              child: const CircularProgressIndicator(
                                 strokeWidth: 2,
                                 valueColor: AlwaysStoppedAnimation<Color>(
                                   AppColors.primaryColor,

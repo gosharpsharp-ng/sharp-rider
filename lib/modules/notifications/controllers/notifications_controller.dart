@@ -44,7 +44,9 @@ class NotificationsController extends GetxController {
   final getStorage = GetStorage();
   getNotifications({bool isLoadMore = false}) async {
     if (fetchingNotifications ||
-        (isLoadMore && notifications.length >= totalNotifications)) return;
+        (isLoadMore && notifications.length >= totalNotifications)) {
+      return;
+    }
 
     fetchingNotifications = true;
     update();
@@ -86,8 +88,13 @@ class NotificationsController extends GetxController {
 
   @override
   void onInit() {
-    notificationsScrollController.addListener(_notificationsScrollListener);
-    getNotifications();
     super.onInit();
+    notificationsScrollController.addListener(_notificationsScrollListener);
+  }
+
+  @override
+  void onReady() {
+    super.onReady();
+    getNotifications();
   }
 }

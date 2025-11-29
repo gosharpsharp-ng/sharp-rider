@@ -15,7 +15,7 @@ class PhoneNumberWidget extends StatelessWidget {
     return Container(
       width: 1.sw,
       padding: EdgeInsets.symmetric(horizontal: 5.sp, vertical: 5.sp),
-      decoration: BoxDecoration(),
+      decoration: const BoxDecoration(),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [

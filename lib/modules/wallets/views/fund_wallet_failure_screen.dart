@@ -24,7 +24,7 @@ class FundWalletFailureScreen extends StatelessWidget {
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                Spacer(),
+                const Spacer(),
 
                 // Failure Icon
                 Container(
@@ -62,7 +62,7 @@ class FundWalletFailureScreen extends StatelessWidget {
                   maxLines: 3,
                 ),
 
-                Spacer(),
+                const Spacer(),
 
                 // Action Buttons
                 Column(

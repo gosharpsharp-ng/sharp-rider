@@ -27,7 +27,7 @@ class SignUpScreen extends GetView<SignUpController> {
           ),
           body: IndexedStack(
             index: controller.currentStep,
-            children: [
+            children: const [
               PersonalInfoStep(),
               VehicleInfoStep(),
               LicenseInfoStep(),

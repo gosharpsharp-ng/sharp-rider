@@ -234,7 +234,7 @@ class LicenseInfoStep extends GetView<SignUpController> {
                       crossAxisAlignment: CrossAxisAlignment.center,
                       children: [
                         Container(
-                          decoration: BoxDecoration(
+                          decoration: const BoxDecoration(
                             shape: BoxShape.circle,
                             color: AppColors.whiteColor,
                           ),
@@ -277,7 +277,7 @@ class LicenseInfoStep extends GetView<SignUpController> {
                           bottom: 8.sp,
                           right: 8.sp,
                           child: Container(
-                            decoration: BoxDecoration(
+                            decoration: const BoxDecoration(
                               shape: BoxShape.circle,
                               color: AppColors.whiteColor,
                             ),

@@ -70,7 +70,7 @@ class _RatingsScreenState extends State<RatingsScreen> {
                       builder: (context, child) {
                         return Theme(
                           data: Theme.of(context).copyWith(
-                            colorScheme: ColorScheme.light(
+                            colorScheme: const ColorScheme.light(
                               primary: AppColors.primaryColor,
                               onPrimary: AppColors.whiteColor,
                               onSurface: AppColors.blackColor,
@@ -137,7 +137,7 @@ class _RatingsScreenState extends State<RatingsScreen> {
                       builder: (context, child) {
                         return Theme(
                           data: Theme.of(context).copyWith(
-                            colorScheme: ColorScheme.light(
+                            colorScheme: const ColorScheme.light(
                               primary: AppColors.primaryColor,
                               onPrimary: AppColors.whiteColor,
                               onSurface: AppColors.blackColor,
@@ -275,7 +275,7 @@ class _RatingsScreenState extends State<RatingsScreen> {
           ),
           backgroundColor: AppColors.backgroundColor,
           body: isLoading
-              ? Center(
+              ? const Center(
                   child: CircularProgressIndicator(
                     color: AppColors.primaryColor,
                   ),
@@ -363,7 +363,7 @@ class _RatingsScreenState extends State<RatingsScreen> {
                                 crossAxisAlignment: CrossAxisAlignment.end,
                                 children: [
                                   customText(
-                                    "${stats?.averageRating?.toStringAsFixed(1) ?? '0.0'}",
+                                    stats?.averageRating?.toStringAsFixed(1) ?? '0.0',
                                     fontSize: 48.sp,
                                     color: AppColors.whiteColor,
                                     fontWeight: FontWeight.w700,
@@ -383,7 +383,7 @@ class _RatingsScreenState extends State<RatingsScreen> {
                               SizedBox(height: 8.h),
                               RatingBarIndicator(
                                 rating: stats?.averageRating?.toDouble() ?? 0.0,
-                                itemBuilder: (context, index) => Icon(
+                                itemBuilder: (context, index) => const Icon(
                                   Icons.star,
                                   color: Colors.amber,
                                 ),
@@ -603,7 +603,7 @@ class _RatingsScreenState extends State<RatingsScreen> {
             child: LinearProgressIndicator(
               value: percentage,
               backgroundColor: AppColors.greyColor.withOpacity(0.2),
-              valueColor: AlwaysStoppedAnimation<Color>(Colors.amber),
+              valueColor: const AlwaysStoppedAnimation<Color>(Colors.amber),
               minHeight: 8.h,
             ),
           ),

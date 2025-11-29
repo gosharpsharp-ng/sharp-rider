@@ -1,8 +1,22 @@
 import 'package:gorider/core/utils/exports.dart';
 
-class WithdrawalPinBottomSheet extends StatelessWidget {
-  WithdrawalPinBottomSheet({super.key});
-  TextEditingController pinController = TextEditingController();
+class WithdrawalPinBottomSheet extends StatefulWidget {
+  const WithdrawalPinBottomSheet({super.key});
+
+  @override
+  State<WithdrawalPinBottomSheet> createState() =>
+      _WithdrawalPinBottomSheetState();
+}
+
+class _WithdrawalPinBottomSheetState extends State<WithdrawalPinBottomSheet> {
+  final TextEditingController pinController = TextEditingController();
+
+  @override
+  void dispose() {
+    pinController.dispose();
+    super.dispose();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -48,7 +62,7 @@ class WithdrawalPinBottomSheet extends StatelessWidget {
                         },
                         onDone: (val) {
                           showAnyBottomSheet(
-                              child: WithdrawalSuccessBottomSheet());
+                              child: const WithdrawalSuccessBottomSheet());
                         },
                       ),
                     ],

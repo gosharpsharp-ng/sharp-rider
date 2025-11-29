@@ -92,7 +92,7 @@ class NotificationItem extends StatelessWidget {
                     SizedBox(
                       height: 5.h,
                     ),
-                    Divider(
+                    const Divider(
                       color: AppColors.greyColor,
                       thickness: 0.1,
                     ),

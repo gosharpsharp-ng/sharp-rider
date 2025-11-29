@@ -73,10 +73,10 @@ class PayoutDetailsScreen extends StatelessWidget {
                           value:
                               "${formatDate(payout.processedAt!)} ${formatTime(payout.processedAt!)}",
                         ),
-                      if (payout.note != null && payout.note!.isNotEmpty)
+                      if (payout.notes != null && payout.notes!.isNotEmpty)
                         PayoutDetailSummaryItem(
                           title: "Note",
-                          value: payout.note!,
+                          value: payout.notes!,
                           isVertical: true,
                         ),
                     ],
@@ -104,7 +104,7 @@ class PayoutDetailsScreen extends StatelessWidget {
                         ),
                         PayoutDetailSummaryItem(
                           title: "Current Balance",
-                          value: payout.wallet!.formattedBalance,
+                          value: formatToCurrency(payout.wallet!.balanceDouble),
                         ),
                       ],
                     ),

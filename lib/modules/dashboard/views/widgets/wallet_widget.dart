@@ -25,28 +25,58 @@ class WalletWidget extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Row(
-              mainAxisAlignment: MainAxisAlignment.start,
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                customText(title,
-                    color: AppColors.whiteColor,
-                    fontWeight: FontWeight.w500,
-                    fontSize: 14.sp,
-                    overflow: TextOverflow.visible),
-                SizedBox(
-                  width: 10.w,
+                Row(
+                  children: [
+                    customText(title,
+                        color: AppColors.whiteColor,
+                        fontWeight: FontWeight.w500,
+                        fontSize: 14.sp,
+                        overflow: TextOverflow.visible),
+                    SizedBox(
+                      width: 10.w,
+                    ),
+                    InkWell(
+                      highlightColor: AppColors.transparent,
+                      onTap: () {
+                        walletController.toggleWalletBalanceVisibility();
+                      },
+                      child: Icon(
+                        walletController.walletBalanceVisibility
+                            ? Icons.visibility_off
+                            : Icons.visibility,
+                        color: AppColors.whiteColor,
+                        size: 18.sp,
+                      ),
+                    ),
+                  ],
                 ),
-                InkWell(
-                  highlightColor: AppColors.transparent,
-                  onTap: () {
-                    walletController.toggleWalletBalanceVisibility();
+                GetBuilder<SettingsController>(
+                  builder: (settingsController) {
+                    return InkWell(
+                      highlightColor: AppColors.transparent,
+                      onTap: settingsController.isLoading
+                          ? null
+                          : () async {
+                              await settingsController.getProfile();
+                            },
+                      child: settingsController.isLoading
+                          ? SizedBox(
+                              width: 18.sp,
+                              height: 18.sp,
+                              child: const CircularProgressIndicator(
+                                strokeWidth: 2,
+                                color: AppColors.whiteColor,
+                              ),
+                            )
+                          : Icon(
+                              Icons.refresh_rounded,
+                              color: AppColors.whiteColor,
+                              size: 20.sp,
+                            ),
+                    );
                   },
-                  child: Icon(
-                    walletController.walletBalanceVisibility
-                        ? Icons.visibility_off
-                        : Icons.visibility,
-                    color: AppColors.whiteColor,
-                    size: 18.sp,
-                  ),
                 ),
               ],
             ),

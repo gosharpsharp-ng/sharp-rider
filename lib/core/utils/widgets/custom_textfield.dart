@@ -40,7 +40,7 @@ class CustomRoundedInputField extends StatefulWidget {
   final EdgeInsets edgeInsets;
 
   const CustomRoundedInputField({
-    Key? key,
+    super.key,
     this.label = "",
     this.controller,
     this.focusNode,
@@ -75,7 +75,7 @@ class CustomRoundedInputField extends StatefulWidget {
     this.isNumber = false,
     this.readOnly = false,
     this.edgeInsets = const EdgeInsets.all(0),
-  }) : super(key: key);
+  });
 
   @override
   State<CustomRoundedInputField> createState() =>
@@ -342,7 +342,7 @@ class ClickableCustomRoundedInputField extends StatefulWidget {
   final EdgeInsets edgeInsets;
 
   const ClickableCustomRoundedInputField({
-    Key? key,
+    super.key,
     this.label = "",
     this.controller,
     this.focusNode,
@@ -379,7 +379,7 @@ class ClickableCustomRoundedInputField extends StatefulWidget {
     this.isNumber = false,
     this.readOnly = false,
     this.edgeInsets = const EdgeInsets.all(0),
-  }) : super(key: key);
+  });
 
   @override
   State<ClickableCustomRoundedInputField> createState() =>
@@ -644,7 +644,7 @@ class CustomOutlinedRoundedInputField extends StatefulWidget {
   final EdgeInsets edgeInsets;
 
   const CustomOutlinedRoundedInputField({
-    Key? key,
+    super.key,
     this.label = "",
     this.controller,
     this.focusNode,
@@ -675,7 +675,7 @@ class CustomOutlinedRoundedInputField extends StatefulWidget {
     this.isCurrency = false,
     this.readOnly = false,
     this.edgeInsets = const EdgeInsets.all(0),
-  }) : super(key: key);
+  });
 
   @override
   State<CustomOutlinedRoundedInputField> createState() =>
@@ -796,7 +796,7 @@ class _CustomOutlinedRoundedInputFieldState
                         ),
                       )
                     : widget.authPrefix != null
-                        ? Container(
+                        ? SizedBox(
                             width: 40.sp,
                             child: Column(
                               mainAxisAlignment: MainAxisAlignment.center,
@@ -919,7 +919,7 @@ class CustomOutlinedRoundedPhoneInputField extends StatefulWidget {
   final EdgeInsets edgeInsets;
 
   const CustomOutlinedRoundedPhoneInputField({
-    Key? key,
+    super.key,
     this.label = "",
     this.controller,
     this.focusNode,
@@ -947,7 +947,7 @@ class CustomOutlinedRoundedPhoneInputField extends StatefulWidget {
     this.isCurrency = false,
     this.readOnly = false,
     this.edgeInsets = const EdgeInsets.all(0),
-  }) : super(key: key);
+  });
 
   @override
   State<CustomOutlinedRoundedPhoneInputField> createState() =>
@@ -1053,7 +1053,7 @@ class _CustomOutlinedRoundedPhoneInputFieldState
                         ),
                       )
                     : widget.authPrefix != null
-                        ? Container(
+                        ? SizedBox(
                             width: 40.sp,
                             child: Column(
                               mainAxisAlignment: MainAxisAlignment.center,
@@ -1114,7 +1114,7 @@ class _CustomOutlinedRoundedPhoneInputFieldState
                   borderRadius: BorderRadius.circular(
                     widget.isSearch ? 22.r : 8.r,
                   ),
-                  borderSide: BorderSide(
+                  borderSide: const BorderSide(
                     color: AppColors.primaryColor,
                     width: 0.5,
                   ),
@@ -1190,7 +1190,7 @@ class CustomRoundedPhoneInputField extends StatefulWidget {
   final EdgeInsets edgeInsets;
 
   const CustomRoundedPhoneInputField({
-    Key? key,
+    super.key,
     this.label = "",
     this.controller,
     this.focusNode,
@@ -1223,7 +1223,7 @@ class CustomRoundedPhoneInputField extends StatefulWidget {
     this.isNumber = false,
     this.readOnly = false,
     this.edgeInsets = const EdgeInsets.all(0),
-  }) : super(key: key);
+  });
 
   @override
   State<CustomRoundedPhoneInputField> createState() =>
