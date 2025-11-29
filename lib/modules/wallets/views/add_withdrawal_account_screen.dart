@@ -119,7 +119,8 @@ class AddWithdrawalAccountScreen extends StatelessWidget {
                           walletController.verifyPayoutBank();
                         } else {
                           // Clear account name if number is modified
-                          if (walletController.resolvedBankAccountName.text.isNotEmpty) {
+                          if (walletController
+                              .resolvedBankAccountName.text.isNotEmpty) {
                             walletController.resolvedBankAccountName.clear();
                             walletController.update();
                           }
@@ -148,7 +149,8 @@ class AddWithdrawalAccountScreen extends StatelessWidget {
                                 ),
                               ),
                             )
-                          : walletController.resolvedBankAccountName.text.isNotEmpty
+                          : walletController
+                                  .resolvedBankAccountName.text.isNotEmpty
                               ? Padding(
                                   padding: const EdgeInsets.all(8.0),
                                   child: Icon(
@@ -169,7 +171,8 @@ class AddWithdrawalAccountScreen extends StatelessWidget {
                           color: AppColors.primaryColor.withOpacity(0.1),
                           borderRadius: BorderRadius.circular(8.r),
                           border: Border.all(
-                            color: AppColors.primaryColor.withOpacity(0.3),
+                            color:
+                                AppColors.primaryColor.withOpacity(0.3),
                           ),
                         ),
                         child: Row(
@@ -208,7 +211,8 @@ class AddWithdrawalAccountScreen extends StatelessWidget {
                       hasTitle: true,
                       isRequired: true,
                       controller: walletController.resolvedBankAccountName,
-                      suffixWidget: walletController.resolvedBankAccountName.text.isNotEmpty
+                      suffixWidget: walletController
+                              .resolvedBankAccountName.text.isNotEmpty
                           ? Padding(
                               padding: const EdgeInsets.all(8.0),
                               child: Icon(

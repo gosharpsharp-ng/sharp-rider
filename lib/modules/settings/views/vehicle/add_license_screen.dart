@@ -12,7 +12,7 @@ class AddLicenseScreen extends StatelessWidget {
           appBar: defaultAppBar(
             implyLeading: true,
             bgColor: AppColors.backgroundColor,
-            title: "Add License",
+            title: settingsController.isEditingLicense ? "Edit License" : "Add License",
             centerTitle: false,
           ),
           body: Container(
@@ -88,7 +88,11 @@ class AddLicenseScreen extends StatelessWidget {
                     padding: EdgeInsets.symmetric(horizontal: 20.sp),
                     child: CustomButton(
                       onPressed: () {
-                        settingsController.addVehicleLicense();
+                        if (settingsController.isEditingLicense) {
+                          settingsController.updateVehicleLicense();
+                        } else {
+                          settingsController.addVehicleLicense();
+                        }
                       },
                       isBusy: settingsController.isLoadingVehicle,
                       title: "Save",

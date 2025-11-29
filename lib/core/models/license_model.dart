@@ -1,35 +1,20 @@
-import 'package:json_annotation/json_annotation.dart';
-
-part 'license_model.g.dart';
-
-@JsonSerializable()
 class LicenseModel {
-  @JsonKey(name: 'id')
   final int id;
-  @JsonKey(name: 'number')
   final String number;
-  @JsonKey(name: 'front_img')
   final String? frontImage;
-  @JsonKey(name: 'back_img')
   final String? backImage;
-  @JsonKey(name: 'expiry_date')
   final String expiryDate;
-  @JsonKey(name: 'issued_at')
   final String issuedAt;
-  @JsonKey(name: 'status')
   final String status;
-  @JsonKey(name: 'user_id')
   final int userId;
-  @JsonKey(name: 'created_at')
   final String createdAt;
-  @JsonKey(name: 'updated_at')
   final String updatedAt;
 
   LicenseModel({
     required this.id,
     required this.number,
-     this.frontImage,
-     this.backImage,
+    this.frontImage,
+    this.backImage,
     required this.expiryDate,
     required this.issuedAt,
     required this.status,
@@ -38,7 +23,44 @@ class LicenseModel {
     required this.updatedAt,
   });
 
-  factory LicenseModel.fromJson(Map<String, dynamic> json) =>
-      _$LicenseModelFromJson(json);
-  Map<String, dynamic> toJson() => _$LicenseModelToJson(this);
+  static int _parseInt(dynamic value) {
+    if (value == null) return 0;
+    if (value is int) return value;
+    if (value is num) return value.toInt();
+    return int.tryParse(value.toString()) ?? 0;
+  }
+
+  static String _parseString(dynamic value) {
+    return value?.toString() ?? '';
+  }
+
+  factory LicenseModel.fromJson(Map<String, dynamic> json) {
+    return LicenseModel(
+      id: _parseInt(json['id']),
+      number: _parseString(json['number']),
+      frontImage: json['front_img']?.toString(),
+      backImage: json['back_img']?.toString(),
+      expiryDate: _parseString(json['expiry_date']),
+      issuedAt: _parseString(json['issued_at']),
+      status: _parseString(json['status']),
+      userId: _parseInt(json['user_id']),
+      createdAt: _parseString(json['created_at']),
+      updatedAt: _parseString(json['updated_at']),
+    );
+  }
+
+  Map<String, dynamic> toJson() {
+    return {
+      'id': id,
+      'number': number,
+      'front_img': frontImage,
+      'back_img': backImage,
+      'expiry_date': expiryDate,
+      'issued_at': issuedAt,
+      'status': status,
+      'user_id': userId,
+      'created_at': createdAt,
+      'updated_at': updatedAt,
+    };
+  }
 }

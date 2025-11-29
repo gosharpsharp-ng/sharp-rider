@@ -15,7 +15,7 @@ class WalletWidget extends StatelessWidget {
     return GetBuilder<WalletController>(builder: (walletController) {
       return Container(
         width: 1.sw,
-        margin: EdgeInsets.symmetric(horizontal: 10.w),
+        margin: EdgeInsets.symmetric(horizontal: 0.w),
         padding: EdgeInsets.symmetric(vertical: 18.sp, horizontal: 15.sp),
         decoration: BoxDecoration(
             color: AppColors.deepPrimaryColor,
@@ -56,8 +56,7 @@ class WalletWidget extends StatelessWidget {
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                WalletBalanceText(
-                    balance: walletController.availableBalance),
+                WalletBalanceText(balance: walletController.availableBalance),
                 canWithdraw
                     ? CustomColouredTextButton(
                         onPressed: () {
@@ -109,7 +108,7 @@ class WalletBalanceText extends StatelessWidget {
               : "*****",
           color: AppColors.whiteColor,
           fontWeight: FontWeight.w600,
-          fontFamily: GoogleFonts.montserrat().fontFamily!,
+          fontFamily: GoogleFonts.inter().fontFamily!,
           fontSize: 24.sp,
           overflow: TextOverflow.visible);
     });

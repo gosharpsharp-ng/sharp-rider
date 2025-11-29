@@ -110,7 +110,7 @@ class CustomImagePickerBottomSheet extends StatelessWidget {
                 // _buildOptionTile(
                 //   icon: Icons.delete_outline,
                 //   iconColor: AppColors.redColor,
-                //   iconBgColor: AppColors.redColor.withOpacity(0.1),
+                //   iconBgColor: AppColors.redColor.withValues(alpha:0.1),
                 //   title: "Remove Image",
                 //   subtitle: "Delete current image",
                 //   onTap: () async {

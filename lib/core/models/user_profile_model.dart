@@ -1,14 +1,20 @@
+import 'package:gorider/core/models/bank_account_model.dart';
+import 'package:gorider/core/models/license_model.dart';
 import 'package:gorider/core/models/vehicle_model.dart';
 import 'package:gorider/core/models/wallet_model.dart';
 
 class UserProfile {
   final int id;
   final String? avatar;
+  final String? avatarUrl;
   final String fname;
   final String lname;
   final String phone;
   final String? dob;
+  final String? deviceTokenUpdatedAt;
   final String email;
+  final String? emailVerifiedAt;
+  final String? phoneVerifiedAt;
   final String status;
   final String? referralCode;
   final String? referredBy;
@@ -21,15 +27,23 @@ class UserProfile {
   final List<dynamic>? permissions;
   final VehicleModel? vehicle;
   final Wallet? wallet;
+  final List<dynamic>? ratings;
+  final List<dynamic>? commissions;
+  final BankAccount? bankAccount;
+  final LicenseModel? license;
 
   UserProfile({
     required this.id,
     this.avatar,
+    this.avatarUrl,
     required this.fname,
     required this.lname,
     required this.phone,
     this.dob,
+    this.deviceTokenUpdatedAt,
     required this.email,
+    this.emailVerifiedAt,
+    this.phoneVerifiedAt,
     required this.status,
     this.referralCode,
     this.referredBy,
@@ -42,18 +56,26 @@ class UserProfile {
     this.permissions,
     this.vehicle,
     this.wallet,
+    this.ratings,
+    this.commissions,
+    this.bankAccount,
+    this.license,
   });
 
   factory UserProfile.fromJson(Map<String, dynamic> json) {
     return UserProfile(
       id: json['id'] as int,
       avatar: json['avatar'] as String?,
-      fname: json['fname'] as String,
-      lname: json['lname'] as String,
-      phone: json['phone'] as String,
+      avatarUrl: json['avatar_url'] as String?,
+      fname: json['fname'] as String? ?? '',
+      lname: json['lname'] as String? ?? '',
+      phone: json['phone'] as String? ?? '',
       dob: json['dob'] as String?,
-      email: json['email'] as String,
-      status: json['status'] as String,
+      deviceTokenUpdatedAt: json['device_token_updated_at'] as String?,
+      email: json['email'] as String? ?? '',
+      emailVerifiedAt: json['email_verified_at'] as String?,
+      phoneVerifiedAt: json['phone_verified_at'] as String?,
+      status: json['status'] as String? ?? '',
       referralCode: json['referral_code'] as String?,
       referredBy: json['referred_by'] as String?,
       lastLoginAt: json['last_login_at'] as String?,
@@ -73,6 +95,14 @@ class UserProfile {
       wallet: json['wallet'] != null
           ? Wallet.fromJson(json['wallet'] as Map<String, dynamic>)
           : null,
+      ratings: json['ratings'] as List<dynamic>?,
+      commissions: json['commissions'] as List<dynamic>?,
+      bankAccount: json['bank_account'] != null
+          ? BankAccount.fromJson(json['bank_account'] as Map<String, dynamic>)
+          : null,
+      license: json['license'] != null
+          ? LicenseModel.fromJson(json['license'] as Map<String, dynamic>)
+          : null,
     );
   }
 
@@ -80,11 +110,15 @@ class UserProfile {
     return {
       'id': id,
       'avatar': avatar,
+      'avatar_url': avatarUrl,
       'fname': fname,
       'lname': lname,
       'phone': phone,
       'dob': dob,
+      'device_token_updated_at': deviceTokenUpdatedAt,
       'email': email,
+      'email_verified_at': emailVerifiedAt,
+      'phone_verified_at': phoneVerifiedAt,
       'status': status,
       'referral_code': referralCode,
       'referred_by': referredBy,
@@ -97,6 +131,10 @@ class UserProfile {
       'permissions': permissions,
       'vehicle': vehicle?.toJson(),
       'wallet': wallet?.toJson(),
+      'ratings': ratings,
+      'commissions': commissions,
+      'bank_account': bankAccount?.toJson(),
+      'license': license?.toJson(),
     };
   }
 }

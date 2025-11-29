@@ -116,6 +116,19 @@ class WalletController extends GetxController {
     }
   }
 
+  // Refresh wallet by fetching profile and syncing wallet data
+  Future<void> refreshWalletFromProfile() async {
+    try {
+      if (Get.isRegistered<SettingsController>()) {
+        final settingsController = Get.find<SettingsController>();
+        await settingsController.getProfile();
+        loadWalletFromProfile();
+      }
+    } catch (e) {
+      debugPrint("Error refreshing wallet from profile: $e");
+    }
+  }
+
   // Get available balance as string (for backward compatibility)
   String get availableBalance => wallet?.balance ?? "0.00";
 
@@ -137,6 +150,39 @@ class WalletController extends GetxController {
   toggleWalletBalanceVisibility() {
     walletBalanceVisibility = !walletBalanceVisibility;
     getStorage.write("walletBalanceVisibility", walletBalanceVisibility);
+    update();
+  }
+
+  PayStackAuthorizationModel? payStackAuthorizationData;
+
+  final fundWalletFormKey = GlobalKey<FormState>();
+  bool fundingWallet = false;
+  TextEditingController amountEntryController = TextEditingController();
+  fundWallet() async {
+    if (fundWalletFormKey.currentState!.validate()) {
+      fundingWallet = true;
+      update();
+      dynamic data = {
+        'amount': stripCurrencyFormat(amountEntryController.text),
+      };
+
+      APIResponse response = await walletService.fundWallet(data);
+      fundingWallet = false;
+      update();
+      if (response.status == "success") {
+        payStackAuthorizationData =
+            PayStackAuthorizationModel.fromJson(response.data);
+        update();
+      } else {
+        showToast(
+            message: response.message, isError: response.status != "success");
+      }
+    }
+  }
+
+  clearFundingFields() {
+    amountEntryController.clear();
+    payStackAuthorizationData = null;
     update();
   }
 
@@ -262,7 +308,7 @@ class WalletController extends GetxController {
 
       if (response.status == "success") {
         showToast(message: "Bank account updated successfully", isError: false);
-        await getPayoutBankAccount(); // Refresh bank account data
+        await refreshBankAccountFromProfile(); // Refresh bank account data from profile
         filterBanks("");
         banksFilterController.clear();
         clearImputedBankFields();
@@ -300,25 +346,47 @@ class WalletController extends GetxController {
     update();
   }
 
-  // Get payout bank account
+  // Get payout bank account from user profile
   bool loadingPayoutBankAccount = false;
-  getPayoutBankAccount() async {
+
+  // Load bank account from profile (via SettingsController)
+  void loadBankAccountFromProfile() {
+    try {
+      if (Get.isRegistered<SettingsController>()) {
+        final settingsController = Get.find<SettingsController>();
+        if (settingsController.userProfile?.bankAccount != null) {
+          payoutBankAccount = settingsController.userProfile!.bankAccount;
+          update();
+        }
+      }
+    } catch (e) {
+      debugPrint("Error loading bank account from profile: $e");
+    }
+  }
+
+  // Refresh bank account by fetching profile
+  Future<void> refreshBankAccountFromProfile() async {
     loadingPayoutBankAccount = true;
     update();
 
     try {
-      APIResponse response = await walletService.getPayoutBankAccount();
-
-      if (response.status == "success" && response.data != null) {
-        payoutBankAccount = BankAccount.fromJson(response.data);
-        update();
+      if (Get.isRegistered<SettingsController>()) {
+        final settingsController = Get.find<SettingsController>();
+        await settingsController.getProfile();
+        loadBankAccountFromProfile();
       }
     } catch (e) {
-      debugPrint("Error loading payout bank account: $e");
+      debugPrint("Error refreshing bank account from profile: $e");
     } finally {
       loadingPayoutBankAccount = false;
       update();
     }
+  }
+
+  // Legacy method - now loads from profile
+  @Deprecated('Use loadBankAccountFromProfile() instead. Bank account is now in user profile.')
+  getPayoutBankAccount() async {
+    await refreshBankAccountFromProfile();
   }
 
   @override
@@ -330,8 +398,9 @@ class WalletController extends GetxController {
     }
     update();
     transactionsScrollController.addListener(_transactionsScrollListener);
-    // Load wallet from profile instead of separate API call
+    // Load wallet and bank account from profile instead of separate API calls
     loadWalletFromProfile();
+    loadBankAccountFromProfile();
     getTransactions();
   }
 

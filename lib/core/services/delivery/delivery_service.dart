@@ -3,10 +3,39 @@ import 'package:gorider/core/utils/exports.dart';
 class DeliveryService extends CoreService {
   Future<DeliveryService> init() async => this;
 
-  Future<APIResponse> updateDeliveryStatus(dynamic data) async {
+  /// Trigger delivery actions (accept, pick, deliver)
+  ///
+  /// Endpoint: POST /riders/deliveries/{tracking_id}/trigger
+  /// Body: { "action": "accepted"|"picked"|"delivered", "delivery_code": "..." }
+  Future<APIResponse> triggerDeliveryAction({
+    required String trackingId,
+    required String action,
+    String? deliveryCode,
+  }) async {
+    final Map<String, dynamic> body = {
+      "action": action,
+    };
+
+    // Add delivery_code only for "delivered" action
+    if (deliveryCode != null) {
+      body["delivery_code"] = deliveryCode;
+    }
+
     return await send(
-        "/riders/deliveries/${data['tracking_id'].toString()}?action=${data['action']}",
-        null);
+      "/riders/deliveries/$trackingId/trigger",
+      body,
+    );
+  }
+
+  /// Legacy method for backward compatibility
+  /// Will call the new trigger method with correct format
+  @Deprecated('Use triggerDeliveryAction instead')
+  Future<APIResponse> updateDeliveryStatus(dynamic data) async {
+    return await triggerDeliveryAction(
+      trackingId: data['tracking_id'].toString(),
+      action: data['action'].toString(),
+      deliveryCode: data['delivery_code']?.toString(),
+    );
   }
 
   Future<APIResponse> getAllDeliveries(dynamic data) async {

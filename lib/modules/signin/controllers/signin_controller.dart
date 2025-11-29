@@ -53,8 +53,6 @@ class SignInController extends GetxController {
           "as_rider": true
         };
         APIResponse response = await authService.login(data);
-        showToast(
-            message: response.message, isError: response.status != "success");
 
         if (response.status.toLowerCase() == "success") {
           print("*****************************************************************************");

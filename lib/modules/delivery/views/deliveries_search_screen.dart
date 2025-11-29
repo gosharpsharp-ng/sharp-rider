@@ -74,11 +74,13 @@ class SearchDeliveriesScreen extends StatelessWidget {
                             ...List.generate(
                               ordersController.deliverySearchResults.length,
                               (i) => DeliveryItemWidget(
-                                onSelected: () {
+                                onSelected: () async {
                                   Get.back();
                                   ordersController.setSelectedDelivery(
                                       ordersController
                                           .deliverySearchResults[i]);
+                                  // Fetch full delivery details before navigating
+                                  await ordersController.getDelivery();
                                   Get.toNamed(Routes.DELIVERY_DETAILS);
                                 },
                                 shipment:
@@ -103,7 +105,7 @@ class SearchDeliveriesScreen extends StatelessWidget {
                               child: Center(
                                 child: Padding(
                                   padding: const EdgeInsets.all(8.0),
-                                  child: customText("No more data to load",
+                                  child: customText("",
                                       color: AppColors.blueColor),
                                 ),
                               ),

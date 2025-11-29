@@ -29,10 +29,10 @@ class WalletsService extends CoreService {
   }
 
   Future<APIResponse> updatePayoutAccount(dynamic data) async {
-    return await send("/riders/payout-account", data);
+    return await send("/riders/bank-account", data);
   }
 
   Future<APIResponse> getPayoutBankAccount() async {
-    return await fetch("/riders/payout-account");
+    return await fetch("/rider/bank-account");
   }
 }

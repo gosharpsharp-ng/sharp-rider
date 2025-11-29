@@ -38,27 +38,28 @@ class DeliveryItemAccordion extends StatelessWidget {
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  customText(shipmentItemData.name,
+                  customText(shipmentItemData.name ?? '',
                       fontWeight: FontWeight.w500, fontSize: 16.sp),
                 ],
               ),
             ),
             children: [
-              if (shipmentItemData.image.length > 1000)
-                Container(
-                  height: 150.h,
-                  width: double.infinity,
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(8.r),
-                    image: DecorationImage(
-                        image: base64ToMemoryImage(
-                          shipmentItemData.image,
-                        ),
-                        fit: BoxFit.cover),
-                  ),
-                )
-              else
-                SizedBox.shrink(),
+              // if (shipmentItemData.image.length > 1000)
+              //   // Container(
+              //   //   height: 150.h,
+              //   //   width: double.infinity,
+              //   //   decoration: BoxDecoration(
+              //   //     borderRadius: BorderRadius.circular(8.r),
+              //   //     image: DecorationImage(
+              //   //         image: base64ToMemoryImage(
+              //   //           // shipmentItemData.image,
+              //   //         ),
+              //   //         fit: BoxFit.cover),
+              //   //   ),
+              //   // )
+              //   SizedBox()
+              // else
+              //   SizedBox.shrink(),
               SizedBox(
                 width: 1.sw,
                 child: Column(
@@ -70,7 +71,7 @@ class DeliveryItemAccordion extends StatelessWidget {
                     DeliverySummaryDetailItem(
                         isVertical: false,
                         title: "Category",
-                        value: shipmentItemData.category),
+                        value: shipmentItemData.category ?? ''),
                     DeliverySummaryDetailItem(
                         isVertical: false,
                         title: "Quantity",

@@ -63,7 +63,8 @@ class _RatingsScreenState extends State<RatingsScreen> {
                   onTap: () async {
                     final DateTime? picked = await showDatePicker(
                       context: context,
-                      initialDate: tempStartDate ?? DateTime.now().subtract(const Duration(days: 30)),
+                      initialDate: tempStartDate ??
+                          DateTime.now().subtract(const Duration(days: 30)),
                       firstDate: DateTime(2020),
                       lastDate: DateTime.now(),
                       builder: (context, child) {
@@ -87,9 +88,11 @@ class _RatingsScreenState extends State<RatingsScreen> {
                   },
                   child: Container(
                     width: double.infinity,
-                    padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 14.h),
+                    padding:
+                        EdgeInsets.symmetric(horizontal: 16.w, vertical: 14.h),
                     decoration: BoxDecoration(
-                      border: Border.all(color: AppColors.greyColor.withOpacity(0.3)),
+                      border: Border.all(
+                          color: AppColors.greyColor.withOpacity(0.3)),
                       borderRadius: BorderRadius.circular(12.r),
                     ),
                     child: Row(
@@ -100,7 +103,9 @@ class _RatingsScreenState extends State<RatingsScreen> {
                               ? "${tempStartDate!.day}/${tempStartDate!.month}/${tempStartDate!.year}"
                               : "Select start date",
                           fontSize: 14.sp,
-                          color: tempStartDate != null ? AppColors.blackColor : AppColors.greyColor,
+                          color: tempStartDate != null
+                              ? AppColors.blackColor
+                              : AppColors.greyColor,
                         ),
                         Icon(
                           Icons.calendar_today_outlined,
@@ -150,9 +155,11 @@ class _RatingsScreenState extends State<RatingsScreen> {
                   },
                   child: Container(
                     width: double.infinity,
-                    padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 14.h),
+                    padding:
+                        EdgeInsets.symmetric(horizontal: 16.w, vertical: 14.h),
                     decoration: BoxDecoration(
-                      border: Border.all(color: AppColors.greyColor.withOpacity(0.3)),
+                      border: Border.all(
+                          color: AppColors.greyColor.withOpacity(0.3)),
                       borderRadius: BorderRadius.circular(12.r),
                     ),
                     child: Row(
@@ -163,7 +170,9 @@ class _RatingsScreenState extends State<RatingsScreen> {
                               ? "${tempEndDate!.day}/${tempEndDate!.month}/${tempEndDate!.year}"
                               : "Select end date",
                           fontSize: 14.sp,
-                          color: tempEndDate != null ? AppColors.blackColor : AppColors.greyColor,
+                          color: tempEndDate != null
+                              ? AppColors.blackColor
+                              : AppColors.greyColor,
                         ),
                         Icon(
                           Icons.calendar_today_outlined,
@@ -197,13 +206,18 @@ class _RatingsScreenState extends State<RatingsScreen> {
                         onPressed: () {
                           if (tempStartDate != null && tempEndDate != null) {
                             if (tempEndDate!.isBefore(tempStartDate!)) {
-                              showToast(message: "End date must be after start date", isError: true);
+                              showToast(
+                                  message: "End date must be after start date",
+                                  isError: true);
                               return;
                             }
-                            controller.setRatingDateRange(tempStartDate, tempEndDate);
+                            controller.setRatingDateRange(
+                                tempStartDate, tempEndDate);
                             Get.back();
                           } else {
-                            showToast(message: "Please select both dates", isError: true);
+                            showToast(
+                                message: "Please select both dates",
+                                isError: true);
                           }
                         },
                         title: "Apply",
@@ -272,18 +286,22 @@ class _RatingsScreenState extends State<RatingsScreen> {
                   },
                   child: SingleChildScrollView(
                     physics: const AlwaysScrollableScrollPhysics(),
-                    padding: EdgeInsets.symmetric(vertical: 20.h, horizontal: 15.w),
+                    padding:
+                        EdgeInsets.symmetric(vertical: 20.h, horizontal: 15.w),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         // Date Range Indicator
-                        if (controller.ratingStartDate != null && controller.ratingEndDate != null)
+                        if (controller.ratingStartDate != null &&
+                            controller.ratingEndDate != null)
                           Container(
                             width: double.infinity,
                             margin: EdgeInsets.only(bottom: 16.h),
-                            padding: EdgeInsets.symmetric(horizontal: 12.w, vertical: 8.h),
+                            padding: EdgeInsets.symmetric(
+                                horizontal: 12.w, vertical: 8.h),
                             decoration: BoxDecoration(
-                              color: AppColors.primaryColor.withOpacity(0.1),
+                              color:
+                                  AppColors.primaryColor.withOpacity(0.1),
                               borderRadius: BorderRadius.circular(8.r),
                             ),
                             child: Row(
@@ -303,7 +321,8 @@ class _RatingsScreenState extends State<RatingsScreen> {
                                   ),
                                 ),
                                 InkWell(
-                                  onTap: () => controller.clearRatingDateFilter(),
+                                  onTap: () =>
+                                      controller.clearRatingDateFilter(),
                                   child: Icon(
                                     Icons.close,
                                     size: 18.sp,
@@ -320,7 +339,10 @@ class _RatingsScreenState extends State<RatingsScreen> {
                           padding: EdgeInsets.all(20.sp),
                           decoration: BoxDecoration(
                             gradient: LinearGradient(
-                              colors: [AppColors.primaryColor, AppColors.primaryColor.withOpacity(0.8)],
+                              colors: [
+                                AppColors.primaryColor,
+                                AppColors.primaryColor.withOpacity(0.8)
+                              ],
                               begin: Alignment.topLeft,
                               end: Alignment.bottomRight,
                             ),
@@ -331,7 +353,8 @@ class _RatingsScreenState extends State<RatingsScreen> {
                               customText(
                                 "Average Rating",
                                 fontSize: 14.sp,
-                                color: AppColors.whiteColor.withOpacity(0.9),
+                                color:
+                                    AppColors.whiteColor.withOpacity(0.9),
                                 fontWeight: FontWeight.w500,
                               ),
                               SizedBox(height: 12.h),
@@ -350,7 +373,8 @@ class _RatingsScreenState extends State<RatingsScreen> {
                                     child: customText(
                                       "/5",
                                       fontSize: 20.sp,
-                                      color: AppColors.whiteColor.withOpacity(0.7),
+                                      color: AppColors.whiteColor
+                                          .withOpacity(0.7),
                                       fontWeight: FontWeight.w500,
                                     ),
                                   ),
@@ -371,7 +395,8 @@ class _RatingsScreenState extends State<RatingsScreen> {
                               customText(
                                 "${stats?.totalRatings ?? 0} ratings",
                                 fontSize: 14.sp,
-                                color: AppColors.whiteColor.withOpacity(0.8),
+                                color:
+                                    AppColors.whiteColor.withOpacity(0.8),
                               ),
                             ],
                           ),
@@ -422,15 +447,30 @@ class _RatingsScreenState extends State<RatingsScreen> {
                                 color: AppColors.blackColor,
                               ),
                               SizedBox(height: 16.h),
-                              _buildRatingBar(5, stats?.ratingBreakdown?.fiveStar ?? 0, stats?.totalRatings ?? 0),
+                              _buildRatingBar(
+                                  5,
+                                  stats?.ratingBreakdown?.fiveStar ?? 0,
+                                  stats?.totalRatings ?? 0),
                               SizedBox(height: 10.h),
-                              _buildRatingBar(4, stats?.ratingBreakdown?.fourStar ?? 0, stats?.totalRatings ?? 0),
+                              _buildRatingBar(
+                                  4,
+                                  stats?.ratingBreakdown?.fourStar ?? 0,
+                                  stats?.totalRatings ?? 0),
                               SizedBox(height: 10.h),
-                              _buildRatingBar(3, stats?.ratingBreakdown?.threeStar ?? 0, stats?.totalRatings ?? 0),
+                              _buildRatingBar(
+                                  3,
+                                  stats?.ratingBreakdown?.threeStar ?? 0,
+                                  stats?.totalRatings ?? 0),
                               SizedBox(height: 10.h),
-                              _buildRatingBar(2, stats?.ratingBreakdown?.twoStar ?? 0, stats?.totalRatings ?? 0),
+                              _buildRatingBar(
+                                  2,
+                                  stats?.ratingBreakdown?.twoStar ?? 0,
+                                  stats?.totalRatings ?? 0),
                               SizedBox(height: 10.h),
-                              _buildRatingBar(1, stats?.ratingBreakdown?.oneStar ?? 0, stats?.totalRatings ?? 0),
+                              _buildRatingBar(
+                                  1,
+                                  stats?.ratingBreakdown?.oneStar ?? 0,
+                                  stats?.totalRatings ?? 0),
                             ],
                           ),
                         ),
@@ -450,7 +490,8 @@ class _RatingsScreenState extends State<RatingsScreen> {
                               Container(
                                 padding: EdgeInsets.all(12.sp),
                                 decoration: BoxDecoration(
-                                  color: AppColors.primaryColor.withOpacity(0.1),
+                                  color: AppColors.primaryColor
+                                      .withOpacity(0.1),
                                   borderRadius: BorderRadius.circular(12.r),
                                 ),
                                 child: Icon(

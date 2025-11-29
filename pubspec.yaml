@@ -49,12 +49,14 @@ dependencies:
   flutter_native_splash: ^2.4.0
   intl:
   cupertino_icons: ^1.0.8
-  zego_uikit_prebuilt_call: ^4.16.21
-  zego_uikit_signaling_plugin: ^2.8.9
-  zego_express_engine:
-  zego_zim: ^2.20.0+1
-  zego_zpns: ^2.8.0
+  # Zego packages temporarily disabled due to compatibility issues
+  # zego_uikit_prebuilt_call: 4.16.0
+  # zego_uikit_signaling_plugin: ^2.8.0
+  # zego_express_engine:
+  # zego_zim: ^2.18.0
+  # zego_zpns: ^2.7.0
   url_launcher: ^6.3.1
+  permission_handler: ^11.4.0
 
 dev_dependencies:
   flutter_test:
@@ -99,12 +101,22 @@ flutter:
   # see https://flutter.dev/to/font-from-package
 
 flutter_native_splash:
-  background_image: "assets/imgs/splash_img.png"
+  color: "#000000"
+  image: "assets/icons/gosharp_icon.png"
   android: true
   ios: true
   web: false
   android_12:
-    color: "#274A19"
+    color: "#000000"
+    image: "assets/icons/gosharp_icon.png"
 
 dependency_overrides:
-  image_cropper_platform_interface: 5.0.0
+  image_cropper: ^5.0.1
+  image_cropper_platform_interface: ^5.0.0
+  floating: ^6.0.0
+  flutter_ringtone_player: ^4.0.0+4
+  vibration: ^3.1.4
+  file_picker: 8.3.1
+  # zego_uikit: 2.24.0
+  # zego_plugin_adapter: 2.12.0
+  # zego_callkit: 1.0.0+3

@@ -114,8 +114,7 @@ class _PayoutHistoryScreenState extends State<PayoutHistoryScreen> {
                     child: Visibility(
                       visible: payoutController.payoutRequests.isNotEmpty,
                       replacement: Visibility(
-                        visible:
-                            !payoutController.fetchingPayouts &&
+                        visible: !payoutController.fetchingPayouts &&
                             payoutController.payoutRequests.isEmpty,
                         replacement: SingleChildScrollView(
                           child: SkeletonLoaders.payoutItem(count: 5),
@@ -141,28 +140,28 @@ class _PayoutHistoryScreenState extends State<PayoutHistoryScreen> {
                               fontSize: 14.sp,
                               color: AppColors.greyColor,
                             ),
-                            SizedBox(height: 24.h),
-                            GestureDetector(
-                              onTap: () {
-                                Get.offNamed(Routes.PAYOUT_REQUEST_SCREEN);
-                              },
-                              child: Container(
-                                padding: EdgeInsets.symmetric(
-                                  horizontal: 24.w,
-                                  vertical: 12.h,
-                                ),
-                                decoration: BoxDecoration(
-                                  color: AppColors.primaryColor,
-                                  borderRadius: BorderRadius.circular(25.r),
-                                ),
-                                child: customText(
-                                  "Request Payout",
-                                  fontSize: 14.sp,
-                                  color: AppColors.whiteColor,
-                                  fontWeight: FontWeight.w600,
-                                ),
-                              ),
-                            ),
+                            // SizedBox(height: 24.h),
+                            // GestureDetector(
+                            //   onTap: () {
+                            //     Get.offNamed(Routes.PAYOUT_REQUEST_SCREEN);
+                            //   },
+                            //   child: Container(
+                            //     padding: EdgeInsets.symmetric(
+                            //       horizontal: 24.w,
+                            //       vertical: 12.h,
+                            //     ),
+                            //     decoration: BoxDecoration(
+                            //       color: AppColors.primaryColor,
+                            //       borderRadius: BorderRadius.circular(25.r),
+                            //     ),
+                            //     child: customText(
+                            //       "Request Payout",
+                            //       fontSize: 14.sp,
+                            //       color: AppColors.whiteColor,
+                            //       fontWeight: FontWeight.w600,
+                            //     ),
+                            //   ),
+                            // ),
                           ],
                         ),
                       ),
@@ -185,8 +184,7 @@ class _PayoutHistoryScreenState extends State<PayoutHistoryScreen> {
                               ),
                             ),
                             Visibility(
-                              visible:
-                                  payoutController.fetchingPayouts &&
+                              visible: payoutController.fetchingPayouts &&
                                   payoutController.payoutRequests.isNotEmpty,
                               child: Center(
                                 child: Padding(
@@ -215,8 +213,7 @@ class _PayoutHistoryScreenState extends State<PayoutHistoryScreen> {
                               ),
                             ),
                             Visibility(
-                              visible:
-                                  payoutController.payoutRequests.length >=
+                              visible: payoutController.payoutRequests.length >=
                                       payoutController.totalPayouts &&
                                   payoutController.totalPayouts > 0,
                               child: Center(

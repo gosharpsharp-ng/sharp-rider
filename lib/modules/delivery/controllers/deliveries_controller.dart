@@ -22,7 +22,6 @@ class DeliveriesController extends GetxController with WidgetsBindingObserver {
   // Status filtering
   final List<String> deliveryStatuses = [
     'all',
-    'pending',
     'accepted',
     'picked',
     'delivered',
@@ -172,7 +171,6 @@ class DeliveriesController extends GetxController with WidgetsBindingObserver {
             await serviceManager.initializeServices(
               settingsController.reactiveUserProfile.value!,
             );
-            showToast(message: "You're online", isError: false);
           } catch (e) {
             showToast(
               message: "Failed to initialize services: ${e.toString()}",
@@ -181,7 +179,6 @@ class DeliveriesController extends GetxController with WidgetsBindingObserver {
           }
         } else {
           await serviceManager.disposeServices();
-          showToast(message: "You're offline", isError: false, duration: 1);
         }
         update();
         // } else {
@@ -289,13 +286,15 @@ class DeliveriesController extends GetxController with WidgetsBindingObserver {
       );
     }
     if (newGoogleMapController != null) {
-      newGoogleMapController!.animateCamera(
-        CameraUpdate.newLatLngBounds(latLngBounds, 65),
-      );
+      try {
+        await newGoogleMapController!.animateCamera(
+          CameraUpdate.newLatLngBounds(latLngBounds, 65),
+        );
+      } catch (e) {
+        debugPrint("Error animating camera: $e");
+      }
     } else {
-      print("================================================");
-      print("GoogleMapController is not initialized yet.");
-      print("================================================");
+      debugPrint("GoogleMapController is not initialized yet.");
     }
     Marker originMarker = Marker(
       markerId: const MarkerId('OriginID'),
@@ -304,8 +303,8 @@ class DeliveriesController extends GetxController with WidgetsBindingObserver {
         snippet: "Sender",
       ),
       position: LatLng(
-        double.parse(selectedDelivery!.originLocation.latitude),
-        double.parse(selectedDelivery!.originLocation.longitude),
+        double.parse(selectedDelivery!.originLocation.latitude ?? '0.0'),
+        double.parse(selectedDelivery!.originLocation.longitude ?? '0.0'),
       ),
       icon: BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueRed),
     );
@@ -316,8 +315,8 @@ class DeliveriesController extends GetxController with WidgetsBindingObserver {
         snippet: "Receiver",
       ),
       position: LatLng(
-        double.parse(selectedDelivery!.destinationLocation.latitude),
-        double.parse(selectedDelivery!.destinationLocation.longitude),
+        double.parse(selectedDelivery!.destinationLocation.latitude ?? '0.0'),
+        double.parse(selectedDelivery!.destinationLocation.longitude ?? '0.0'),
       ),
       icon: BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueGreen),
     );
@@ -413,11 +412,15 @@ class DeliveriesController extends GetxController with WidgetsBindingObserver {
     }
 
     if (newGoogleMapController != null) {
-      newGoogleMapController!.animateCamera(
-        CameraUpdate.newLatLngBounds(latLngBounds, 65),
-      );
+      try {
+        await newGoogleMapController!.animateCamera(
+          CameraUpdate.newLatLngBounds(latLngBounds, 65),
+        );
+      } catch (e) {
+        debugPrint("Error animating camera: $e");
+      }
     } else {
-      print("GoogleMapController is not initialized yet.");
+      debugPrint("GoogleMapController is not initialized yet.");
     }
 
     // Add markers
@@ -437,8 +440,8 @@ class DeliveriesController extends GetxController with WidgetsBindingObserver {
           snippet: "Sender",
         ),
         position: LatLng(
-          double.parse(selectedDelivery!.originLocation.latitude),
-          double.parse(selectedDelivery!.originLocation.longitude),
+          double.parse(selectedDelivery!.originLocation.latitude ?? '0.0'),
+          double.parse(selectedDelivery!.originLocation.longitude ?? '0.0'),
         ),
         icon: BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueGreen),
       );
@@ -450,8 +453,8 @@ class DeliveriesController extends GetxController with WidgetsBindingObserver {
           snippet: "Receiver",
         ),
         position: LatLng(
-          double.parse(selectedDelivery!.destinationLocation.latitude),
-          double.parse(selectedDelivery!.destinationLocation.longitude),
+          double.parse(selectedDelivery!.destinationLocation.latitude ?? '0.0'),
+          double.parse(selectedDelivery!.destinationLocation.longitude ?? '0.0'),
         ),
         icon: BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueGreen),
       );
@@ -477,27 +480,33 @@ class DeliveriesController extends GetxController with WidgetsBindingObserver {
     deliveryService.updateDeliveryStatus(data);
   }
 
+  // Store last acceptance response for result screen
+  String lastAcceptanceMessage = '';
+  String lastAcceptanceTrackingId = '';
+
   Future<void> acceptDelivery(
     BuildContext context, {
     required String trackingId,
   }) async {
     acceptedDelivery = false;
     acceptingDelivery = true;
+    lastAcceptanceMessage = '';
+    lastAcceptanceTrackingId = trackingId;
     update();
-    final dynamic data = {"tracking_id": trackingId, "action": "accept"};
 
-    // Call the API
-    APIResponse response = await deliveryService.updateDeliveryStatus(data);
+    // Call the API with correct action name "accepted"
+    APIResponse response = await deliveryService.triggerDeliveryAction(
+      trackingId: trackingId,
+      action: "accepted",
+    );
     // Handle response
     acceptingDelivery = false;
+    lastAcceptanceMessage = response.message;
     update();
+
     if (response.status == "success") {
-      pickedDeliveries.add(selectedDelivery?.trackingId ?? "");
+      pickedDeliveries.add(trackingId);
       update();
-      showToast(
-        message: response.message,
-        isError: response.status != "success",
-      );
       selectedDelivery = DeliveryModel.fromJson(response.data);
       await getDelivery();
       if (Get.isRegistered<LocationService>()) {
@@ -533,10 +542,8 @@ class DeliveriesController extends GetxController with WidgetsBindingObserver {
       // Refresh deliveries list after accepting
       fetchDeliveries();
     } else {
-      showToast(
-        message: response.message,
-        isError: response.status != "success",
-      );
+      acceptedDelivery = false;
+      update();
     }
   }
 
@@ -643,16 +650,23 @@ class DeliveriesController extends GetxController with WidgetsBindingObserver {
   Future<void> updateDeliveryStatus(
     BuildContext context, {
     required String status,
+    String? deliveryCode,
   }) async {
     updatingDeliveryStatus = true;
     update();
-    final dynamic data = {
-      "tracking_id": selectedDelivery!.trackingId,
-      "action": status.toLowerCase(),
-    };
 
-    // Call the API
-    APIResponse response = await deliveryService.updateDeliveryStatus(data);
+    // Map status to correct action name for API
+    String action = status.toLowerCase();
+    if (action == "pick") action = "picked";
+    if (action == "accept") action = "accepted";
+    if (action == "deliver") action = "delivered";
+
+    // Call the API with correct endpoint
+    APIResponse response = await deliveryService.triggerDeliveryAction(
+      trackingId: selectedDelivery!.trackingId,
+      action: action,
+      deliveryCode: deliveryCode,
+    );
     // Handle response
     showToast(message: response.message, isError: response.status != "success");
 
@@ -711,19 +725,19 @@ class DeliveriesController extends GetxController with WidgetsBindingObserver {
         drawPolylineFromRiderToDestination(
           context,
           destinationPosition: LatLng(
-            double.parse(selectedDelivery!.destinationLocation.latitude),
-            double.parse(selectedDelivery!.destinationLocation.longitude),
+            double.parse(selectedDelivery!.destinationLocation.latitude ?? '0.0'),
+            double.parse(selectedDelivery!.destinationLocation.longitude ?? '0.0'),
           ),
         );
       } else if (['delivered'].contains(selectedDelivery!.status)) {
         drawPolyLineFromOriginToDestination(
           context,
-          originLatitude: selectedDelivery!.originLocation.latitude,
-          originLongitude: selectedDelivery!.originLocation.longitude,
-          originAddress: selectedDelivery!.originLocation.name,
-          destinationLatitude: selectedDelivery!.destinationLocation.latitude,
-          destinationLongitude: selectedDelivery!.destinationLocation.longitude,
-          destinationAddress: selectedDelivery!.destinationLocation.name,
+          originLatitude: selectedDelivery!.originLocation.latitude ?? '0.0',
+          originLongitude: selectedDelivery!.originLocation.longitude ?? '0.0',
+          originAddress: selectedDelivery!.originLocation.name ?? '',
+          destinationLatitude: selectedDelivery!.destinationLocation.latitude ?? '0.0',
+          destinationLongitude: selectedDelivery!.destinationLocation.longitude ?? '0.0',
+          destinationAddress: selectedDelivery!.destinationLocation.name ?? '',
         );
       }
       await getDelivery();

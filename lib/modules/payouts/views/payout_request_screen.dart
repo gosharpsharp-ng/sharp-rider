@@ -134,31 +134,31 @@ class PayoutRequestScreen extends StatelessWidget {
 
                     SizedBox(height: 16.h),
 
-                    // Link to Payout History
-                    GestureDetector(
-                      onTap: () {
-                        Get.offNamed(Routes.PAYOUT_HISTORY_SCREEN);
-                      },
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          customText(
-                            "View Payout History",
-                            fontSize: 14.sp,
-                            color: AppColors.primaryColor,
-                            fontWeight: FontWeight.w600,
-                          ),
-                          SizedBox(width: 4.w),
-                          Icon(
-                            Icons.arrow_forward_ios,
-                            color: AppColors.primaryColor,
-                            size: 14.sp,
-                          ),
-                        ],
-                      ),
-                    ),
-
-                    SizedBox(height: 15.h),
+                    // // Link to Payout History
+                    // GestureDetector(
+                    //   onTap: () {
+                    //     Get.offNamed(Routes.PAYOUT_HISTORY_SCREEN);
+                    //   },
+                    //   child: Row(
+                    //     mainAxisAlignment: MainAxisAlignment.center,
+                    //     children: [
+                    //       customText(
+                    //         "View Payout History",
+                    //         fontSize: 14.sp,
+                    //         color: AppColors.primaryColor,
+                    //         fontWeight: FontWeight.w600,
+                    //       ),
+                    //       SizedBox(width: 4.w),
+                    //       Icon(
+                    //         Icons.arrow_forward_ios,
+                    //         color: AppColors.primaryColor,
+                    //         size: 14.sp,
+                    //       ),
+                    //     ],
+                    //   ),
+                    // ),
+                    //
+                    // SizedBox(height: 15.h),
                   ],
                 ),
               ),

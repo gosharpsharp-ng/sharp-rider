@@ -108,7 +108,8 @@ class OrderInvoiceSummaryStatusItem extends StatelessWidget {
                         color: value.toLowerCase() == 'delivered'
                             ? AppColors.primaryColor.withOpacity(0.4)
                             : value.toLowerCase() == 'in transit'
-                                ? AppColors.deepAmberColor.withOpacity(0.4)
+                                ? AppColors.deepAmberColor
+                                    .withOpacity(0.4)
                                 : AppColors.redColor.withOpacity(0.4),
                         borderRadius: BorderRadius.circular(
                           8.r,

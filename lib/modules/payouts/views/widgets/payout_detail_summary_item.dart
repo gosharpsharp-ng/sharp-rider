@@ -38,10 +38,11 @@ class PayoutDetailSummaryItem extends StatelessWidget {
                   value,
                   color: AppColors.blackColor,
                   fontFamily: title == "Amount"
-                      ? GoogleFonts.montserrat().fontFamily!
+                      ? GoogleFonts.inter().fontFamily!
                       : "Satoshi",
                   fontSize: 14.sp,
-                  fontWeight: title == "Amount" ? FontWeight.w600 : FontWeight.w500,
+                  fontWeight:
+                      title == "Amount" ? FontWeight.w600 : FontWeight.w500,
                   overflow: TextOverflow.visible,
                 ),
               ],
@@ -62,9 +63,10 @@ class PayoutDetailSummaryItem extends StatelessWidget {
                     color: AppColors.blackColor,
                     fontSize: 14.sp,
                     fontFamily: title == "Amount"
-                        ? GoogleFonts.montserrat().fontFamily!
+                        ? GoogleFonts.inter().fontFamily!
                         : "Satoshi",
-                    fontWeight: title == "Amount" ? FontWeight.w600 : FontWeight.w500,
+                    fontWeight:
+                        title == "Amount" ? FontWeight.w600 : FontWeight.w500,
                     overflow: TextOverflow.visible,
                     textAlign: TextAlign.right,
                   ),

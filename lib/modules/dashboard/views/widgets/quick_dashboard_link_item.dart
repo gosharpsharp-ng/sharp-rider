@@ -50,7 +50,7 @@ class QuickDashboardLinkItem extends StatelessWidget {
                     title,
                     color: AppColors.blackColor,
                     fontWeight: FontWeight.w600,
-                    fontFamily: GoogleFonts.montserrat().fontFamily!,
+                    fontFamily: GoogleFonts.inter().fontFamily!,
                     fontSize: 12.sp,
                     overflow: TextOverflow.visible,
                   ),

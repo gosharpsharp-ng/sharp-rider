@@ -1,10 +1,4 @@
-import 'package:json_annotation/json_annotation.dart';
-
-part 'review_model.g.dart';
-
-@JsonSerializable(explicitToJson: true)
 class ReviewModel {
-  @JsonKey(name: 'average_rating')
   final double averageRating;
   final List<Review> reviews;
 
@@ -13,11 +7,31 @@ class ReviewModel {
     required this.reviews,
   });
 
-  factory ReviewModel.fromJson(Map<String, dynamic> json) => _$ReviewModelFromJson(json);
-  Map<String, dynamic> toJson() => _$ReviewModelToJson(this);
+  static double _parseDouble(dynamic value) {
+    if (value == null) return 0.0;
+    if (value is double) return value;
+    if (value is num) return value.toDouble();
+    return double.tryParse(value.toString()) ?? 0.0;
+  }
+
+  factory ReviewModel.fromJson(Map<String, dynamic> json) {
+    return ReviewModel(
+      averageRating: _parseDouble(json['average_rating']),
+      reviews: (json['reviews'] as List<dynamic>?)
+              ?.map((e) => Review.fromJson(e as Map<String, dynamic>))
+              .toList() ??
+          [],
+    );
+  }
+
+  Map<String, dynamic> toJson() {
+    return {
+      'average_rating': averageRating,
+      'reviews': reviews.map((e) => e.toJson()).toList(),
+    };
+  }
 }
 
-@JsonSerializable()
 class Review {
   final String review;
   final Author author;
@@ -27,11 +41,21 @@ class Review {
     required this.author,
   });
 
-  factory Review.fromJson(Map<String, dynamic> json) => _$ReviewFromJson(json);
-  Map<String, dynamic> toJson() => _$ReviewToJson(this);
+  factory Review.fromJson(Map<String, dynamic> json) {
+    return Review(
+      review: json['review']?.toString() ?? '',
+      author: Author.fromJson(json['author'] as Map<String, dynamic>),
+    );
+  }
+
+  Map<String, dynamic> toJson() {
+    return {
+      'review': review,
+      'author': author.toJson(),
+    };
+  }
 }
 
-@JsonSerializable()
 class Author {
   final int id;
   final String? avatar;
@@ -42,37 +66,79 @@ class Author {
   final String email;
   final String role;
   final String status;
-  @JsonKey(name: 'referral_code')
   final String referralCode;
-  @JsonKey(name: 'referred_by')
   final String? referredBy;
-  @JsonKey(name: 'last_login_at')
   final String? lastLoginAt;
-  @JsonKey(name: 'failed_login_attempts')
   final int failedLoginAttempts;
-  @JsonKey(name: 'created_at')
   final String createdAt;
-  @JsonKey(name: 'updated_at')
   final String updatedAt;
 
   Author({
     required this.id,
-    required this.avatar,
+    this.avatar,
     required this.fname,
     required this.lname,
     required this.phone,
-    required this.dob,
+    this.dob,
     required this.email,
     required this.role,
     required this.status,
     required this.referralCode,
-    required this.referredBy,
-    required this.lastLoginAt,
+    this.referredBy,
+    this.lastLoginAt,
     required this.failedLoginAttempts,
     required this.createdAt,
     required this.updatedAt,
   });
 
-  factory Author.fromJson(Map<String, dynamic> json) => _$AuthorFromJson(json);
-  Map<String, dynamic> toJson() => _$AuthorToJson(this);
+  static int _parseInt(dynamic value) {
+    if (value == null) return 0;
+    if (value is int) return value;
+    if (value is num) return value.toInt();
+    return int.tryParse(value.toString()) ?? 0;
+  }
+
+  static String _parseString(dynamic value) {
+    return value?.toString() ?? '';
+  }
+
+  factory Author.fromJson(Map<String, dynamic> json) {
+    return Author(
+      id: _parseInt(json['id']),
+      avatar: json['avatar']?.toString(),
+      fname: _parseString(json['fname']),
+      lname: _parseString(json['lname']),
+      phone: _parseString(json['phone']),
+      dob: json['dob']?.toString(),
+      email: _parseString(json['email']),
+      role: _parseString(json['role']),
+      status: _parseString(json['status']),
+      referralCode: _parseString(json['referral_code']),
+      referredBy: json['referred_by']?.toString(),
+      lastLoginAt: json['last_login_at']?.toString(),
+      failedLoginAttempts: _parseInt(json['failed_login_attempts']),
+      createdAt: _parseString(json['created_at']),
+      updatedAt: _parseString(json['updated_at']),
+    );
+  }
+
+  Map<String, dynamic> toJson() {
+    return {
+      'id': id,
+      'avatar': avatar,
+      'fname': fname,
+      'lname': lname,
+      'phone': phone,
+      'dob': dob,
+      'email': email,
+      'role': role,
+      'status': status,
+      'referral_code': referralCode,
+      'referred_by': referredBy,
+      'last_login_at': lastLoginAt,
+      'failed_login_attempts': failedLoginAttempts,
+      'created_at': createdAt,
+      'updated_at': updatedAt,
+    };
+  }
 }

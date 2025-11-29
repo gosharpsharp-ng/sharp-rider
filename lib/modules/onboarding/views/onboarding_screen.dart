@@ -37,7 +37,8 @@ class OnboardingScreen extends StatelessWidget {
                   flex: 6,
                   child: Container(
                     width: 1.sw,
-                    padding: EdgeInsets.symmetric(horizontal: 20.w, vertical: 20.h),
+                    padding:
+                        EdgeInsets.symmetric(horizontal: 20.w, vertical: 20.h),
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.start,
                       children: [
@@ -48,7 +49,8 @@ class OnboardingScreen extends StatelessWidget {
                             borderRadius: BorderRadius.circular(24.r),
                             boxShadow: [
                               BoxShadow(
-                                color: AppColors.primaryColor.withOpacity(0.2),
+                                color: AppColors.primaryColor
+                                    .withOpacity(0.2),
                                 blurRadius: 30,
                                 offset: const Offset(0, 10),
                                 spreadRadius: 0,
@@ -116,7 +118,8 @@ class OnboardingScreen extends StatelessWidget {
                             borderRadius: BorderRadius.circular(12.r),
                             boxShadow: [
                               BoxShadow(
-                                color: AppColors.primaryColor.withOpacity(0.3),
+                                color: AppColors.primaryColor
+                                    .withOpacity(0.3),
                                 blurRadius: 20,
                                 offset: const Offset(0, 8),
                               ),

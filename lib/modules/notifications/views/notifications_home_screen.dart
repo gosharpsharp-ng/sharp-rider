@@ -83,7 +83,7 @@ class NotificationsHomeScreen extends StatelessWidget {
                       child: Center(
                         child: Padding(
                           padding: const EdgeInsets.all(8.0),
-                          child: customText("No more data to load",
+                          child: customText("",
                               color: AppColors.blueColor),
                         ),
                       ),

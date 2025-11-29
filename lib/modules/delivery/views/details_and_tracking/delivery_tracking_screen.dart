@@ -12,31 +12,36 @@ class _DeliveryTrackingScreenState extends State<DeliveryTrackingScreen> {
   final settingsController = Get.find<SettingsController>();
   final deliveriesController = Get.find<DeliveriesController>();
 
+  bool _mapInitialized = false;
+
   @override
   void initState() {
     super.initState();
-    // Draw route between pickup and delivery locations
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      _initializeMap();
-    });
+    // Reset map state for fresh polyline drawing
+    deliveriesController.polyLineSet.clear();
+    deliveriesController.markerSet.clear();
+    deliveriesController.pLineCoordinatedList.clear();
   }
 
   void _initializeMap() {
+    if (_mapInitialized) return;
+    _mapInitialized = true;
+
     if (deliveriesController.selectedDelivery != null) {
       deliveriesController.drawPolyLineFromOriginToDestination(
         context,
         originLatitude:
-            deliveriesController.selectedDelivery!.originLocation.latitude,
+            deliveriesController.selectedDelivery!.originLocation.latitude ?? '0.0',
         originLongitude:
-            deliveriesController.selectedDelivery!.originLocation.longitude,
+            deliveriesController.selectedDelivery!.originLocation.longitude ?? '0.0',
         destinationLatitude:
-            deliveriesController.selectedDelivery!.destinationLocation.latitude,
+            deliveriesController.selectedDelivery!.destinationLocation.latitude ?? '0.0',
         destinationLongitude: deliveriesController
-            .selectedDelivery!.destinationLocation.longitude,
+            .selectedDelivery!.destinationLocation.longitude ?? '0.0',
         originAddress:
-            deliveriesController.selectedDelivery!.originLocation.name,
+            deliveriesController.selectedDelivery!.originLocation.displayName,
         destinationAddress:
-            deliveriesController.selectedDelivery!.destinationLocation.name,
+            deliveriesController.selectedDelivery!.destinationLocation.displayName,
       );
     }
   }
@@ -58,20 +63,20 @@ class _DeliveryTrackingScreenState extends State<DeliveryTrackingScreen> {
   String _getStatusButtonText() {
     final status = deliveriesController.selectedDelivery?.status?.toLowerCase();
     if (status == 'accepted') {
-      return 'Arrived at Pickup';
+      return 'Picked Up';
     } else if (status == 'picked') {
       return 'Deliver Item';
     }
     return 'Update Status';
   }
 
-  // Get status action
+  // Get status action - these must match the API: "accepted", "picked", "delivered"
   String _getStatusAction() {
     final status = deliveriesController.selectedDelivery?.status?.toLowerCase();
     if (status == 'accepted') {
-      return 'pickup';
+      return 'picked'; // Next action after accepted is picked
     } else if (status == 'picked') {
-      return 'deliver';
+      return 'delivered'; // Next action after picked is delivered
     }
     return '';
   }
@@ -81,11 +86,12 @@ class _DeliveryTrackingScreenState extends State<DeliveryTrackingScreen> {
     Get.dialog(
       DeliveryOTPVerificationDialog(
         trackingId: deliveriesController.selectedDelivery!.trackingId,
-        onVerificationSuccess: () {
-          // After successful OTP verification, update delivery status
+        onVerificationSuccess: (String deliveryCode) {
+          // After collecting delivery code, update delivery status with the code
           deliveriesController.updateDeliveryStatus(
             context,
-            status: 'deliver',
+            status: 'delivered',
+            deliveryCode: deliveryCode,
           );
         },
       ),
@@ -118,11 +124,9 @@ class _DeliveryTrackingScreenState extends State<DeliveryTrackingScreen> {
   Widget build(BuildContext context) {
     return GetBuilder<DeliveriesController>(
       builder: (deliveriesController) {
-        final isDeliveryComplete = [
-          'delivered',
-          'rejected',
-          'canceled'
-        ].contains(deliveriesController.selectedDelivery?.status?.toLowerCase());
+        final isDeliveryComplete = ['delivered', 'rejected', 'canceled']
+            .contains(
+                deliveriesController.selectedDelivery?.status?.toLowerCase());
 
         return Scaffold(
           appBar: flatAppBar(),
@@ -133,20 +137,53 @@ class _DeliveryTrackingScreenState extends State<DeliveryTrackingScreen> {
               Container(
                 width: 1.sw,
                 height: 1.sh * 0.65,
-                child: GoogleMap(
-                  mapType: MapType.normal,
-                  myLocationEnabled: false,
-                  myLocationButtonEnabled: false,
-                  zoomControlsEnabled: true,
-                  zoomGesturesEnabled: true,
-                  scrollGesturesEnabled: true,
-                  trafficEnabled: true,
-                  polylines: deliveriesController.polyLineSet,
-                  markers: deliveriesController.markerSet,
-                  initialCameraPosition: _kLagosPosition,
-                  onMapCreated: (GoogleMapController controller) {
-                    deliveriesController.setMapController(controller);
-                  },
+                child: Stack(
+                  children: [
+                    GoogleMap(
+                      mapType: MapType.normal,
+                      myLocationEnabled: false,
+                      myLocationButtonEnabled: false,
+                      zoomControlsEnabled: true,
+                      zoomGesturesEnabled: true,
+                      scrollGesturesEnabled: true,
+                      trafficEnabled: true,
+                      polylines: deliveriesController.polyLineSet,
+                      markers: deliveriesController.markerSet,
+                      initialCameraPosition: _kLagosPosition,
+                      onMapCreated: (GoogleMapController controller) {
+                        deliveriesController.setMapController(controller);
+                        // Draw polyline after map is created
+                        _initializeMap();
+                      },
+                    ),
+                    // Navigate Button on map
+                    if (!isDeliveryComplete)
+                      Positioned(
+                        bottom: 16.h,
+                        right: 16.w,
+                        child: FloatingActionButton.extended(
+                          heroTag: "navigateBtn",
+                          onPressed: () {
+                            final destination = _getNavigationDestination();
+                            if (destination.isNotEmpty) {
+                              openGoogleMaps(destination);
+                            }
+                          },
+                          backgroundColor: AppColors.primaryColor,
+                          icon: Icon(
+                            Icons.navigation_rounded,
+                            color: AppColors.whiteColor,
+                            size: 20.sp,
+                          ),
+                          label: customText(
+                            "Navigate",
+                            fontSize: 14.sp,
+                            fontWeight: FontWeight.w600,
+                            color: AppColors.whiteColor,
+                          ),
+                        ),
+                      ),
+                  ],
                 ),
               ),
 
@@ -173,60 +210,81 @@ class _DeliveryTrackingScreenState extends State<DeliveryTrackingScreen> {
                         child: Column(
                           mainAxisSize: MainAxisSize.min,
                           children: [
-                            // Navigation button and status update (only if not delivered)
-                            if (!isDeliveryComplete) ...[
-                              SizedBox(height: 10.h),
+                            // Drag handle indicator
+                            Container(
+                              width: 40.w,
+                              height: 4.h,
+                              margin: EdgeInsets.only(bottom: 12.h),
+                              decoration: BoxDecoration(
+                                color: AppColors.greyColor.withOpacity(0.3),
+                                borderRadius: BorderRadius.circular(2.r),
+                              ),
+                            ),
 
-                              // Navigate Button (Floating style)
-                              Padding(
-                                padding: EdgeInsets.symmetric(horizontal: 12.sp),
-                                child: FloatingActionButton.extended(
-                                  onPressed: () {
-                                    final destination = _getNavigationDestination();
-                                    if (destination.isNotEmpty) {
-                                      openGoogleMaps(destination);
-                                    }
-                                  },
-                                  backgroundColor: AppColors.greenColor,
-                                  icon: Icon(
-                                    Icons.navigation,
-                                    color: AppColors.whiteColor,
-                                    size: 24.sp,
-                                  ),
-                                  label: Row(
+                            // Tracking ID
+                            Container(
+                              padding: EdgeInsets.symmetric(
+                                  horizontal: 16.sp, vertical: 10.sp),
+                              margin: EdgeInsets.symmetric(horizontal: 16.sp),
+                              decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(8.r),
+                                color: AppColors.backgroundColor,
+                              ),
+                              child: Row(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
+                                children: [
+                                  Row(
                                     children: [
-                                      SvgPicture.asset(
-                                        SvgAssets.googleMapsIcon,
-                                        height: 24.sp,
-                                        width: 24.sp,
+                                      Icon(
+                                        Icons.local_shipping_outlined,
+                                        color: AppColors.primaryColor,
+                                        size: 20.sp,
                                       ),
                                       SizedBox(width: 8.w),
                                       customText(
-                                        "Navigate",
-                                        fontSize: 16.sp,
-                                        fontWeight: FontWeight.bold,
-                                        color: AppColors.whiteColor,
+                                        "Tracking ID:",
+                                        color: AppColors.obscureTextColor,
+                                        fontSize: 13.sp,
+                                        fontWeight: FontWeight.w400,
                                       ),
                                     ],
                                   ),
-                                ),
+                                  Row(
+                                    children: [
+                                      customText(
+                                        deliveriesController
+                                                .selectedDelivery?.trackingId ??
+                                            "",
+                                        color: AppColors.primaryColor,
+                                        fontSize: 14.sp,
+                                        fontWeight: FontWeight.w600,
+                                      ),
+                                      SizedBox(width: 8.w),
+                                      InkWell(
+                                        onTap: () {
+                                          Clipboard.setData(ClipboardData(
+                                            text: deliveriesController
+                                                    .selectedDelivery
+                                                    ?.trackingId ??
+                                                "",
+                                          ));
+                                          showToast(
+                                              message:
+                                                  "Tracking ID copied to clipboard");
+                                        },
+                                        child: Icon(
+                                          Icons.copy_rounded,
+                                          color: AppColors.primaryColor,
+                                          size: 18.sp,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ],
                               ),
-                              SizedBox(height: 12.h),
-
-                              // Status Update Button
-                              Padding(
-                                padding: EdgeInsets.symmetric(horizontal: 20.sp),
-                                child: CustomButton(
-                                  onPressed: _handleStatusButtonPress,
-                                  isBusy: deliveriesController.updatingDeliveryStatus,
-                                  title: _getStatusButtonText(),
-                                  width: 1.sw,
-                                  backgroundColor: AppColors.greenColor,
-                                  fontColor: AppColors.whiteColor,
-                                ),
-                              ),
-                              SizedBox(height: 16.h),
-                            ],
+                            ),
+                            SizedBox(height: 12.h),
 
                             // Pickup and Delivery Locations Card
                             Container(
@@ -263,7 +321,8 @@ class _DeliveryTrackingScreenState extends State<DeliveryTrackingScreen> {
                                       SizedBox(width: 12.w),
                                       Expanded(
                                         child: Column(
-                                          crossAxisAlignment: CrossAxisAlignment.start,
+                                          crossAxisAlignment:
+                                              CrossAxisAlignment.start,
                                           children: [
                                             customText(
                                               "Pick up Address",
@@ -273,8 +332,10 @@ class _DeliveryTrackingScreenState extends State<DeliveryTrackingScreen> {
                                             ),
                                             SizedBox(height: 4.h),
                                             customText(
-                                              deliveriesController.selectedDelivery
-                                                      ?.originLocation.name ??
+                                              deliveriesController
+                                                      .selectedDelivery
+                                                      ?.originLocation
+                                                      .displayName ??
                                                   "",
                                               color: AppColors.whiteColor,
                                               fontSize: 14.sp,
@@ -320,7 +381,8 @@ class _DeliveryTrackingScreenState extends State<DeliveryTrackingScreen> {
                                       SizedBox(width: 12.w),
                                       Expanded(
                                         child: Column(
-                                          crossAxisAlignment: CrossAxisAlignment.start,
+                                          crossAxisAlignment:
+                                              CrossAxisAlignment.start,
                                           children: [
                                             customText(
                                               "Drop off Address",
@@ -330,8 +392,10 @@ class _DeliveryTrackingScreenState extends State<DeliveryTrackingScreen> {
                                             ),
                                             SizedBox(height: 4.h),
                                             customText(
-                                              deliveriesController.selectedDelivery
-                                                      ?.destinationLocation.name ??
+                                              deliveriesController
+                                                      .selectedDelivery
+                                                      ?.destinationLocation
+                                                      .displayName ??
                                                   "",
                                               color: AppColors.whiteColor,
                                               fontSize: 14.sp,
@@ -351,15 +415,18 @@ class _DeliveryTrackingScreenState extends State<DeliveryTrackingScreen> {
                             // Status indicator text
                             if (!isDeliveryComplete)
                               Padding(
-                                padding: EdgeInsets.symmetric(horizontal: 20.sp),
+                                padding:
+                                    EdgeInsets.symmetric(horizontal: 20.sp),
                                 child: Align(
                                   alignment: Alignment.centerLeft,
                                   child: customText(
-                                    deliveriesController.selectedDelivery?.status
+                                    deliveriesController
+                                                .selectedDelivery?.status
                                                 ?.toLowerCase() ==
                                             'accepted'
                                         ? "Head to pick-up location"
-                                        : deliveriesController.selectedDelivery?.status
+                                        : deliveriesController
+                                                    .selectedDelivery?.status
                                                     ?.toLowerCase() ==
                                                 'picked'
                                             ? "Head to delivery location"
@@ -387,21 +454,28 @@ class _DeliveryTrackingScreenState extends State<DeliveryTrackingScreen> {
                                     children: [
                                       CircleAvatar(
                                         radius: 24.r,
-                                        backgroundColor: AppColors.primaryColor.withOpacity(0.1),
+                                        backgroundColor: AppColors.primaryColor
+                                            .withOpacity(0.1),
                                         backgroundImage: deliveriesController
-                                                    .selectedDelivery?.sender?.avatar !=
+                                                    .selectedDelivery
+                                                    ?.user
+                                                    ?.avatar !=
                                                 null
                                             ? CachedNetworkImageProvider(
                                                 deliveriesController
-                                                        .selectedDelivery?.sender?.avatar ??
+                                                        .selectedDelivery
+                                                        ?.user
+                                                        ?.avatar ??
                                                     '',
                                               )
                                             : null,
                                         child: deliveriesController
-                                                    .selectedDelivery?.sender?.avatar ==
+                                                    .selectedDelivery
+                                                    ?.user
+                                                    ?.avatar ==
                                                 null
                                             ? customText(
-                                                "${deliveriesController.selectedDelivery?.sender?.firstName?.substring(0, 1) ?? ""}${deliveriesController.selectedDelivery?.sender?.lastName?.substring(0, 1) ?? ""}",
+                                                "${deliveriesController.selectedDelivery?.user?.firstName?.substring(0, 1) ?? ""}${deliveriesController.selectedDelivery?.user?.lastName?.substring(0, 1) ?? ""}",
                                                 fontSize: 16.sp,
                                                 fontWeight: FontWeight.bold,
                                                 color: AppColors.primaryColor,
@@ -411,10 +485,11 @@ class _DeliveryTrackingScreenState extends State<DeliveryTrackingScreen> {
                                       SizedBox(width: 12.w),
                                       Expanded(
                                         child: Column(
-                                          crossAxisAlignment: CrossAxisAlignment.start,
+                                          crossAxisAlignment:
+                                              CrossAxisAlignment.start,
                                           children: [
                                             customText(
-                                              "${deliveriesController.selectedDelivery?.sender?.firstName ?? ""} ${deliveriesController.selectedDelivery?.sender?.lastName ?? ""}",
+                                              "${deliveriesController.selectedDelivery?.user?.firstName ?? ""} ${deliveriesController.selectedDelivery?.user?.lastName ?? ""}",
                                               color: AppColors.blackColor,
                                               fontSize: 16.sp,
                                               fontWeight: FontWeight.w600,
@@ -463,13 +538,18 @@ class _DeliveryTrackingScreenState extends State<DeliveryTrackingScreen> {
                                     children: [
                                       CircleAvatar(
                                         radius: 24.r,
-                                        backgroundColor: AppColors.greenColor.withOpacity(0.1),
+                                        backgroundColor: AppColors.greenColor
+                                            .withOpacity(0.1),
                                         child: customText(
-                                          deliveriesController
-                                                  .selectedDelivery?.receiver.name
+                                          (deliveriesController.selectedDelivery
+                                                  ?.receiver?.name ?? "")
+                                                  .length >= 2
+                                              ? deliveriesController.selectedDelivery!
+                                                  .receiver!.name!
                                                   .substring(0, 2)
-                                                  .toUpperCase() ??
-                                              "",
+                                                  .toUpperCase()
+                                              : (deliveriesController.selectedDelivery
+                                                  ?.receiver?.name ?? "").toUpperCase(),
                                           fontSize: 16.sp,
                                           fontWeight: FontWeight.bold,
                                           color: AppColors.greenColor,
@@ -478,11 +558,14 @@ class _DeliveryTrackingScreenState extends State<DeliveryTrackingScreen> {
                                       SizedBox(width: 12.w),
                                       Expanded(
                                         child: Column(
-                                          crossAxisAlignment: CrossAxisAlignment.start,
+                                          crossAxisAlignment:
+                                              CrossAxisAlignment.start,
                                           children: [
                                             customText(
                                               deliveriesController
-                                                      .selectedDelivery?.receiver.name ??
+                                                      .selectedDelivery
+                                                      ?.receiver
+                                                      ?.name ??
                                                   "",
                                               color: AppColors.blackColor,
                                               fontSize: 16.sp,
@@ -502,7 +585,9 @@ class _DeliveryTrackingScreenState extends State<DeliveryTrackingScreen> {
                                         onTap: () {
                                           makePhoneCall(
                                             deliveriesController
-                                                    .selectedDelivery?.receiver.phone ??
+                                                    .selectedDelivery
+                                                    ?.receiver
+                                                    ?.phone ??
                                                 "",
                                           );
                                         },
@@ -537,26 +622,30 @@ class _DeliveryTrackingScreenState extends State<DeliveryTrackingScreen> {
 
                                   // Delivery Stats
                                   Row(
-                                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                    mainAxisAlignment:
+                                        MainAxisAlignment.spaceBetween,
                                     children: [
                                       DeliveryTrackingMiniInfoItem(
                                         title: "Order status",
                                         value: deliveriesController
-                                                .selectedDelivery?.status
+                                                .selectedDelivery
+                                                ?.status
                                                 ?.capitalizeFirst ??
                                             "",
                                         isStatus: true,
                                       ),
                                       DeliveryTrackingMiniInfoItem(
                                         title: "Distance",
-                                        value: deliveriesController.selectedDelivery?.distance ?? "",
+                                        value: deliveriesController
+                                                .selectedDelivery?.distance ??
+                                            "",
                                       ),
                                       DeliveryTrackingMiniInfoItem(
                                         title: "Amount",
                                         value: formatToCurrency(
                                           double.tryParse(deliveriesController
-                                                  .selectedDelivery?.cost ??
-                                              "0") ??
+                                                      .selectedDelivery?.cost ??
+                                                  "0") ??
                                               0,
                                         ),
                                       ),
@@ -566,6 +655,25 @@ class _DeliveryTrackingScreenState extends State<DeliveryTrackingScreen> {
                               ),
                             ),
                             SizedBox(height: 20.h),
+
+                            // Action Button (only if not delivered)
+                            if (!isDeliveryComplete) ...[
+                              Padding(
+                                padding: EdgeInsets.symmetric(horizontal: 16.sp),
+                                child: SizedBox(
+                                  width: double.infinity,
+                                  child: CustomButton(
+                                    onPressed: _handleStatusButtonPress,
+                                    isBusy: deliveriesController
+                                        .updatingDeliveryStatus,
+                                    title: _getStatusButtonText(),
+                                    backgroundColor: AppColors.primaryColor,
+                                    fontColor: AppColors.whiteColor,
+                                  ),
+                                ),
+                              ),
+                              SizedBox(height: 16.h),
+                            ],
                           ],
                         ),
                       ),

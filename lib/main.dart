@@ -11,16 +11,15 @@ void main() async {
     DeviceOrientation.portraitUp,
   ]);
   setupServiceLocator();
-  //  1.1.2: set navigator key to ZegoUIKitPrebuiltCallInvitationService
-  ZegoUIKitPrebuiltCallInvitationService().setNavigatorKey(navigatorKey);
+  // Zego Cloud temporarily disabled
+  // //  1.1.2: set navigator key to ZegoUIKitPrebuiltCallInvitationService
+  // ZegoUIKitPrebuiltCallInvitationService().setNavigatorKey(navigatorKey);
 
-  // call the useSystemCallingUI
-  ZegoUIKit().initLog().then((value) {
-    ZegoUIKitPrebuiltCallInvitationService().useSystemCallingUI(
-      [ZegoUIKitSignalingPlugin()],
-    );
-    runApp(GoSharpDriver(navigatorKey: navigatorKey));
-  });
+  // // call the useSystemCallingUI
+  // ZegoUIKitPrebuiltCallInvitationService().useSystemCallingUI(
+  //   [ZegoUIKitSignalingPlugin()],
+  // );
+  runApp(GoSharpDriver(navigatorKey: navigatorKey));
 }
 
 class GoSharpDriver extends StatelessWidget {

@@ -13,7 +13,7 @@ class AddVehicleScreen extends StatelessWidget {
           appBar: defaultAppBar(
             implyLeading: true,
             bgColor: AppColors.backgroundColor,
-            title: "Add Bike",
+            title: settingsController.isEditingVehicle ? "Edit Bike" : "Add Bike",
             centerTitle: false,
           ),
           body: Container(
@@ -102,7 +102,11 @@ class AddVehicleScreen extends StatelessWidget {
                     padding: EdgeInsets.symmetric(horizontal: 20.sp),
                     child: CustomButton(
                       onPressed: () async {
-                        await settingsController.addVehicleInfo();
+                        if (settingsController.isEditingVehicle) {
+                          await settingsController.updateVehicleInfo();
+                        } else {
+                          await settingsController.addVehicleInfo();
+                        }
                       },
                       isBusy: settingsController.isLoadingVehicle,
                       title: "Save",

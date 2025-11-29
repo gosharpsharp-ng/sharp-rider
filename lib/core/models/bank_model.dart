@@ -1,8 +1,3 @@
-import 'package:json_annotation/json_annotation.dart';
-
-part 'bank_model.g.dart';
-
-@JsonSerializable()
 class BankModel {
   final int id;
   final String name;
@@ -10,15 +5,12 @@ class BankModel {
   final String code;
   final String? longcode;
   final String? gateway;
-  @JsonKey(name: 'pay_with_bank')
   final bool payWithBank;
-  @JsonKey(name: 'supports_transfer')
   final bool supportsTransfer;
   final bool active;
   final String country;
   final String currency;
   final String type;
-  @JsonKey(name: 'is_deleted')
   final bool isDeleted;
   final String createdAt;
   final String updatedAt;
@@ -41,9 +33,62 @@ class BankModel {
     required this.updatedAt,
   });
 
-  /// Factory method to generate a `BankModel` instance from JSON
-  factory BankModel.fromJson(Map<String, dynamic> json) => _$BankModelFromJson(json);
+  static int _parseInt(dynamic value) {
+    if (value == null) return 0;
+    if (value is int) return value;
+    if (value is num) return value.toInt();
+    return int.tryParse(value.toString()) ?? 0;
+  }
 
-  /// Method to convert `BankModel` instance to JSON
-  Map<String, dynamic> toJson() => _$BankModelToJson(this);
+  static String _parseString(dynamic value) {
+    return value?.toString() ?? '';
+  }
+
+  static bool _parseBool(dynamic value) {
+    if (value == null) return false;
+    if (value is bool) return value;
+    if (value is int) return value == 1;
+    if (value is String) return value.toLowerCase() == 'true' || value == '1';
+    return false;
+  }
+
+  factory BankModel.fromJson(Map<String, dynamic> json) {
+    return BankModel(
+      id: _parseInt(json['id']),
+      name: _parseString(json['name']),
+      slug: _parseString(json['slug']),
+      code: _parseString(json['code']),
+      longcode: json['longcode']?.toString(),
+      gateway: json['gateway']?.toString(),
+      payWithBank: _parseBool(json['pay_with_bank']),
+      supportsTransfer: _parseBool(json['supports_transfer']),
+      active: _parseBool(json['active']),
+      country: _parseString(json['country']),
+      currency: _parseString(json['currency']),
+      type: _parseString(json['type']),
+      isDeleted: _parseBool(json['is_deleted']),
+      createdAt: _parseString(json['createdAt']),
+      updatedAt: _parseString(json['updatedAt']),
+    );
+  }
+
+  Map<String, dynamic> toJson() {
+    return {
+      'id': id,
+      'name': name,
+      'slug': slug,
+      'code': code,
+      'longcode': longcode,
+      'gateway': gateway,
+      'pay_with_bank': payWithBank,
+      'supports_transfer': supportsTransfer,
+      'active': active,
+      'country': country,
+      'currency': currency,
+      'type': type,
+      'is_deleted': isDeleted,
+      'createdAt': createdAt,
+      'updatedAt': updatedAt,
+    };
+  }
 }

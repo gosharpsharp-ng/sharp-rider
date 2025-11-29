@@ -12,7 +12,7 @@ class ProfileService extends CoreService {
   }
 
   Future<APIResponse> updateProfile(dynamic data) async {
-    return await formUpdate("/riders/profile", data);
+    return await update("/riders/profile", data);
   }
 
   Future<APIResponse> getNotifications(dynamic data) async {
@@ -33,7 +33,11 @@ class ProfileService extends CoreService {
   }
 
   Future<APIResponse> addVehicle(dynamic data) async {
-    return await send("/riders/vehicle", data);
+    return await send("/riders/vehicle", {"vehicle": data});
+  }
+
+  Future<APIResponse> updateVehicle(dynamic data) async {
+    return await update("/riders/profile", {"vehicle": data});
   }
 
   Future<APIResponse> getVehicle() async {
@@ -42,6 +46,10 @@ class ProfileService extends CoreService {
 
   Future<APIResponse> addLicense(dynamic data) async {
     return await send("/riders/driver-license", data);
+  }
+
+  Future<APIResponse> updateLicense(dynamic data) async {
+    return await update("/riders/profile", {"license": data});
   }
 
   Future<APIResponse> getLicense() async {
@@ -78,6 +86,11 @@ class ProfileService extends CoreService {
 
   Future<APIResponse> submitPayoutRequest(dynamic data) async {
     return await send("/riders/wallet/payout", data);
+  }
+
+  // Wallet funding
+  Future<APIResponse> fundWallet(dynamic data) async {
+    return await send("/riders/wallet/fund", data);
   }
 
   // FAQ

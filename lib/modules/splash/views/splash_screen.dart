@@ -189,7 +189,8 @@ class _SplashScreenState extends State<SplashScreen>
                               child: Container(
                                 padding: EdgeInsets.all(30.sp),
                                 decoration: BoxDecoration(
-                                  color: AppColors.whiteColor.withOpacity(0.15),
+                                  color: AppColors.whiteColor
+                                      .withOpacity(0.15),
                                   shape: BoxShape.circle,
                                   boxShadow: [
                                     BoxShadow(
@@ -248,7 +249,8 @@ class _SplashScreenState extends State<SplashScreen>
                               'Rider',
                               fontSize: 18.sp,
                               fontWeight: FontWeight.w500,
-                              color: AppColors.whiteColor.withOpacity(0.9),
+                              color:
+                                  AppColors.whiteColor.withOpacity(0.9),
                               textAlign: TextAlign.center,
                             ),
                           ],

@@ -72,7 +72,7 @@ class PayoutItem extends StatelessWidget {
                         formatToCurrency(payoutRequest.amountDouble),
                         color: AppColors.blackColor,
                         fontWeight: FontWeight.bold,
-                        fontFamily: GoogleFonts.montserrat().fontFamily!,
+                        fontFamily: GoogleFonts.inter().fontFamily!,
                         fontSize: 16.sp,
                       ),
                     ],
@@ -108,7 +108,8 @@ class PayoutItem extends StatelessWidget {
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       Container(
-                        padding: EdgeInsets.symmetric(horizontal: 8.w, vertical: 4.h),
+                        padding: EdgeInsets.symmetric(
+                            horizontal: 8.w, vertical: 4.h),
                         decoration: BoxDecoration(
                           color: _getStatusColor().withOpacity(0.1),
                           borderRadius: BorderRadius.circular(12.r),

@@ -68,4 +68,8 @@ class SvgAssets {
   static const String profileIcon = 'assets/svgs/profile.svg';
   static const String securityIcon = 'assets/svgs/security.svg';
   static const String supportIcon = 'assets/svgs/support.svg';
+  static const String userIcon = 'assets/svgs/user_icon.svg';
+  static const String transactionsIcon = 'assets/svgs/transactions.svg';
+  static const String bankAccountIcon = 'assets/svgs/bank_account.svg';
+  static const String payoutIcon = 'assets/svgs/payout.svg';
 }

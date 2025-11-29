@@ -611,7 +611,8 @@ String formatRideTime(String timestamp) {
 }
 
 String formatToCurrency(num number) {
-  NumberFormat format = NumberFormat.currency(locale: 'en_US', symbol: '₦');
+  NumberFormat format =
+      NumberFormat.currency(locale: 'en_US', symbol: '₦', decimalDigits: 0);
   return format.format(number);
 }
 
@@ -724,10 +725,12 @@ class TitleSectionBox extends StatelessWidget {
   final String title;
   final Color backgroundColor;
   final List<Widget> children;
+  final Widget? trailing;
   const TitleSectionBox(
       {super.key,
       required this.title,
       required this.children,
+      this.trailing,
       this.backgroundColor = AppColors.whiteColor});
 
   @override
@@ -743,11 +746,17 @@ class TitleSectionBox extends StatelessWidget {
         mainAxisAlignment: MainAxisAlignment.start,
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          customText(title,
-              fontWeight: FontWeight.w500,
-              overflow: TextOverflow.visible,
-              fontSize: 16.sp,
-              color: AppColors.blackColor),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              customText(title,
+                  fontWeight: FontWeight.w500,
+                  overflow: TextOverflow.visible,
+                  fontSize: 16.sp,
+                  color: AppColors.blackColor),
+              if (trailing != null) trailing!,
+            ],
+          ),
           SizedBox(
             height: 5.h,
           ),
@@ -1093,22 +1102,14 @@ double toDegrees(double radians) {
 
 Color getStatusColor(String? status) {
   switch (status?.toLowerCase()) {
-    case "pending":
-      return AppColors.lightRedColor;
-    case "confirmed":
-      return AppColors.lightAmberColor;
-    case "paid":
-      return AppColors.lightGreenColor;
-    case "assigned":
+    case "accepted":
       return AppColors.lightBlueColor;
-    case "enroute":
-      return AppColors.lightPurpleColor;
-    case "collected":
-      return AppColors.lightTealColor;
-    case "transit":
+    case "picked":
       return AppColors.lightOrangeColor;
     case "delivered":
       return AppColors.lightGreenColor;
+    case "cancelled":
+      return AppColors.lightRedColor;
     default:
       return AppColors.lightGreyColor;
   }
@@ -1116,41 +1117,31 @@ Color getStatusColor(String? status) {
 
 Color getStatusTextColor(String? status) {
   switch (status?.toLowerCase()) {
-    case "pending":
-      return AppColors.redColor;
-    case "confirmed":
-      return AppColors.amberColor;
-    case "paid":
-      return AppColors.greenColor;
-    case "assigned":
+    case "accepted":
       return AppColors.blueColor;
-    case "enroute":
-      return AppColors.purpleColor;
-    case "collected":
-      return AppColors.tealColor;
-    case "transit":
+    case "picked":
       return AppColors.orangeColor;
     case "delivered":
       return AppColors.greenColor;
+    case "cancelled":
+      return AppColors.redColor;
     default:
       return AppColors.greyColor;
   }
 }
 
 double getDeliveryProgress(String status) {
-  switch (status.capitalizeFirst) {
-    case 'Pending':
-      return 0.0;
-    case 'Confirmed':
+  switch (status.toLowerCase()) {
+    case 'accepted':
       return 0.33;
-    case 'Picked':
+    case 'picked':
       return 0.67;
-    case 'Delivered':
+    case 'delivered':
       return 1.0;
-    case 'Accepted':
-      return 0.2; // Assuming 'Accepted' is somewhere between 'Pending' and 'Confirmed'
+    case 'cancelled':
+      return 0.0;
     default:
-      return 0.0; // Default case if status is unknown
+      return 0.0;
   }
 }
 
@@ -1346,4 +1337,357 @@ Future<File> compressImageWithLowerQuality(File file) async {
 
   // Convert XFile? -> File
   return result != null ? File(result.path) : file;
+}
+
+// Payment WebView Controller for handling Paystack payments
+class PaymentWebViewController {
+  bool paymentCompleted = false;
+  bool autoClosing = false;
+  String paymentStatus =
+      'pending'; // 'pending', 'success', 'failed', 'cancelled', 'declined'
+  String? failureReason; // Store the specific failure reason
+  Timer? autoCloseTimer;
+  Timer? statusCheckTimer;
+
+  final WebViewController controller;
+  final VoidCallback onSuccess;
+  final Function(String reason) onFailure;
+
+  PaymentWebViewController({
+    required this.controller,
+    required this.onSuccess,
+    required this.onFailure,
+  }) {
+    _setupController();
+  }
+
+  void _setupController() {
+    controller
+      ..setJavaScriptMode(JavaScriptMode.unrestricted)
+      ..setBackgroundColor(const Color(0x00000000))
+      ..setNavigationDelegate(
+        NavigationDelegate(
+          onPageFinished: (String url) async {
+            // Focus on input field for better UX
+            try {
+              controller
+                  .runJavaScript('document.querySelector("input")?.focus();');
+            } catch (e) {
+              debugPrint('Error focusing input: $e');
+            }
+
+            // Check payment status after page loads
+            await _checkPaymentStatus();
+          },
+          onUrlChange: (UrlChange? urlChange) {
+            if (urlChange?.url != null) {
+              final url = urlChange!.url!.toLowerCase();
+              debugPrint('Paystack URL changed to: $url');
+
+              // Check if URL contains success callback indicators
+              // Paystack typically redirects to callback_url with trxref or reference parameter
+              if ((url.contains('trxref=') || url.contains('reference=')) &&
+                  !url.contains('paystack.co')) {
+                // This is likely a callback URL redirect after successful payment
+                debugPrint(
+                    'Detected callback URL with transaction reference - checking status');
+              }
+            }
+            // Additional check on URL change
+            _checkPaymentStatus();
+          },
+          onNavigationRequest: (NavigationRequest request) {
+            // Allow navigation
+            return NavigationDecision.navigate;
+          },
+        ),
+      );
+
+    // Periodic status check (backup method) - check every 2 seconds
+    statusCheckTimer = Timer.periodic(Duration(seconds: 2), (timer) {
+      if (!paymentCompleted) {
+        _checkPaymentStatus();
+      }
+    });
+  }
+
+  Future<void> _checkPaymentStatus() async {
+    if (paymentCompleted) return;
+
+    try {
+      // Method 1: Check current URL for callback indicators
+      final currentUrl = await controller.currentUrl();
+      if (currentUrl != null) {
+        final urlLower = currentUrl.toLowerCase();
+        debugPrint('Checking payment status - URL: $urlLower');
+
+        // Check if URL contains success callback indicators
+        // Paystack typically redirects to callback_url with trxref or reference parameter
+        if ((urlLower.contains('trxref=') || urlLower.contains('reference=')) &&
+            !urlLower.contains('paystack.co')) {
+          // This is likely a callback URL redirect after successful payment
+          debugPrint(
+              'Detected callback URL with transaction reference - treating as success');
+          _handleSuccess();
+          return;
+        }
+      }
+
+      // Method 2: Check page title
+      final title = await controller.getTitle();
+      debugPrint('Checking payment status - Title: $title');
+
+      if (title != null) {
+        final titleLower = title.toLowerCase();
+
+        // Check for success indicators in title
+        if (titleLower.contains('success') ||
+            titleLower.contains('successful') ||
+            titleLower.contains('approved') ||
+            titleLower.contains('complete')) {
+          _handleSuccess();
+          return;
+        }
+
+        // Check for cancellation indicators in title
+        if (titleLower.contains('cancel') || titleLower.contains('abort')) {
+          _handleCancellation();
+          return;
+        }
+
+        // Check for declined indicators
+        if (titleLower.contains('declined') || titleLower.contains('decline')) {
+          _handleFailure(isDeclined: true);
+          return;
+        }
+
+        // Check for failure indicators
+        if (titleLower.contains('fail') || titleLower.contains('error')) {
+          _handleFailure(isDeclined: false);
+          return;
+        }
+      }
+
+      // Method 3: Check page content via JavaScript
+      final result = await controller.runJavaScriptReturningResult('''
+        (function() {
+          const bodyText = document.body.innerText.toLowerCase();
+
+          // Success patterns
+          if (bodyText.includes('payment successful') ||
+              bodyText.includes('transaction successful') ||
+              bodyText.includes('payment complete') ||
+              bodyText.includes('transaction complete') ||
+              bodyText.includes('was successful') ||
+              bodyText.includes('has been successful') ||
+              bodyText.includes('approved') ||
+              bodyText.includes('payment received') ||
+              bodyText.includes('thank you for your payment') ||
+              bodyText.includes('your payment of')) {
+            return 'success';
+          }
+
+          // Cancellation patterns
+          if (bodyText.includes('payment cancelled') ||
+              bodyText.includes('payment canceled') ||
+              bodyText.includes('transaction cancelled') ||
+              bodyText.includes('transaction canceled') ||
+              bodyText.includes('you cancelled') ||
+              bodyText.includes('cancel this payment') ||
+              bodyText.includes('payment was cancelled')) {
+            return 'cancelled';
+          }
+
+          // Declined patterns
+          if (bodyText.includes('declined') ||
+              bodyText.includes('card declined')) {
+            return 'declined';
+          }
+
+          // Failure patterns
+          if (bodyText.includes('payment failed') ||
+              bodyText.includes('transaction failed') ||
+              bodyText.includes('payment declined') ||
+              bodyText.includes('transaction declined') ||
+              bodyText.includes('could not be processed') ||
+              bodyText.includes('payment error')) {
+            return 'failed';
+          }
+
+          return 'unknown';
+        })();
+      ''');
+
+      final status = result.toString().replaceAll('"', '');
+      debugPrint('JavaScript content check result: $status');
+
+      if (status == 'success') {
+        _handleSuccess();
+      } else if (status == 'cancelled') {
+        _handleCancellation();
+      } else if (status == 'declined') {
+        _handleFailure(isDeclined: true);
+      } else if (status == 'failed') {
+        _handleFailure(isDeclined: false);
+      }
+    } catch (e) {
+      debugPrint('Error checking payment status: $e');
+    }
+  }
+
+  void _handleSuccess() {
+    if (paymentCompleted) return;
+
+    paymentCompleted = true;
+    paymentStatus = 'success';
+    autoClosing = true;
+
+    // Cancel status check timer
+    statusCheckTimer?.cancel();
+
+    debugPrint('Payment successful - auto-closing in 3 seconds');
+
+    // Auto-close after 3 seconds to let user see success message
+    autoCloseTimer = Timer(Duration(seconds: 3), () {
+      Get.back();
+      onSuccess();
+    });
+  }
+
+  void _handleFailure({bool isDeclined = false}) {
+    if (paymentCompleted) return;
+
+    paymentCompleted = true;
+    paymentStatus = isDeclined ? 'declined' : 'failed';
+    autoClosing = true;
+
+    failureReason = isDeclined
+        ? 'Your payment was declined. Please check your card details or try another payment method.'
+        : 'Payment could not be completed. Please try again.';
+
+    // Cancel status check timer
+    statusCheckTimer?.cancel();
+
+    debugPrint(
+        'Payment ${isDeclined ? 'declined' : 'failed'} - auto-closing in 2 seconds');
+
+    // Auto-close after 2 seconds
+    autoCloseTimer = Timer(Duration(seconds: 2), () {
+      Get.back();
+      onFailure(
+          failureReason ?? 'Payment was not completed. Please try again.');
+    });
+  }
+
+  void _handleCancellation() {
+    if (paymentCompleted) return;
+
+    paymentCompleted = true;
+    paymentStatus = 'cancelled';
+    autoClosing = true;
+    failureReason =
+        'You cancelled this payment. No charges were made to your account.';
+
+    statusCheckTimer?.cancel();
+
+    debugPrint('Payment cancelled - auto-closing in 2 seconds');
+
+    // Auto-close after 2 seconds
+    autoCloseTimer = Timer(Duration(seconds: 2), () {
+      Get.back();
+      onFailure(failureReason ?? 'Payment was cancelled.');
+    });
+  }
+
+  void handleManualClose() {
+    statusCheckTimer?.cancel();
+    autoCloseTimer?.cancel();
+
+    // User closed webview manually before payment completed
+    if (!paymentCompleted) {
+      paymentStatus = 'cancelled';
+      debugPrint('Payment cancelled by user');
+      onFailure(
+          'Payment was cancelled. Please try again if you wish to complete this transaction.');
+    }
+  }
+
+  void dispose() {
+    statusCheckTimer?.cancel();
+    autoCloseTimer?.cancel();
+  }
+}
+
+// Show WebView Dialog for Payment with automatic success/failure detection
+void showPaymentWebViewDialog(
+  BuildContext context, {
+  required String url,
+  required VoidCallback onSuccess,
+  required Function(String reason) onFailure,
+  String title = "Payment",
+}) {
+  final WebViewController webViewController = WebViewController();
+  PaymentWebViewController? paymentController;
+
+  paymentController = PaymentWebViewController(
+    controller: webViewController,
+    onSuccess: onSuccess,
+    onFailure: onFailure,
+  );
+
+  showGeneralDialog(
+    context: context,
+    barrierDismissible: true,
+    barrierLabel: MaterialLocalizations.of(context).modalBarrierDismissLabel,
+    pageBuilder: (BuildContext context, Animation<double> animation,
+        Animation<double> secondaryAnimation) {
+      webViewController.loadRequest(Uri.parse(url));
+      return PopScope(
+        canPop: true,
+        onPopInvoked: (didPop) {
+          if (didPop && paymentController != null) {
+            if (!paymentController.paymentCompleted) {
+              paymentController.paymentStatus = 'cancelled';
+              // Schedule callback for next frame to avoid state issues
+              final controller = paymentController;
+              WidgetsBinding.instance.addPostFrameCallback((_) {
+                controller.onFailure(
+                    'Payment was cancelled. Please try again if you wish to complete this transaction.');
+              });
+            }
+            paymentController.dispose();
+          }
+        },
+        child: Scaffold(
+          appBar: AppBar(
+            title: customText(title),
+            leading: IconButton(
+              icon: const Icon(Icons.close),
+              onPressed: () {
+                if (paymentController == null) return;
+
+                if (!paymentController.paymentCompleted) {
+                  paymentController.paymentStatus = 'cancelled';
+                  Navigator.of(context).pop();
+                  // Use PostFrameCallback to avoid context issues
+                  final controller = paymentController;
+                  WidgetsBinding.instance.addPostFrameCallback((_) {
+                    controller.onFailure(
+                        'Payment was cancelled. Please try again if you wish to complete this transaction.');
+                  });
+                  paymentController.dispose();
+                } else {
+                  Navigator.of(context).pop();
+                  paymentController.dispose();
+                }
+              },
+            ),
+          ),
+          body: WebViewWidget(
+            controller: webViewController,
+          ),
+        ),
+      );
+    },
+  );
 }

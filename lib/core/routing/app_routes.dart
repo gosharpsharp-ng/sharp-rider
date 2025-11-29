@@ -37,6 +37,7 @@ abstract class Routes {
   static const DELIVERY_PAYMENT_OPTIONS_SCREEN = '/delivery_payment_options_screen';
   static const DELIVERY_SUMMARY_SCREEN = '/delivery_summary_screen';
   static const DELIVERY_PACKAGE_INFORMATION_UPLOAD_SCREEN = '/delivery_package_information_upload_screen';
+  static const DELIVERY_ACCEPTANCE_RESULT_SCREEN = '/delivery_acceptance_result_screen';
 
   // Notifications
   static const NOTIFICATIONS_HOME = '/notifications_home';
@@ -61,8 +62,12 @@ abstract class Routes {
   static const WALLETS_HOME_SCREEN = '/wallets_home_screen';
   static const TRANSACTIONS_SCREEN = '/transactions_screen';
   static const TRANSACTION_DETAILS_SCREEN = '/transaction_details_screen';
+  static const BANK_DETAILS_SCREEN = '/bank_details_screen';
   static const ADD_WITHDRAWAL_ACCOUNT_SCREEN = '/add_withdrawal_account_screen';
   static const WITHDRAWAL_AMOUNT_SCREEN = '/withdrawal_amount_screen';
+  static const FUND_WALLET_AMOUNT_SCREEN = '/fund_wallet_amount_screen';
+  static const FUND_WALLET_SUCCESS_SCREEN = '/fund_wallet_success_screen';
+  static const FUND_WALLET_FAILURE_SCREEN = '/fund_wallet_failure_screen';
 
   // Payouts
   static const PAYOUT_HISTORY_SCREEN = '/payout_history_screen';

@@ -1,26 +1,15 @@
-import 'package:json_annotation/json_annotation.dart';
-
-part 'bank_account_model.g.dart';
-
-@JsonSerializable()
 class BankAccount {
   final int id;
-  @JsonKey(name: 'bank_account_number')
   final String bankAccountNumber;
-  @JsonKey(name: 'bank_account_name')
   final String bankAccountName;
-  @JsonKey(name: 'bank_name')
   final String bankName;
-  @JsonKey(name: 'bank_code')
   final String bankCode;
-  @JsonKey(name: 'recipient_id')
-  final String recipientId;
-  @JsonKey(name: 'user_id')
-  final int userId;
-  @JsonKey(name: 'created_at')
-  final String createdAt;
-  @JsonKey(name: 'updated_at')
-  final String updatedAt;
+  final String? recipientId;
+  final String? accountableType;
+  final int? accountableId;
+  final String? deletedAt;
+  final String? createdAt;
+  final String? updatedAt;
 
   BankAccount({
     required this.id,
@@ -28,12 +17,57 @@ class BankAccount {
     required this.bankAccountName,
     required this.bankName,
     required this.bankCode,
-    required this.recipientId,
-    required this.userId,
-    required this.createdAt,
-    required this.updatedAt,
+    this.recipientId,
+    this.accountableType,
+    this.accountableId,
+    this.deletedAt,
+    this.createdAt,
+    this.updatedAt,
   });
 
-  factory BankAccount.fromJson(Map<String, dynamic> json) => _$BankAccountFromJson(json);
-  Map<String, dynamic> toJson() => _$BankAccountToJson(this);
+  static int _parseInt(dynamic value) {
+    if (value == null) return 0;
+    if (value is int) return value;
+    if (value is num) return value.toInt();
+    return int.tryParse(value.toString()) ?? 0;
+  }
+
+  static int? _parseNullableInt(dynamic value) {
+    if (value == null) return null;
+    if (value is int) return value;
+    if (value is num) return value.toInt();
+    return int.tryParse(value.toString());
+  }
+
+  factory BankAccount.fromJson(Map<String, dynamic> json) {
+    return BankAccount(
+      id: _parseInt(json['id']),
+      bankAccountNumber: json['bank_account_number']?.toString() ?? '',
+      bankAccountName: json['bank_account_name']?.toString() ?? '',
+      bankName: json['bank_name']?.toString() ?? '',
+      bankCode: json['bank_code']?.toString() ?? '',
+      recipientId: json['recipient_id']?.toString(),
+      accountableType: json['accountable_type']?.toString(),
+      accountableId: _parseNullableInt(json['accountable_id']),
+      deletedAt: json['deleted_at']?.toString(),
+      createdAt: json['created_at']?.toString(),
+      updatedAt: json['updated_at']?.toString(),
+    );
+  }
+
+  Map<String, dynamic> toJson() {
+    return {
+      'id': id,
+      'bank_account_number': bankAccountNumber,
+      'bank_account_name': bankAccountName,
+      'bank_name': bankName,
+      'bank_code': bankCode,
+      'recipient_id': recipientId,
+      'accountable_type': accountableType,
+      'accountable_id': accountableId,
+      'deleted_at': deletedAt,
+      'created_at': createdAt,
+      'updated_at': updatedAt,
+    };
+  }
 }
