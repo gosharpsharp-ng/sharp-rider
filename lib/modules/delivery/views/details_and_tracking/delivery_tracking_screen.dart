@@ -191,7 +191,7 @@ class _DeliveryTrackingScreenState extends State<DeliveryTrackingScreen> {
                         _initializeMap();
                       },
                     ),
-                    // Navigate Button on map
+                    // Navigate Button on map - Google Maps style
                     if (!isDeliveryComplete)
                       Positioned(
                         bottom: 16.h,
@@ -204,17 +204,18 @@ class _DeliveryTrackingScreenState extends State<DeliveryTrackingScreen> {
                               openGoogleMaps(destination);
                             }
                           },
-                          backgroundColor: AppColors.primaryColor,
+                          backgroundColor: AppColors.whiteColor,
+                          elevation: 4,
                           icon: Icon(
-                            Icons.navigation_rounded,
-                            color: AppColors.whiteColor,
-                            size: 20.sp,
+                            Icons.directions,
+                            color: const Color(0xFF4285F4), // Google Maps blue
+                            size: 22.sp,
                           ),
                           label: customText(
                             _getNavigationButtonLabel(),
                             fontSize: 14.sp,
                             fontWeight: FontWeight.w600,
-                            color: AppColors.whiteColor,
+                            color: const Color(0xFF4285F4), // Google Maps blue
                           ),
                         ),
                       ),

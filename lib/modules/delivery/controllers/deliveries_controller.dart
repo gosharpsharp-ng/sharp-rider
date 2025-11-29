@@ -126,7 +126,9 @@ class DeliveriesController extends GetxController with WidgetsBindingObserver {
     fetchingDeliveries = false;
     update();
     if (response.status == "success") {
-      selectedDelivery = DeliveryModel.fromJson(response.data);
+      // API returns {delivery: {...}} so extract the delivery object
+      final deliveryData = response.data['delivery'] ?? response.data;
+      selectedDelivery = DeliveryModel.fromJson(deliveryData);
       update();
     }
   }
@@ -507,7 +509,9 @@ class DeliveriesController extends GetxController with WidgetsBindingObserver {
     if (response.status == "success") {
       pickedDeliveries.add(trackingId);
       update();
-      selectedDelivery = DeliveryModel.fromJson(response.data);
+      // API returns {delivery: {...}} so extract the delivery object
+      final deliveryData = response.data['delivery'] ?? response.data;
+      selectedDelivery = DeliveryModel.fromJson(deliveryData);
       await getDelivery();
       if (Get.isRegistered<LocationService>()) {
         await Get.find<LocationService>().joinParcelTrackingRoom(
@@ -720,7 +724,9 @@ class DeliveriesController extends GetxController with WidgetsBindingObserver {
         Navigator.pop(Get.context!);
         // Get.offAndToNamed(Routes.RIDER_PERFORMANCE_SCREEN);
       }
-      selectedDelivery = DeliveryModel.fromJson(response.data);
+      // API returns {delivery: {...}} so extract the delivery object
+      final deliveryData = response.data['delivery'] ?? response.data;
+      selectedDelivery = DeliveryModel.fromJson(deliveryData);
       if (['picked'].contains(selectedDelivery!.status)) {
         drawPolylineFromRiderToDestination(
           context,
