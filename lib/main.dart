@@ -1,3 +1,4 @@
+import 'package:gorider/core/services/push_notification_service.dart';
 import 'package:gorider/core/utils/exports.dart';
 import 'package:wakelock_plus/wakelock_plus.dart';
 
@@ -8,6 +9,10 @@ void main() async {
   await ScreenUtil.ensureScreenSize();
   await Get.putAsync(() => AuthProvider().init());
   Get.put(DeliveryNotificationServiceManager());
+
+  // Initialize push notifications
+  await PushNotificationService().initialize();
+
   SystemChrome.setPreferredOrientations([
     DeviceOrientation.portraitUp,
   ]);
