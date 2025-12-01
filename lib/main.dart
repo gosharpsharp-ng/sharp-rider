@@ -1,3 +1,4 @@
+import 'package:gorider/core/services/app_update/app_update_service.dart';
 import 'package:gorider/core/services/push_notification_service.dart';
 import 'package:gorider/core/utils/exports.dart';
 import 'package:wakelock_plus/wakelock_plus.dart';
@@ -22,6 +23,11 @@ void main() async {
   WakelockPlus.enable();
 
   runApp(GoSharpDriver(navigatorKey: navigatorKey));
+
+  // Check for app updates after app is running
+  Future.delayed(const Duration(seconds: 2), () {
+    AppUpdateService().initialize();
+  });
 }
 
 class GoSharpDriver extends StatelessWidget {
