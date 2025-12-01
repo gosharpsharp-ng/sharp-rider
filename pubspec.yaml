@@ -19,7 +19,7 @@ dependencies:
   get: ^4.7.2
   flutter_screenutil: ^5.9.3
   flutter_image_compress: ^2.4.0
-  skeletonizer: ^1.4.2
+  skeletonizer: ^2.1.0+1
   dotted_border: ^2.1.0
   flutter_dotenv: ^5.1.0
   get_storage: ^2.1.1
@@ -41,7 +41,7 @@ dependencies:
   flutter_google_maps_webservices: ^1.1.1
   image_picker: ^1.1.2
   webview_flutter: ^4.8.0
-  image_cropper: ^5.0.1
+  image_cropper: ^8.0.2
   intl_phone_field: ^3.1.0
   flutter_polyline_points: ^3.0.1
   cloudinary: ^1.2.0
@@ -105,8 +105,6 @@ flutter_native_splash:
     image: "assets/icons/gorider-logo.png"
 
 dependency_overrides:
-  image_cropper: ^5.0.1
-  image_cropper_platform_interface: ^5.0.0
   floating: ^6.0.0
   flutter_ringtone_player: ^4.0.0+4
   vibration: ^3.1.4

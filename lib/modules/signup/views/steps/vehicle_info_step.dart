@@ -128,69 +128,70 @@ class VehicleInfoStep extends GetView<SignUpController> {
                         ),
                         SizedBox(height: 10.sp),
 
-                        // Optional Images Section
-                        Align(
-                          alignment: Alignment.centerLeft,
-                          child: customText(
-                            "Vehicle Photos (Optional)",
-                            fontSize: 14.sp,
-                            fontWeight: FontWeight.w500,
-                            color: AppColors.blackColor,
-                          ),
-                        ),
-                        SizedBox(height: 10.sp),
+                        // TODO: Temporarily commented out - Optional vehicle photos
+                        // // Optional Images Section
+                        // Align(
+                        //   alignment: Alignment.centerLeft,
+                        //   child: customText(
+                        //     "Vehicle Photos (Optional)",
+                        //     fontSize: 14.sp,
+                        //     fontWeight: FontWeight.w500,
+                        //     color: AppColors.blackColor,
+                        //   ),
+                        // ),
+                        // SizedBox(height: 10.sp),
 
-                        // Interior Photo - Sharp-vendor pattern
-                        _buildImagePicker(
-                          context: context,
-                          title: "Interior Photo",
-                          image: controller.vehicleInteriorPhoto,
-                          onTap: () {
-                            showAnyBottomSheet(
-                              isControlled: false,
-                              child: CustomImagePickerBottomSheet(
-                                title: "Interior Photo",
-                                takePhotoFunction: () =>
-                                    controller.pickVehicleInteriorPhoto(
-                                        pickFromCamera: true),
-                                selectFromGalleryFunction: () =>
-                                    controller.pickVehicleInteriorPhoto(
-                                        pickFromCamera: false),
-                                deleteFunction: () =>
-                                    controller.removeVehicleInteriorPhoto(),
-                              ),
-                            );
-                          },
-                          onRemove: () =>
-                              controller.removeVehicleInteriorPhoto(),
-                        ),
+                        // // Interior Photo - Sharp-vendor pattern
+                        // _buildImagePicker(
+                        //   context: context,
+                        //   title: "Interior Photo",
+                        //   image: controller.vehicleInteriorPhoto,
+                        //   onTap: () {
+                        //     showAnyBottomSheet(
+                        //       isControlled: false,
+                        //       child: CustomImagePickerBottomSheet(
+                        //         title: "Interior Photo",
+                        //         takePhotoFunction: () =>
+                        //             controller.pickVehicleInteriorPhoto(
+                        //                 pickFromCamera: true),
+                        //         selectFromGalleryFunction: () =>
+                        //             controller.pickVehicleInteriorPhoto(
+                        //                 pickFromCamera: false),
+                        //         deleteFunction: () =>
+                        //             controller.removeVehicleInteriorPhoto(),
+                        //       ),
+                        //     );
+                        //   },
+                        //   onRemove: () =>
+                        //       controller.removeVehicleInteriorPhoto(),
+                        // ),
 
-                        SizedBox(height: 10.sp),
+                        // SizedBox(height: 10.sp),
 
-                        // Exterior Photo - Sharp-vendor pattern
-                        _buildImagePicker(
-                          context: context,
-                          title: "Exterior Photo",
-                          image: controller.vehicleExteriorPhoto,
-                          onTap: () {
-                            showAnyBottomSheet(
-                              isControlled: false,
-                              child: CustomImagePickerBottomSheet(
-                                title: "Exterior Photo",
-                                takePhotoFunction: () =>
-                                    controller.pickVehicleExteriorPhoto(
-                                        pickFromCamera: true),
-                                selectFromGalleryFunction: () =>
-                                    controller.pickVehicleExteriorPhoto(
-                                        pickFromCamera: false),
-                                deleteFunction: () =>
-                                    controller.removeVehicleExteriorPhoto(),
-                              ),
-                            );
-                          },
-                          onRemove: () =>
-                              controller.removeVehicleExteriorPhoto(),
-                        ),
+                        // // Exterior Photo - Sharp-vendor pattern
+                        // _buildImagePicker(
+                        //   context: context,
+                        //   title: "Exterior Photo",
+                        //   image: controller.vehicleExteriorPhoto,
+                        //   onTap: () {
+                        //     showAnyBottomSheet(
+                        //       isControlled: false,
+                        //       child: CustomImagePickerBottomSheet(
+                        //         title: "Exterior Photo",
+                        //         takePhotoFunction: () =>
+                        //             controller.pickVehicleExteriorPhoto(
+                        //                 pickFromCamera: true),
+                        //         selectFromGalleryFunction: () =>
+                        //             controller.pickVehicleExteriorPhoto(
+                        //                 pickFromCamera: false),
+                        //         deleteFunction: () =>
+                        //             controller.removeVehicleExteriorPhoto(),
+                        //       ),
+                        //     );
+                        //   },
+                        //   onRemove: () =>
+                        //       controller.removeVehicleExteriorPhoto(),
+                        // ),
 
                         SizedBox(height: 15.sp),
                         CustomButton(
