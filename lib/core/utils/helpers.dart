@@ -1617,10 +1617,10 @@ class PaymentWebViewController {
     // Cancel status check timer
     statusCheckTimer?.cancel();
 
-    debugPrint('Payment successful - auto-closing in 3 seconds');
+    debugPrint('Payment successful - auto-closing in 5 seconds');
 
-    // Auto-close after 3 seconds to let user see success message
-    autoCloseTimer = Timer(const Duration(seconds: 3), () {
+    // Auto-close after 5 seconds to let user see success message and ensure callback processes
+    autoCloseTimer = Timer(const Duration(seconds: 5), () {
       Get.back();
       onSuccess();
     });
