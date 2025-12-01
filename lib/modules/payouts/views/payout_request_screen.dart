@@ -93,15 +93,6 @@ class PayoutRequestScreen extends StatelessWidget {
                                   TextSelection.collapsed(offset: value.length),
                             );
                           },
-                          suffixWidget: Padding(
-                            padding: EdgeInsets.all(8.sp),
-                            child: customText(
-                              "₦",
-                              fontSize: 18.sp,
-                              color: AppColors.greyColor,
-                              fontWeight: FontWeight.w600,
-                            ),
-                          ),
                         ),
 
                         SizedBox(height: 16.h),
