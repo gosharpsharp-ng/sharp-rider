@@ -1,3 +1,4 @@
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:gorider/core/services/app_update/app_update_service.dart';
 import 'package:gorider/core/services/push_notification_service.dart';
 import 'package:gorider/core/utils/exports.dart';
@@ -6,6 +7,11 @@ import 'package:wakelock_plus/wakelock_plus.dart';
 final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+
+  // Load appropriate env file based on build mode
+  const buildMode = String.fromEnvironment('BUILD_MODE', defaultValue: 'dev');
+  await dotenv.load(fileName: buildMode == 'prod' ? '.env.prod' : '.env.dev');
+
   await GetStorage.init();
   await ScreenUtil.ensureScreenSize();
   await Get.putAsync(() => AuthProvider().init());
@@ -37,15 +43,27 @@ class GoSharpDriver extends StatelessWidget {
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
-    ScreenUtil.init(context,
-        designSize: Size(MediaQuery.sizeOf(context).width,
-            MediaQuery.sizeOf(context).height));
+    ScreenUtil.init(
+      context,
+      designSize: const Size(375, 812),
+      splitScreenMode: true,
+      minTextAdapt: true,
+    );
     return GetMaterialApp(
       debugShowCheckedModeBanner: false,
       title: 'GoRider',
       initialRoute: AppPages.INITIAL,
       getPages: AppPages.routes,
       navigatorKey: navigatorKey,
+      builder: (context, child) {
+        return MediaQuery(
+          data: MediaQuery.of(context).copyWith(
+            textScaler: TextScaler.linear(0.85),
+            boldText: false,
+          ),
+          child: child!,
+        );
+      },
     );
   }
 }
