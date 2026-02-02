@@ -42,22 +42,24 @@ class OnboardingScreen extends StatelessWidget {
                       mainAxisAlignment: MainAxisAlignment.start,
                       children: [
                         // Hero Image
-                        Container(
-                          height: 1.sh * 0.52,
-                          decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(24.r),
-                            boxShadow: [
-                              BoxShadow(
-                                color: AppColors.primaryColor
-                                    .withOpacity(0.2),
-                                blurRadius: 30,
-                                offset: const Offset(0, 10),
-                                spreadRadius: 0,
+                        // Hero Image
+                        Expanded(
+                          child: Container(
+                            decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(24.r),
+                              boxShadow: [
+                                BoxShadow(
+                                  color:
+                                      AppColors.primaryColor.withOpacity(0.2),
+                                  blurRadius: 30,
+                                  offset: const Offset(0, 10),
+                                  spreadRadius: 0,
+                                ),
+                              ],
+                              image: const DecorationImage(
+                                image: AssetImage(PngAssets.onboardingImage1),
+                                fit: BoxFit.cover,
                               ),
-                            ],
-                            image: const DecorationImage(
-                              image: AssetImage(PngAssets.onboardingImage1),
-                              fit: BoxFit.cover,
                             ),
                           ),
                         ),
@@ -117,8 +119,7 @@ class OnboardingScreen extends StatelessWidget {
                             borderRadius: BorderRadius.circular(12.r),
                             boxShadow: [
                               BoxShadow(
-                                color: AppColors.primaryColor
-                                    .withOpacity(0.3),
+                                color: AppColors.primaryColor.withOpacity(0.3),
                                 blurRadius: 20,
                                 offset: const Offset(0, 8),
                               ),

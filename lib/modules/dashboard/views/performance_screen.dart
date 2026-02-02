@@ -109,7 +109,7 @@ class PerformanceScreen extends StatelessWidget {
                             ),
                             color: AppColors.blackColor,
                             fontWeight: FontWeight.w600,
-                            fontFamily: GoogleFonts.inter().fontFamily!,
+                            fontFamily: "Satoshi",
                             fontSize: 25.sp,
                             overflow: TextOverflow.visible,
                           ),

@@ -6,14 +6,13 @@ import 'package:wakelock_plus/wakelock_plus.dart';
 
 final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
 void main() async {
-  WidgetsFlutterBinding.ensureInitialized();
+  WidgetsFlutterBinding.ensureInitialized(); 
 
   // Load appropriate env file based on build mode
   const buildMode = String.fromEnvironment('BUILD_MODE', defaultValue: 'dev');
   await dotenv.load(fileName: buildMode == 'prod' ? '.env.prod' : '.env.dev');
 
   await GetStorage.init();
-  await ScreenUtil.ensureScreenSize();
   await Get.putAsync(() => AuthProvider().init());
   Get.put(DeliveryNotificationServiceManager());
 
@@ -40,28 +39,28 @@ class GoSharpDriver extends StatelessWidget {
   final GlobalKey<NavigatorState> navigatorKey;
   const GoSharpDriver({super.key, required this.navigatorKey});
 
-  // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
-    ScreenUtil.init(
-      context,
+    return ScreenUtilInit(
       designSize: const Size(375, 812),
-      splitScreenMode: true,
       minTextAdapt: true,
-    );
-    return GetMaterialApp(
-      debugShowCheckedModeBanner: false,
-      title: 'GoRider',
-      initialRoute: AppPages.INITIAL,
-      getPages: AppPages.routes,
-      navigatorKey: navigatorKey,
+      splitScreenMode: true,
       builder: (context, child) {
-        return MediaQuery(
-          data: MediaQuery.of(context).copyWith(
-            textScaler: TextScaler.linear(0.85),
-            boldText: false,
-          ),
-          child: child!,
+        return GetMaterialApp(
+          debugShowCheckedModeBanner: false,
+          title: 'GoRider',
+          initialRoute: AppPages.INITIAL,
+          getPages: AppPages.routes,
+          navigatorKey: navigatorKey,
+          builder: (context, child) {
+            return MediaQuery(
+              data: MediaQuery.of(context).copyWith(
+                textScaler: TextScaler.linear(0.85),
+                boldText: false,
+              ),
+              child: child!,
+            );
+          },
         );
       },
     );

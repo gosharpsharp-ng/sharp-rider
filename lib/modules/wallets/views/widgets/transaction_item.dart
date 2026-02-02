@@ -3,7 +3,8 @@ import 'package:gorider/core/utils/exports.dart';
 class TransactionItem extends StatelessWidget {
   final Transaction transaction;
   final Function onTap;
-  const TransactionItem({super.key, required this.transaction, required this.onTap});
+  const TransactionItem(
+      {super.key, required this.transaction, required this.onTap});
 
   @override
   Widget build(BuildContext context) {
@@ -61,7 +62,7 @@ class TransactionItem extends StatelessWidget {
                             formatToCurrency(double.parse(transaction.amount)),
                             color: AppColors.blackColor,
                             fontWeight: FontWeight.w600,
-                            fontFamily: GoogleFonts.inter().fontFamily!,
+                            fontFamily: "Satoshi",
                             fontSize: 15.sp,
                             overflow: TextOverflow.visible),
                       ],

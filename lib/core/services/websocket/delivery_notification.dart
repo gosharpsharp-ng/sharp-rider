@@ -70,7 +70,8 @@ class DeliveryNotificationService extends GetxService {
       final parsedData = data is String ? jsonDecode(data) : data;
       final DeliveryNotificationModel delivery =
           DeliveryNotificationModel.fromJson(parsedData);
-      var originLatLng = LatLng(double.parse(delivery.originLocation.latitude ?? '0.0'),
+      var originLatLng = LatLng(
+          double.parse(delivery.originLocation.latitude ?? '0.0'),
           double.parse(delivery.originLocation.longitude ?? '0.0'));
       var destinationLatLng = LatLng(
           double.parse(delivery.destinationLocation.latitude ?? '0.0'),
@@ -90,8 +91,7 @@ class DeliveryNotificationService extends GetxService {
       // Check if rider has an active delivery (accepted or picked)
       final hasActiveDelivery = deliveriesController.selectedDelivery != null &&
           ['accepted', 'picked'].contains(
-            deliveriesController.selectedDelivery!.status?.toLowerCase()
-          );
+              deliveriesController.selectedDelivery!.status?.toLowerCase());
 
       if (hasActiveDelivery) {
         log('Rider has active delivery, ignoring new notification');
@@ -105,14 +105,17 @@ class DeliveryNotificationService extends GetxService {
       }
 
       // Check if dialog is already showing for this delivery
-      if (_isDialogShowing && _currentNotificationTrackingId == delivery.trackingId) {
+      if (_isDialogShowing &&
+          _currentNotificationTrackingId == delivery.trackingId) {
         log('Dialog already showing for ${delivery.trackingId}, ignoring');
         return;
       }
 
       if (!_isDialogShowing &&
-          !deliveriesController.rejectedDeliveries.contains(delivery.trackingId) &&
-          !deliveriesController.pickedDeliveries.contains(delivery.trackingId)) {
+          !deliveriesController.rejectedDeliveries
+              .contains(delivery.trackingId) &&
+          !deliveriesController.pickedDeliveries
+              .contains(delivery.trackingId)) {
         // Mark as processed to prevent duplicates
         _processedNotifications.add(delivery.trackingId);
         _currentNotificationTrackingId = delivery.trackingId;
@@ -189,7 +192,8 @@ class DeliveryNotificationService extends GetxService {
                           // Amount row
                           _buildInfoRow(
                             label: 'Amount',
-                            value: formatToCurrency(double.parse(shipment.cost)),
+                            value:
+                                formatToCurrency(double.parse(shipment.cost)),
                           ),
                           SizedBox(height: 16.h),
 
@@ -210,7 +214,9 @@ class DeliveryNotificationService extends GetxService {
                           // Distance row
                           _buildInfoRow(
                             label: 'Distance',
-                            value: senderToReceiverDirectionDetails.distance_text ?? '',
+                            value: senderToReceiverDirectionDetails
+                                    .distance_text ??
+                                '',
                           ),
                           SizedBox(height: 32.h),
 
@@ -223,7 +229,8 @@ class DeliveryNotificationService extends GetxService {
                                   onTap: deliveriesController.acceptingDelivery
                                       ? null
                                       : () {
-                                          deliveriesController.rejectedDeliveries
+                                          deliveriesController
+                                              .rejectedDeliveries
                                               .add(shipment.trackingId);
                                           deliveriesController.rejectDelivery(
                                             trackingId: shipment.trackingId,
@@ -235,11 +242,15 @@ class DeliveryNotificationService extends GetxService {
                                           Get.back();
                                         },
                                   child: Container(
-                                    padding: EdgeInsets.symmetric(vertical: 14.h),
+                                    padding:
+                                        EdgeInsets.symmetric(vertical: 14.h),
                                     decoration: BoxDecoration(
-                                      color: deliveriesController.acceptingDelivery
-                                          ? const Color(0xFFFFE5E5).withOpacity(0.5)
-                                          : const Color(0xFFFFE5E5), // Light red
+                                      color:
+                                          deliveriesController.acceptingDelivery
+                                              ? const Color(0xFFFFE5E5)
+                                                  .withOpacity(0.5)
+                                              : const Color(
+                                                  0xFFFFE5E5), // Light red
                                       borderRadius: BorderRadius.circular(8.r),
                                     ),
                                     child: Center(
@@ -247,9 +258,12 @@ class DeliveryNotificationService extends GetxService {
                                         'Decline',
                                         fontSize: 16.sp,
                                         fontWeight: FontWeight.w600,
-                                        color: deliveriesController.acceptingDelivery
-                                            ? const Color(0xFFD32F2F).withOpacity(0.5)
-                                            : const Color(0xFFD32F2F), // Red text
+                                        color: deliveriesController
+                                                .acceptingDelivery
+                                            ? const Color(0xFFD32F2F)
+                                                .withOpacity(0.5)
+                                            : const Color(
+                                                0xFFD32F2F), // Red text
                                       ),
                                     ),
                                   ),
@@ -266,7 +280,8 @@ class DeliveryNotificationService extends GetxService {
                                           FlutterRingtonePlayer().stop();
                                           _stopVibration();
 
-                                          await deliveriesController.acceptDelivery(
+                                          await deliveriesController
+                                              .acceptDelivery(
                                             context,
                                             trackingId: shipment.trackingId,
                                           );
@@ -282,29 +297,37 @@ class DeliveryNotificationService extends GetxService {
 
                                           // Navigate to result screen with success/failure info
                                           Get.offNamed(
-                                            Routes.DELIVERY_ACCEPTANCE_RESULT_SCREEN,
+                                            Routes
+                                                .DELIVERY_ACCEPTANCE_RESULT_SCREEN,
                                             arguments: {
-                                              'isSuccess': deliveriesController.acceptedDelivery,
-                                              'message': deliveriesController.lastAcceptanceMessage,
+                                              'isSuccess': deliveriesController
+                                                  .acceptedDelivery,
+                                              'message': deliveriesController
+                                                  .lastAcceptanceMessage,
                                               'trackingId': shipment.trackingId,
                                             },
                                           );
                                         },
                                   child: Container(
-                                    padding: EdgeInsets.symmetric(vertical: 14.h),
+                                    padding:
+                                        EdgeInsets.symmetric(vertical: 14.h),
                                     decoration: BoxDecoration(
-                                      color: const Color(0xFF2E7D32), // Dark green
+                                      color:
+                                          const Color(0xFF2E7D32), // Dark green
                                       borderRadius: BorderRadius.circular(8.r),
                                     ),
                                     child: Center(
-                                      child: deliveriesController.acceptingDelivery
+                                      child: deliveriesController
+                                              .acceptingDelivery
                                           ? SizedBox(
                                               width: 20.sp,
                                               height: 20.sp,
-                                              child: const CircularProgressIndicator(
+                                              child:
+                                                  const CircularProgressIndicator(
                                                 strokeWidth: 2,
                                                 valueColor:
-                                                    AlwaysStoppedAnimation<Color>(
+                                                    AlwaysStoppedAnimation<
+                                                            Color>(
                                                         AppColors.whiteColor),
                                               ),
                                             )
@@ -405,7 +428,8 @@ class DeliveryNotificationService extends GetxService {
         SizedBox(height: 4.h),
         Text(
           value,
-          style: GoogleFonts.inter(
+          style: TextStyle(
+            fontFamily: "Satoshi",
             fontSize: 14.sp,
             fontWeight: FontWeight.w600,
             color: AppColors.blackColor,

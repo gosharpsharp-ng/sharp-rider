@@ -138,7 +138,7 @@ class WalletBalanceText extends StatelessWidget {
               : "*****",
           color: AppColors.whiteColor,
           fontWeight: FontWeight.w600,
-          fontFamily: GoogleFonts.inter().fontFamily!,
+          fontFamily: "Satoshi",
           fontSize: 24.sp,
           overflow: TextOverflow.visible);
     });

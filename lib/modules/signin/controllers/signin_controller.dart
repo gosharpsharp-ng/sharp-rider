@@ -40,8 +40,13 @@ class SignInController extends GetxController {
     update();
   }
 
+  String? loginErrorMessage;
+
   TextEditingController passwordController = TextEditingController();
   signIn() async {
+    loginErrorMessage = null;
+    update();
+
     if (signInFormKey.currentState!.validate()) {
       setLoadingState(true);
       try {
@@ -55,9 +60,12 @@ class SignInController extends GetxController {
         APIResponse response = await authService.login(data);
 
         if (response.status.toLowerCase() == "success") {
-          print("*****************************************************************************");
-          print("Login successful - Token: ${response.data['access_token'] ?? response.data['auth_token']}");
-          print("*****************************************************************************");
+          print(
+              "*****************************************************************************");
+          print(
+              "Login successful - Token: ${response.data['access_token'] ?? response.data['auth_token']}");
+          print(
+              "*****************************************************************************");
 
           loginController.clear();
           passwordController.clear();
@@ -65,19 +73,22 @@ class SignInController extends GetxController {
           update();
           final getStorage = GetStorage();
           // Try both possible token field names
-          final token = response.data['access_token'] ?? response.data['auth_token'];
+          final token =
+              response.data['access_token'] ?? response.data['auth_token'];
           getStorage.write("token", token);
 
           // Initialize controllers like sharp-vendor does
           Get.put(SettingsController());
           Get.put(DeliveriesController());
           Get.toNamed(Routes.APP_NAVIGATION);
+        } else {
+          loginErrorMessage = response.message;
+          update();
         }
       } catch (e) {
         print("Error during sign in: $e");
-        showToast(
-            message: "An unexpected error occurred. Please try again.",
-            isError: true);
+        loginErrorMessage = "An unexpected error occurred. Please try again.";
+        update();
       } finally {
         // Always reset loading state, even if an error occurs
         setLoadingState(false);

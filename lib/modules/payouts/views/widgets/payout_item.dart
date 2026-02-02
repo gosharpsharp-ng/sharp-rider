@@ -72,7 +72,7 @@ class PayoutItem extends StatelessWidget {
                         formatToCurrency(payoutRequest.amountDouble),
                         color: AppColors.blackColor,
                         fontWeight: FontWeight.bold,
-                        fontFamily: GoogleFonts.inter().fontFamily!,
+                        fontFamily: "Satoshi",
                         fontSize: 16.sp,
                       ),
                     ],

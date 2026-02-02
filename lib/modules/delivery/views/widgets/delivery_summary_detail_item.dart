@@ -63,7 +63,7 @@ class DeliverySummaryDetailItem extends StatelessWidget {
                         color: AppColors.blackColor,
                         fontSize: 15.sp,
                         fontFamily: isCurrency
-                            ? GoogleFonts.inter().fontFamily!
+                            ? "Satoshi"
                             : null,
                         fontWeight: FontWeight.w500,
                         overflow: TextOverflow.visible,
@@ -122,7 +122,7 @@ class DeliverySummaryDetailItem extends StatelessWidget {
                   color: AppColors.blackColor,
                   fontSize: 15.sp,
                   fontFamily: isCurrency
-                      ? GoogleFonts.inter().fontFamily!
+                      ? "Satoshi"
                       : null,
                   fontWeight: FontWeight.w500,
                   overflow: TextOverflow.visible,
