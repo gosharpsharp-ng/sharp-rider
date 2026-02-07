@@ -21,10 +21,51 @@ import FirebaseMessaging
     firebaseOptions.bundleID = "com.gosharpsharp.rider"
     
     FirebaseApp.configure(options: firebaseOptions)
+    
+    // Search for the asset in the main bundle and its subdirectories
+    var envContent: String? = nil
+    let envFileName = {
+        #if DEBUG
+        return ".env.dev"
+        #else
+        return ".env.prod"
+        #endif
+    }()
 
-    // Load Google Maps API key from Info.plist
-    if let apiKey = Bundle.main.object(forInfoDictionaryKey: "GOOGLE_MAPS_API_KEY") as? String {
-      GMSServices.provideAPIKey(apiKey)
+    let searchPaths = [
+        "flutter_assets/\(envFileName)",
+        "App.framework/flutter_assets/\(envFileName)",
+        "Frameworks/App.framework/flutter_assets/\(envFileName)",
+        envFileName
+    ]
+
+    for relPath in searchPaths {
+        if let path = Bundle.main.path(forResource: relPath, ofType: nil) {
+            envContent = try? String(contentsOfFile: path, encoding: .utf8)
+            if envContent != nil { break }
+        }
+    }
+
+    var apiKeyProvided = false
+    if let content = envContent {
+        let lines = content.components(separatedBy: .newlines)
+        for line in lines {
+            let trimmed = line.trimmingCharacters(in: .whitespacesAndNewlines)
+            if trimmed.hasPrefix("GOOGLE_MAPS_API_KEY=") {
+                let apiKey = trimmed.replacingOccurrences(of: "GOOGLE_MAPS_API_KEY=", with: "")
+                    .trimmingCharacters(in: .whitespaces)
+                if !apiKey.isEmpty {
+                    GMSServices.provideAPIKey(apiKey)
+                    apiKeyProvided = true
+                }
+                break
+            }
+        }
+    }
+
+    // Fallback to Info.plist if asset loading fails or key is missing in .env
+    if !apiKeyProvided, let apiKey = Bundle.main.object(forInfoDictionaryKey: "GOOGLE_MAPS_API_KEY") as? String {
+        GMSServices.provideAPIKey(apiKey)
     }
 
     GeneratedPluginRegistrant.register(with: self)

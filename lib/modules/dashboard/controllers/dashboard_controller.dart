@@ -18,8 +18,8 @@ class DashboardController extends GetxController {
   // Flag to track if map is visible/mounted
   bool isMapVisible = false;
 
-  // Light map style (standard Google Maps)
-  static const String _lightMapStyle = '[]';
+  // Light map style (null means standard Google Maps)
+  static const String? _lightMapStyle = null;
 
   // Dark map style
   static const String _darkMapStyle = '''
@@ -96,11 +96,13 @@ class DashboardController extends GetxController {
   void _updateMapCamera(Position position) {
     // Only animate camera if map is visible and controller is available
     if (isMapVisible && mapController != null) {
-      mapController!.animateCamera(
+      mapController!
+          .animateCamera(
         CameraUpdate.newLatLng(
           LatLng(position.latitude, position.longitude),
         ),
-      ).catchError((e) {
+      )
+          .catchError((e) {
         // Silently handle error when map is not available
         debugPrint("Error animating camera: $e");
       });
@@ -166,7 +168,7 @@ class DashboardController extends GetxController {
     isMapVisible = false;
   }
 
-  String get currentMapStyle =>
+  String? get currentMapStyle =>
       isLightMapStyle ? _lightMapStyle : _darkMapStyle;
 
   void toggleMapStyle() {
@@ -186,7 +188,8 @@ class DashboardController extends GetxController {
       mapController!.animateCamera(
         CameraUpdate.newCameraPosition(
           CameraPosition(
-            target: LatLng(currentPosition!.latitude, currentPosition!.longitude),
+            target:
+                LatLng(currentPosition!.latitude, currentPosition!.longitude),
             zoom: 16.5,
             bearing: currentHeading,
           ),

@@ -33,7 +33,7 @@ class ProfileService extends CoreService {
   }
 
   Future<APIResponse> addVehicle(dynamic data) async {
-    return await send("/riders/vehicle", {"vehicle": data});
+    return await update("/riders/profile", {"vehicle": data});
   }
 
   Future<APIResponse> updateVehicle(dynamic data) async {
@@ -103,7 +103,8 @@ class ProfileService extends CoreService {
   }
 
   // Rating stats
-  Future<APIResponse> getRatingStats({String? startDate, String? endDate}) async {
+  Future<APIResponse> getRatingStats(
+      {String? startDate, String? endDate}) async {
     String url = "/riders/stats/ratings";
     if (startDate != null && endDate != null) {
       url += "?start_date=$startDate&end_date=$endDate";

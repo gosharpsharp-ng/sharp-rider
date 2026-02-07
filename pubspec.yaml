@@ -125,10 +125,11 @@ flutter_native_splash:
   image: "assets/icons/gorider-logo.png"
   android: true
   ios: true
+  ios_content_mode: scaleAspectFit
   web: false
   android_12:
     color: "#000000"
-    image: "assets/icons/gorider-logo.png"
+    image: "assets/icons/gorider-logo-android.png"
 
 flutter_launcher_icons:
   android: "launcher_icon"

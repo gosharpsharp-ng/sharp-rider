@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:gorider/core/services/app_update/app_update_service.dart';
 import 'package:gorider/core/services/push_notification_service.dart';
@@ -6,11 +7,10 @@ import 'package:wakelock_plus/wakelock_plus.dart';
 
 final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
 void main() async {
-  WidgetsFlutterBinding.ensureInitialized(); 
+  WidgetsFlutterBinding.ensureInitialized();
 
   // Load appropriate env file based on build mode
-  const buildMode = String.fromEnvironment('BUILD_MODE', defaultValue: 'dev');
-  await dotenv.load(fileName: buildMode == 'prod' ? '.env.prod' : '.env.dev');
+  await dotenv.load(fileName: kReleaseMode ? '.env.prod' : '.env.dev');
 
   await GetStorage.init();
   await Get.putAsync(() => AuthProvider().init());
