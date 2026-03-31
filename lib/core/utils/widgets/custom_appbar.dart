@@ -47,7 +47,7 @@ PreferredSize defaultAppBar(
           fontWeight: FontWeight.w600,
           color: AppColors.blackColor), // Added title if needed
       centerTitle: centerTitle,
-      foregroundColor: bgColor,
+      foregroundColor: AppColors.blackColor,
       surfaceTintColor: bgColor,
       automaticallyImplyLeading: implyLeading,
       elevation: 0,

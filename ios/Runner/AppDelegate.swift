@@ -21,35 +21,20 @@ import FirebaseMessaging
     firebaseOptions.bundleID = "com.gosharpsharp.rider"
     
     FirebaseApp.configure(options: firebaseOptions)
-    
-    // Search for the asset in the main bundle and its subdirectories
-    var envContent: String? = nil
-    let envFileName = {
-        #if DEBUG
-        return ".env.dev"
-        #else
-        return ".env.prod"
-        #endif
-    }()
 
-    let searchPaths = [
-        "flutter_assets/\(envFileName)",
-        "App.framework/flutter_assets/\(envFileName)",
-        "Frameworks/App.framework/flutter_assets/\(envFileName)",
-        envFileName
-    ]
-
-    for relPath in searchPaths {
-        if let path = Bundle.main.path(forResource: relPath, ofType: nil) {
-            envContent = try? String(contentsOfFile: path, encoding: .utf8)
-            if envContent != nil { break }
-        }
-    }
+    // Load Google Maps API key from bundled .env file, fallback to Info.plist
+    let envFileName: String
+    #if DEBUG
+    envFileName = ".env.dev"
+    #else
+    envFileName = ".env.prod"
+    #endif
 
     var apiKeyProvided = false
-    if let content = envContent {
-        let lines = content.components(separatedBy: .newlines)
-        for line in lines {
+    // Bundle.main.path(forResource:inDirectory:) correctly handles subdirectories
+    if let path = Bundle.main.path(forResource: envFileName, ofType: nil, inDirectory: "flutter_assets"),
+       let content = try? String(contentsOfFile: path, encoding: .utf8) {
+        for line in content.components(separatedBy: .newlines) {
             let trimmed = line.trimmingCharacters(in: .whitespacesAndNewlines)
             if trimmed.hasPrefix("GOOGLE_MAPS_API_KEY=") {
                 let apiKey = trimmed.replacingOccurrences(of: "GOOGLE_MAPS_API_KEY=", with: "")
@@ -63,11 +48,12 @@ import FirebaseMessaging
         }
     }
 
-    // Fallback to Info.plist if asset loading fails or key is missing in .env
-    if !apiKeyProvided, let apiKey = Bundle.main.object(forInfoDictionaryKey: "GOOGLE_MAPS_API_KEY") as? String {
+    // Fallback to Info.plist
+    if !apiKeyProvided, let apiKey = Bundle.main.object(forInfoDictionaryKey: "GOOGLE_MAPS_API_KEY") as? String, !apiKey.isEmpty {
         GMSServices.provideAPIKey(apiKey)
     }
 
+    // Must register plugins AFTER provideAPIKey
     GeneratedPluginRegistrant.register(with: self)
 
     // Register for push notifications

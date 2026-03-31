@@ -5,7 +5,6 @@ import 'package:gorider/core/services/push_notification_service.dart';
 import 'package:gorider/core/utils/exports.dart';
 import 'package:wakelock_plus/wakelock_plus.dart';
 
-final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
@@ -27,7 +26,7 @@ void main() async {
   // Keep screen on while app is in foreground
   WakelockPlus.enable();
 
-  runApp(GoSharpDriver(navigatorKey: navigatorKey));
+  runApp(const GoSharpDriver());
 
   // Check for app updates after app is running
   Future.delayed(const Duration(seconds: 2), () {
@@ -36,8 +35,7 @@ void main() async {
 }
 
 class GoSharpDriver extends StatelessWidget {
-  final GlobalKey<NavigatorState> navigatorKey;
-  const GoSharpDriver({super.key, required this.navigatorKey});
+  const GoSharpDriver({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -51,7 +49,7 @@ class GoSharpDriver extends StatelessWidget {
           title: 'GoRider',
           initialRoute: AppPages.INITIAL,
           getPages: AppPages.routes,
-          navigatorKey: navigatorKey,
+          navigatorKey: Get.key,
           builder: (context, child) {
             return MediaQuery(
               data: MediaQuery.of(context).copyWith(

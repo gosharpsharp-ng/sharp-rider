@@ -332,6 +332,7 @@ class SignUpController extends GetxController {
 
   void _startOtpResendTimer() {
     resendOTPAfter = 120;
+    remainingTime = getFormattedResendOTPTime(resendOTPAfter);
     const oneSec = Duration(seconds: 1);
     _otpResendTimer = Timer.periodic(oneSec, (Timer timer) {
       if (resendOTPAfter > 0) {
@@ -509,21 +510,24 @@ class SignUpController extends GetxController {
   Future<void> verifyOtp() async {
     if (signOTPFormKey.currentState!.validate()) {
       setLoadingState(true);
-      dynamic data = {
-        'otp': otpController.text,
-        'identifier': emailController.text,
-      };
-      APIResponse response = await authService.verifyEmailOtp(data);
-      showToast(
-        message: response.message,
-        isError: response.status != "success",
-      );
-      setLoadingState(false);
-      if (response.status == "success") {
-        // Delete the controller before navigating away
-        Get.delete<SignUpController>(force: true);
-        // Navigate to login screen
-        Get.offAllNamed(Routes.SIGN_IN);
+      try {
+        dynamic data = {
+          'otp': otpController.text,
+          'identifier': emailController.text,
+        };
+        APIResponse response = await authService.verifyEmailOtp(data);
+        final alreadyVerified = response.message.toLowerCase().contains("already verified");
+        showToast(
+          message: response.message,
+          isError: response.status != "success" && !alreadyVerified,
+        );
+        if (response.status == "success" || alreadyVerified) {
+          Get.offAllNamed(Routes.SIGN_IN);
+        }
+      } catch (e) {
+        showToast(message: "OTP verification failed: $e", isError: true);
+      } finally {
+        setLoadingState(false);
       }
     }
   }
