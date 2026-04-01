@@ -522,7 +522,7 @@ class SignUpController extends GetxController {
           isError: response.status != "success" && !alreadyVerified,
         );
         if (response.status == "success" || alreadyVerified) {
-          Get.offAllNamed(Routes.SIGN_IN);
+          Get.offAllNamed(Routes.SIGNUP_SUCCESS_SCREEN);
         }
       } catch (e) {
         showToast(message: "OTP verification failed: $e", isError: true);

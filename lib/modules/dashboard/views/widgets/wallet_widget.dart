@@ -44,8 +44,8 @@ class WalletWidget extends StatelessWidget {
                       },
                       child: Icon(
                         walletController.walletBalanceVisibility
-                            ? Icons.visibility_off
-                            : Icons.visibility,
+                            ? Icons.visibility
+                            : Icons.visibility_off,
                         color: AppColors.whiteColor,
                         size: 18.sp,
                       ),

@@ -135,6 +135,7 @@ export 'package:gorider/modules/settings/bindings/settings_bindings.dart';
 export 'package:gorider/modules/signin/bindings/sign_in_bindings.dart';
 export 'package:gorider/modules/signup/bindings/sign_up_bindings.dart';
 export 'package:gorider/modules/signup/views/sign_up_otp_screen.dart';
+export 'package:gorider/modules/signup/views/signup_success_screen.dart';
 export 'package:gorider/modules/splash/bindings/splash_bindings.dart';
 export 'package:gorider/modules/wallets/bindings/wallet_bindings.dart';
 export 'package:gorider/core/models/bank_account_model.dart';

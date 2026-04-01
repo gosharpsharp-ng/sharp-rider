@@ -32,6 +32,10 @@ class AppPages {
       page: () => const SignUpOtpScreen(),
     ),
     GetPage(
+      name: Routes.SIGNUP_SUCCESS_SCREEN,
+      page: () => const SignupSuccessScreen(),
+    ),
+    GetPage(
       name: Routes.SIGN_IN,
       page: () => const SignInScreen(),
       binding: SignInBindings(),
