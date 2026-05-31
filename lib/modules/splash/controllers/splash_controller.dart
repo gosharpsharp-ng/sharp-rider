@@ -1,5 +1,6 @@
 import 'package:geolocator/geolocator.dart';
 import 'package:gorider/core/utils/exports.dart';
+import 'package:gorider/core/services/push_notification_service.dart';
 
 class SplashController extends GetxController {
   @override
@@ -14,6 +15,9 @@ class SplashController extends GetxController {
     String? token = box.read('token');
 
     if (token != null && token.isNotEmpty) {
+      // Register device token for push notifications
+      await PushNotificationService().registerTokenIfAvailable();
+
       // Load data and check location permission
       await _loadData();
 

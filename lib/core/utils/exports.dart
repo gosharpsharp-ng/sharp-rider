@@ -6,7 +6,6 @@ export 'package:flutter/services.dart';
 export 'package:flutter_screenutil/flutter_screenutil.dart';
 export 'package:flutter_ringtone_player/flutter_ringtone_player.dart';
 export 'package:get/get.dart';
-export 'package:google_fonts/google_fonts.dart';
 
 export 'package:pinput/pinput.dart';
 export 'package:gorider/core/utils/app_assets.dart';

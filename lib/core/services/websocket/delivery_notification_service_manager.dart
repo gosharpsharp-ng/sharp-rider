@@ -55,6 +55,9 @@ class DeliveryNotificationServiceManager extends GetxService {
     }
 
     if (Get.isRegistered<DeliveryNotificationService>()) {
+      // Ensure ringtone is stopped before disposing
+      final notificationService = Get.find<DeliveryNotificationService>();
+      notificationService.handleDialogDismissal();
       await Get.delete<DeliveryNotificationService>();
     }
 

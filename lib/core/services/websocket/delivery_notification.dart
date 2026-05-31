@@ -12,6 +12,8 @@ class DeliveryNotificationService extends GetxService {
   bool _isDialogShowing = false;
   String? _currentNotificationTrackingId;
   final Set<String> _processedNotifications = {};
+  Timer? _ringtoneTimeout;
+  bool _isRingtonePlaying = false;
 
   initialize() async {
     if (Get.isRegistered<SocketService>() &&
@@ -24,12 +26,65 @@ class DeliveryNotificationService extends GetxService {
     if (_isDialogShowing) {
       _isDialogShowing = false;
       _currentNotificationTrackingId = null;
+      _stopRingtoneAndVibration();
     }
   }
 
   /// Clears processed notifications cache (call periodically or on logout)
   void clearProcessedNotifications() {
     _processedNotifications.clear();
+  }
+
+  /// Stops ringtone and vibration with error handling
+  void _stopRingtoneAndVibration() {
+    try {
+      // Cancel any active timeout timer
+      _ringtoneTimeout?.cancel();
+      _ringtoneTimeout = null;
+
+      // Stop ringtone if playing
+      if (_isRingtonePlaying) {
+        FlutterRingtonePlayer().stop();
+        _isRingtonePlaying = false;
+        log('Ringtone stopped successfully');
+      }
+
+      // Stop vibration
+      _stopVibration();
+    } catch (e) {
+      log('Error stopping ringtone/vibration: $e');
+      // Even if there's an error, mark as not playing to prevent stuck state
+      _isRingtonePlaying = false;
+    }
+  }
+
+  /// Starts ringtone with automatic timeout to prevent infinite ringing
+  void _startRingtoneWithTimeout() {
+    try {
+      // Stop any existing ringtone first
+      _stopRingtoneAndVibration();
+
+      // Play ringtone
+      FlutterRingtonePlayer().playRingtone();
+      _isRingtonePlaying = true;
+      log('Ringtone started');
+
+      // Set timeout to automatically stop ringtone after 30 seconds
+      _ringtoneTimeout = Timer(const Duration(seconds: 30), () {
+        log('Ringtone timeout reached - auto-stopping');
+        _stopRingtoneAndVibration();
+      });
+    } catch (e) {
+      log('Error starting ringtone: $e');
+      _isRingtonePlaying = false;
+    }
+  }
+
+  @override
+  void onClose() {
+    // Clean up when service is disposed
+    _stopRingtoneAndVibration();
+    super.onClose();
   }
 
   /// Vibrates the device with a pattern to alert the rider
@@ -120,8 +175,8 @@ class DeliveryNotificationService extends GetxService {
         _processedNotifications.add(delivery.trackingId);
         _currentNotificationTrackingId = delivery.trackingId;
 
-        // Play ringtone and vibrate
-        FlutterRingtonePlayer().playRingtone();
+        // Play ringtone and vibrate with timeout protection
+        _startRingtoneWithTimeout();
         _vibrateDevice();
         showDeliveryDialog(
             shipment: delivery,
@@ -143,7 +198,11 @@ class DeliveryNotificationService extends GetxService {
       Builder(
         builder: (context) {
           return WillPopScope(
-            onWillPop: () async => false,
+            onWillPop: () async {
+              // Prevent accidental dismissal but ensure cleanup if it somehow happens
+              _stopRingtoneAndVibration();
+              return false;
+            },
             child: GetBuilder<DeliveriesController>(
                 builder: (deliveriesController) {
               return Dialog(
@@ -237,8 +296,7 @@ class DeliveryNotificationService extends GetxService {
                                           );
                                           _isDialogShowing = false;
                                           _currentNotificationTrackingId = null;
-                                          FlutterRingtonePlayer().stop();
-                                          _stopVibration();
+                                          _stopRingtoneAndVibration();
                                           Get.back();
                                         },
                                   child: Container(
@@ -277,8 +335,7 @@ class DeliveryNotificationService extends GetxService {
                                   onTap: deliveriesController.acceptingDelivery
                                       ? null
                                       : () async {
-                                          FlutterRingtonePlayer().stop();
-                                          _stopVibration();
+                                          _stopRingtoneAndVibration();
 
                                           await deliveriesController
                                               .acceptDelivery(

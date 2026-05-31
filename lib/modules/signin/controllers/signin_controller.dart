@@ -1,5 +1,6 @@
 import 'package:gorider/core/utils/exports.dart';
 import 'package:intl_phone_field/phone_number.dart';
+import 'package:gorider/core/services/push_notification_service.dart';
 
 class SignInController extends GetxController {
   final authService = serviceLocator<AuthenticationService>();
@@ -76,6 +77,9 @@ class SignInController extends GetxController {
           final token =
               response.data['access_token'] ?? response.data['auth_token'];
           getStorage.write("token", token);
+
+          // Register device token for push notifications
+          await PushNotificationService().registerTokenIfAvailable();
 
           // Initialize controllers like sharp-vendor does
           Get.put(SettingsController());
