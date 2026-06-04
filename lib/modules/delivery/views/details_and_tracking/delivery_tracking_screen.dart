@@ -178,6 +178,38 @@ class _DeliveryTrackingScreenState extends State<DeliveryTrackingScreen> {
   Widget build(BuildContext context) {
     return GetBuilder<DeliveriesController>(
       builder: (deliveriesController) {
+        // NULL CHECK - Show loading if no delivery selected
+        if (deliveriesController.selectedDelivery == null) {
+          return Scaffold(
+            appBar: flatAppBar(),
+            backgroundColor: AppColors.backgroundColor,
+            body: Center(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  CircularProgressIndicator(
+                    color: AppColors.primaryColor,
+                  ),
+                  SizedBox(height: 16.h),
+                  customText(
+                    'Loading delivery details...',
+                    fontSize: 16.sp,
+                    color: AppColors.obscureTextColor,
+                  ),
+                  SizedBox(height: 24.h),
+                  CustomButton(
+                    onPressed: () {
+                      Get.offAllNamed(Routes.APP_NAVIGATION);
+                    },
+                    title: 'Back to Home',
+                    backgroundColor: AppColors.greyColor,
+                  ).paddingSymmetric(horizontal: 24.w),
+                ],
+              ),
+            ),
+          );
+        }
+
         final isDeliveryComplete = ['delivered', 'rejected', 'canceled']
             .contains(
                 deliveriesController.selectedDelivery?.status?.toLowerCase());

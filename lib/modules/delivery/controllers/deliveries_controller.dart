@@ -586,11 +586,11 @@ class DeliveriesController extends GetxController with WidgetsBindingObserver {
 
     if (response.status == "success") {
       pickedDeliveries.add(trackingId);
-      update();
       // API returns {delivery: {...}} so extract the delivery object
       final deliveryData = response.data['delivery'] ?? response.data;
       selectedDelivery = DeliveryModel.fromJson(deliveryData);
-      await getDelivery();
+      update(); // Update UI immediately with accepted delivery
+      await getDelivery(); // Fetch latest delivery state
       if (Get.isRegistered<LocationService>()) {
         await Get.find<LocationService>().joinParcelTrackingRoom(
           trackingId: selectedDelivery?.trackingId ?? "",
