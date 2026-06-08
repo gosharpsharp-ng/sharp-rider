@@ -218,71 +218,91 @@ class DeliveryNotificationService extends GetxService {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           // Bike icon at the top
-                          Container(
-                            width: 80.sp,
-                            height: 80.sp,
-                            decoration: const BoxDecoration(
-                              color: Color(0xFFFFC107), // Yellow color
-                              shape: BoxShape.circle,
-                            ),
-                            child: Center(
-                              child: SvgPicture.asset(
-                                SvgAssets.bikeIcon,
-                                width: 50.sp,
-                                height: 50.sp,
-                                colorFilter: const ColorFilter.mode(
-                                  AppColors.blackColor,
-                                  BlendMode.srcIn,
+                          Center(
+                            child: Container(
+                              width: 80.sp,
+                              height: 80.sp,
+                              decoration: const BoxDecoration(
+                                color: Color(0xFFFFC107), // Yellow color
+                                shape: BoxShape.circle,
+                              ),
+                              child: Center(
+                                child: SvgPicture.asset(
+                                  SvgAssets.bikeIcon,
+                                  width: 50.sp,
+                                  height: 50.sp,
+                                  colorFilter: const ColorFilter.mode(
+                                    AppColors.blackColor,
+                                    BlendMode.srcIn,
+                                  ),
                                 ),
                               ),
                             ),
                           ),
-                          SizedBox(height: 20.h),
+                          SizedBox(height: 16.h),
 
-                          // Title
-                          customText(
-                            'New Incoming Order',
-                            fontSize: 20.sp,
-                            fontWeight: FontWeight.w600,
-                            color: AppColors.blackColor,
-                          ),
-                          SizedBox(height: 24.h),
-
-                          // Delivery Fee - Large and Green
+                          // 💰 DELIVERY FEE - First thing rider sees!
                           Center(
                             child: Column(
                               children: [
                                 customText(
-                                  'Your Earning',
-                                  fontSize: 14.sp,
+                                  "You'll Earn",
+                                  fontSize: 13.sp,
                                   fontWeight: FontWeight.w500,
                                   color: AppColors.obscureTextColor,
+                                  letterSpacing: 0.5,
                                 ),
                                 SizedBox(height: 8.h),
                                 Container(
                                   padding: EdgeInsets.symmetric(
-                                    horizontal: 20.w,
-                                    vertical: 12.h,
+                                    horizontal: 24.w,
+                                    vertical: 14.h,
                                   ),
                                   decoration: BoxDecoration(
-                                    color: const Color(0xFF2E7D32).withOpacity(0.1),
-                                    borderRadius: BorderRadius.circular(12.r),
+                                    gradient: LinearGradient(
+                                      colors: [
+                                        const Color(0xFF2E7D32).withOpacity(0.15),
+                                        const Color(0xFF2E7D32).withOpacity(0.08),
+                                      ],
+                                      begin: Alignment.topLeft,
+                                      end: Alignment.bottomRight,
+                                    ),
+                                    borderRadius: BorderRadius.circular(16.r),
                                     border: Border.all(
                                       color: const Color(0xFF2E7D32),
-                                      width: 2,
+                                      width: 2.5,
                                     ),
+                                    boxShadow: [
+                                      BoxShadow(
+                                        color:  AppColors.primaryColor.withOpacity(0.3),
+                                        blurRadius: 12,
+                                        offset: const Offset(0, 4),
+                                      ),
+                                    ],
                                   ),
                                   child: customText(
-                                    '₦${formatToCurrency(double.parse(shipment.deliveryFee))}',
-                                    fontSize: 32.sp,
-                                    fontWeight: FontWeight.bold,
+                                    formatToCurrency(double.parse(shipment.deliveryFee)),
+                                    fontSize: 35.sp,
+                                    fontWeight: FontWeight.w900,
                                     color: const Color(0xFF2E7D32),
+                                    letterSpacing: 1,
                                   ),
                                 ),
                               ],
                             ),
                           ),
-                          SizedBox(height: 24.h),
+                          SizedBox(height: 20.h),
+
+                          // Title
+                          Center(
+                            child: customText(
+                              'New Incoming Order',
+                              fontSize: 18.sp,
+                              fontWeight: FontWeight.w600,
+                              color: AppColors.blackColor,
+                            ),
+                          ),
+                          SizedBox(height: 20.h),
 
                           // From row
                           _buildAddressRow(

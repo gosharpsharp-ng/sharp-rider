@@ -34,7 +34,7 @@ class _DeliveryOTPVerificationDialogState
 
     try {
       // Pass the delivery code to the callback for use in the trigger API
-      Get.back(); // Close dialog first
+      Navigator.pop(context); // Close dialog first
       widget.onVerificationSuccess(otpController.text);
     } catch (e) {
       showToast(message: "Error: ${e.toString()}", isError: true);
@@ -143,7 +143,7 @@ class _DeliveryOTPVerificationDialogState
                   // Cancel button
                   Expanded(
                     child: InkWell(
-                      onTap: isVerifying ? null : () => Get.back(),
+                      onTap: isVerifying ? null : () => Navigator.pop(context),
                       child: Container(
                         padding: EdgeInsets.symmetric(vertical: 14.h),
                         decoration: BoxDecoration(

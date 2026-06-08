@@ -819,7 +819,11 @@ class DeliveriesController extends GetxController with WidgetsBindingObserver {
         // await getRiderStats();
         // await getRiderRatingStats();
         Navigator.pop(Get.context!); // Close success sheet
-        Get.back(); // Close OTP dialog
+
+        // Close OTP dialog if it's open (safer check)
+        if (Get.isDialogOpen == true) {
+          Navigator.pop(Get.context!);
+        }
         // Get.offAndToNamed(Routes.RIDER_PERFORMANCE_SCREEN);
       }
       // API returns {delivery: {...}} so extract the delivery object

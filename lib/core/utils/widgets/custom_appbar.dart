@@ -61,11 +61,13 @@ PreferredSize defaultAppBar(
         systemNavigationBarDividerColor: AppColors.whiteColor,
       ),
       leading: implyLeading
-          ? IconButton(
-              onPressed: onPop ?? () => Get.back(),
-              icon: const Icon(
-                Icons.arrow_back,
-                color: AppColors.blackColor,
+          ? Builder(
+              builder: (context) => IconButton(
+                onPressed: onPop ?? () => Navigator.pop(context),
+                icon: const Icon(
+                  Icons.arrow_back,
+                  color: AppColors.blackColor,
+                ),
               ),
             )
           : null,

@@ -472,6 +472,24 @@ class _DeliveryTrackingScreenState extends State<DeliveryTrackingScreen> {
                               ),
                             SizedBox(height: isDeliveryComplete ? 16.h : 0),
 
+                            // Back to Home Button (for completed deliveries)
+                            if (isDeliveryComplete)
+                              Padding(
+                                padding: EdgeInsets.symmetric(horizontal: 16.sp),
+                                child: SizedBox(
+                                  width: double.infinity,
+                                  child: CustomButton(
+                                    onPressed: () {
+                                      Get.offAllNamed(Routes.APP_NAVIGATION);
+                                    },
+                                    title: 'Back to Home',
+                                    backgroundColor: AppColors.primaryColor,
+                                    fontColor: AppColors.whiteColor,
+                                  ),
+                                ),
+                              ),
+                            SizedBox(height: isDeliveryComplete ? 16.h : 0),
+
                             // Status indicator text
                             if (!isDeliveryComplete)
                               Padding(
