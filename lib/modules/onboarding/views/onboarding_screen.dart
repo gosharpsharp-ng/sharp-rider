@@ -34,10 +34,9 @@ class OnboardingScreen extends StatelessWidget {
                 // Top section with image
                 Expanded(
                   flex: 6,
-                  child: Container(
-                    width: 1.sw,
+                  child: Padding(
                     padding:
-                        EdgeInsets.symmetric(horizontal: 20.w, vertical: 20.h),
+                        const EdgeInsets.symmetric(horizontal: 20, vertical: 20),
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.start,
                       children: [
@@ -73,8 +72,6 @@ class OnboardingScreen extends StatelessWidget {
                 Expanded(
                   flex: 4,
                   child: Container(
-                    width: 1.sw,
-                    padding: EdgeInsets.symmetric(horizontal: 24.w),
                     decoration: BoxDecoration(
                       gradient: LinearGradient(
                         begin: Alignment.topCenter,
@@ -86,6 +83,7 @@ class OnboardingScreen extends StatelessWidget {
                         ],
                       ),
                     ),
+                    padding: const EdgeInsets.symmetric(horizontal: 24),
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.start,
                       children: [

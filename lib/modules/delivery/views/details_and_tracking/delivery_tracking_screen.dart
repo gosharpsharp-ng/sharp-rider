@@ -9,7 +9,6 @@ class DeliveryTrackingScreen extends StatefulWidget {
 }
 
 class _DeliveryTrackingScreenState extends State<DeliveryTrackingScreen> {
-  final settingsController = Get.find<SettingsController>();
   final deliveriesController = Get.find<DeliveriesController>();
 
   bool _mapInitialized = false;
@@ -423,6 +422,55 @@ class _DeliveryTrackingScreenState extends State<DeliveryTrackingScreen> {
                               ),
                             ),
                             SizedBox(height: 12.h),
+
+                            // Delivery Complete Message
+                            if (isDeliveryComplete)
+                              Container(
+                                margin: EdgeInsets.symmetric(horizontal: 16.sp),
+                                padding: EdgeInsets.all(16.sp),
+                                decoration: BoxDecoration(
+                                  color: deliveriesController.selectedDelivery?.status?.toLowerCase() == 'delivered'
+                                      ? AppColors.primaryColor.withOpacity(0.1)
+                                      : AppColors.redColor.withOpacity(0.1),
+                                  borderRadius: BorderRadius.circular(12.r),
+                                  border: Border.all(
+                                    color: deliveriesController.selectedDelivery?.status?.toLowerCase() == 'delivered'
+                                        ? AppColors.primaryColor
+                                        : AppColors.redColor,
+                                    width: 1.5,
+                                  ),
+                                ),
+                                child: Row(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    Icon(
+                                      deliveriesController.selectedDelivery?.status?.toLowerCase() == 'delivered'
+                                          ? Icons.check_circle
+                                          : Icons.cancel,
+                                      color: deliveriesController.selectedDelivery?.status?.toLowerCase() == 'delivered'
+                                          ? AppColors.primaryColor
+                                          : AppColors.redColor,
+                                      size: 24.sp,
+                                    ),
+                                    SizedBox(width: 12.w),
+                                    Expanded(
+                                      child: customText(
+                                        deliveriesController.selectedDelivery?.status?.toLowerCase() == 'delivered'
+                                            ? 'Item Delivered Successfully'
+                                            : deliveriesController.selectedDelivery?.status?.toLowerCase() == 'rejected'
+                                                ? 'Delivery Rejected'
+                                                : 'Delivery Canceled',
+                                        fontSize: 16.sp,
+                                        fontWeight: FontWeight.w600,
+                                        color: deliveriesController.selectedDelivery?.status?.toLowerCase() == 'delivered'
+                                            ? AppColors.primaryColor
+                                            : AppColors.redColor,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            SizedBox(height: isDeliveryComplete ? 16.h : 0),
 
                             // Status indicator text
                             if (!isDeliveryComplete)

@@ -10,7 +10,14 @@ class DeliveriesController extends GetxController with WidgetsBindingObserver {
   final deliveriesSearchFormKey = GlobalKey<FormState>();
   final itemDetailsFormKey = GlobalKey<FormState>();
   final serviceManager = Get.find<DeliveryNotificationServiceManager>();
-  final settingsController = Get.find<SettingsController>();
+
+  // Lazy getter to ensure SettingsController is available when needed
+  SettingsController get settingsController {
+    if (!Get.isRegistered<SettingsController>()) {
+      Get.put(SettingsController());
+    }
+    return Get.find<SettingsController>();
+  }
 
   List<DeliveryModel> allDeliveries = [];
   String? distanceToDestination;
@@ -811,7 +818,8 @@ class DeliveriesController extends GetxController with WidgetsBindingObserver {
         }
         // await getRiderStats();
         // await getRiderRatingStats();
-        Navigator.pop(Get.context!);
+        Navigator.pop(Get.context!); // Close success sheet
+        Get.back(); // Close OTP dialog
         // Get.offAndToNamed(Routes.RIDER_PERFORMANCE_SCREEN);
       }
       // API returns {delivery: {...}} so extract the delivery object

@@ -6,6 +6,7 @@ class DeliveryNotificationModel {
   final String paymentStatus;
   final String distance;
   final String cost;
+  final String deliveryFee;
   final int userId;
   final int? riderId;
   final int? courierTypeId;
@@ -25,6 +26,7 @@ class DeliveryNotificationModel {
     required this.paymentStatus,
     required this.distance,
     required this.cost,
+    required this.deliveryFee,
     required this.userId,
     this.riderId,
     this.courierTypeId,
@@ -46,6 +48,7 @@ class DeliveryNotificationModel {
       paymentStatus: json['paymentStatus'] as String? ?? 'pending',
       distance: _parseToString(json['distance']),
       cost: _parseToString(json['price']),
+      deliveryFee: _parseToString(json['deliveryFee']),
       userId: json['userId'] as int? ?? 1,
       riderId: json['riderId'] as int?,
       courierTypeId: json['courierTypeId'] as int?,
@@ -78,6 +81,7 @@ class DeliveryNotificationModel {
       'paymentStatus': paymentStatus,
       'distance': distance,
       'price': cost,
+      'deliveryFee': deliveryFee,
       'userId': userId,
       'riderId': riderId,
       'courierTypeId': courierTypeId,

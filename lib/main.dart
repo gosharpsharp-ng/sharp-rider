@@ -39,8 +39,12 @@ class GoSharpDriver extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final view = View.of(context);
+    final screenSize = view.physicalSize / view.devicePixelRatio;
+    final isTablet = screenSize.shortestSide >= 600;
+
     return ScreenUtilInit(
-      designSize: const Size(375, 812),
+      designSize: isTablet ? screenSize : const Size(375, 812),
       minTextAdapt: true,
       splitScreenMode: true,
       builder: (context, child) {

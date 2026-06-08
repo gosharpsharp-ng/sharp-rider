@@ -14,6 +14,19 @@ import 'package:path_provider/path_provider.dart';
 import 'package:webview_flutter/webview_flutter.dart';
 import 'package:path/path.dart' as path;
 
+// ============================================================================
+// RESPONSIVE SIZING HELPERS (Following customer app pattern)
+// ============================================================================
+// Use MediaQuery instead of ScreenUtil for natural iPad adaptation
+double screenWidth(BuildContext context, double width) {
+  return MediaQuery.of(context).size.width / width;
+}
+
+double screenHeight(BuildContext context, double height) {
+  return MediaQuery.of(context).size.height / height;
+}
+// ============================================================================
+
 showAnyBottomSheet({required Widget child, bool isControlled = true}) {
   Get.bottomSheet(
     child,

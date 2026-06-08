@@ -53,7 +53,6 @@ class SignupSuccessScreen extends StatelessWidget {
                   backgroundColor: AppColors.primaryColor,
                   fontColor: AppColors.whiteColor,
                 ),
-
                 SizedBox(height: 40.h),
               ],
             ),

@@ -8,3 +8,4 @@ class SignUpBindings implements Bindings {
     Get.put<SignUpController>(SignUpController(), permanent: true);
   }
 }
+  

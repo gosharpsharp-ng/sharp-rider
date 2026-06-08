@@ -248,13 +248,41 @@ class DeliveryNotificationService extends GetxService {
                           ),
                           SizedBox(height: 24.h),
 
-                          // Amount row
-                          _buildInfoRow(
-                            label: 'Amount',
-                            value:
-                                formatToCurrency(double.parse(shipment.cost)),
+                          // Delivery Fee - Large and Green
+                          Center(
+                            child: Column(
+                              children: [
+                                customText(
+                                  'Your Earning',
+                                  fontSize: 14.sp,
+                                  fontWeight: FontWeight.w500,
+                                  color: AppColors.obscureTextColor,
+                                ),
+                                SizedBox(height: 8.h),
+                                Container(
+                                  padding: EdgeInsets.symmetric(
+                                    horizontal: 20.w,
+                                    vertical: 12.h,
+                                  ),
+                                  decoration: BoxDecoration(
+                                    color: const Color(0xFF2E7D32).withOpacity(0.1),
+                                    borderRadius: BorderRadius.circular(12.r),
+                                    border: Border.all(
+                                      color: const Color(0xFF2E7D32),
+                                      width: 2,
+                                    ),
+                                  ),
+                                  child: customText(
+                                    '₦${formatToCurrency(double.parse(shipment.deliveryFee))}',
+                                    fontSize: 32.sp,
+                                    fontWeight: FontWeight.bold,
+                                    color: const Color(0xFF2E7D32),
+                                  ),
+                                ),
+                              ],
+                            ),
                           ),
-                          SizedBox(height: 16.h),
+                          SizedBox(height: 24.h),
 
                           // From row
                           _buildAddressRow(
