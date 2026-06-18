@@ -1159,11 +1159,22 @@ double getDeliveryProgress(String status) {
 }
 
 void makePhoneCall(String phoneNumber) async {
-  final url = 'tel:$phoneNumber';
-  if (await canLaunchUrl(Uri.parse(url))) {
-    await launchUrl(Uri.parse(url));
-  } else {
-    print('Could not launch $url');
+  try {
+    // Clean the phone number (remove spaces, dashes, etc.)
+    final cleanNumber = phoneNumber.replaceAll(RegExp(r'[^\d+]'), '');
+    final Uri phoneUri = Uri.parse('tel:$cleanNumber');
+
+    if (await canLaunchUrl(phoneUri)) {
+      await launchUrl(
+        phoneUri,
+        mode: LaunchMode.externalApplication,
+      );
+    } else {
+      // Simulator doesn't support phone calls - show friendly message
+      debugPrint('📞 Would call: $cleanNumber (Phone calls not supported on simulator)');
+    }
+  } catch (e) {
+    debugPrint('Error making phone call: $e');
   }
 }
 

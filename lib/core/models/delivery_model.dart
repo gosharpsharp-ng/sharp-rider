@@ -7,6 +7,7 @@ class DeliveryModel {
   final String? paymentStatus;
   final String? distance;
   final String? cost;
+  final String? deliveryFee;
   final int? userId;
   final int? riderId;
   final int? currencyId;
@@ -83,6 +84,7 @@ class DeliveryModel {
     this.paymentStatus,
     this.distance,
     this.cost,
+    this.deliveryFee,
     this.userId,
     this.riderId,
     this.currencyId,
@@ -119,6 +121,7 @@ class DeliveryModel {
       paymentStatus: json['payment_status'] as String?,
       distance: _parseToString(json['distance']),
       cost: _parseToString(json['cost']),
+      deliveryFee: _parseToString(json['delivery_fee']),
       userId: json['user_id'] as int?,
       riderId: json['rider_id'] as int?,
       currencyId: json['currency_id'] as int?,
@@ -150,7 +153,9 @@ class DeliveryModel {
       destinationLocationData: json['destination_location'] != null
           ? DeliveryLocation.fromJson(json['destination_location'])
           : null,
-      paymentMethod: json['payment_method'] as String?,
+      paymentMethod: json['payment_method'] is Map
+          ? (json['payment_method'] as Map)['name'] as String?
+          : json['payment_method'] as String?,
     );
   }
 
@@ -164,6 +169,7 @@ class DeliveryModel {
       'payment_status': paymentStatus,
       'distance': distance,
       'cost': cost,
+      'delivery_fee': deliveryFee,
       'user_id': userId,
       'rider_id': riderId,
       'currency_id': currencyId,

@@ -30,7 +30,7 @@ class NewPasswordScreen extends StatelessWidget {
                     showLabel: true,
                     isRequired: true,
                     useCustomValidator: true,
-                    obscureText: passwordResetController.passwordVisibility,
+                    obscureText: !passwordResetController.passwordVisibility,
                     hasTitle: true,
                     controller: passwordResetController.newPasswordController,
                     suffixWidget: IconButton(
@@ -38,7 +38,7 @@ class NewPasswordScreen extends StatelessWidget {
                         passwordResetController.togglePasswordVisibility();
                       },
                       icon: Icon(
-                        passwordResetController.passwordVisibility
+                        !passwordResetController.passwordVisibility
                             ? Icons.visibility_outlined
                             : Icons.visibility_off_outlined,
                         size: 20.sp,
@@ -59,7 +59,7 @@ class NewPasswordScreen extends StatelessWidget {
                     isRequired: true,
                     useCustomValidator: true,
                     obscureText:
-                        passwordResetController.confirmPasswordVisibility,
+                        !passwordResetController.confirmPasswordVisibility,
                     hasTitle: true,
                     controller:
                         passwordResetController.confirmPasswordController,
@@ -69,7 +69,7 @@ class NewPasswordScreen extends StatelessWidget {
                             .toggleConfirmPasswordVisibility();
                       },
                       icon: Icon(
-                        passwordResetController.confirmPasswordVisibility
+                        !passwordResetController.confirmPasswordVisibility
                             ? Icons.visibility_outlined
                             : Icons.visibility_off_outlined,
                         size: 20.sp,

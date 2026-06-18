@@ -1,5 +1,6 @@
 import 'package:gorider/core/utils/exports.dart';
 import 'package:intl_phone_field/phone_number.dart';
+import 'package:gorider/core/services/analytics_service.dart';
 import 'package:gorider/core/services/push_notification_service.dart';
 
 class SignInController extends GetxController {
@@ -80,6 +81,13 @@ class SignInController extends GetxController {
 
           // Register device token for push notifications
           await PushNotificationService().registerTokenIfAvailable();
+
+          // Set Analytics user ID
+          final userProfile = response.data['user'];
+          if (userProfile != null && userProfile['id'] != null) {
+            await AnalyticsService().setUserId(userProfile['id'].toString());
+            await AnalyticsService().setUserProperty('user_type', 'rider');
+          }
 
           // Initialize controllers like sharp-vendor does
           Get.put(SettingsController());

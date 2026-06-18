@@ -1,6 +1,7 @@
 import 'dart:developer';
 import 'dart:io';
 import 'package:gorider/core/utils/exports.dart';
+import 'package:package_info_plus/package_info_plus.dart';
 import 'package:upgrader/upgrader.dart';
 import 'package:url_launcher/url_launcher.dart';
 
@@ -11,18 +12,18 @@ class AppUpdateService {
 
   bool _isDialogShowing = false;
 
-  // Store IDs - Update these with your actual store IDs
   static const String _playStoreId = 'com.gosharpsharp.rider';
   static const String _appStoreId = 'com.gosharpsharp.rider';
 
-  /// Initialize and check for updates
   Future<void> initialize() async {
     await checkForUpdate();
   }
 
-  /// Check if there's a new version available from Play Store/App Store
   Future<void> checkForUpdate() async {
     try {
+      final packageInfo = await PackageInfo.fromPlatform();
+      final installedVersion = packageInfo.version;
+
       final upgrader = Upgrader(
         storeController: UpgraderStoreController(
           onAndroid: () => UpgraderPlayStore(),
@@ -32,46 +33,65 @@ class AppUpdateService {
 
       await upgrader.initialize();
 
-      final currentVersion = upgrader.currentInstalledVersion ?? '';
       final storeVersion = upgrader.currentAppStoreVersion ?? '';
 
-      log('Current app version: $currentVersion');
+      log('Installed version: $installedVersion');
       log('Store version: $storeVersion');
 
+      if (storeVersion.isEmpty) {
+        log('Could not fetch store version — skipping update check');
+        return;
+      }
+
+      final updateAvailable = _isStoreVersionNewer(storeVersion, installedVersion);
+
+      if (!updateAvailable) {
+        log('App is up to date ($installedVersion)');
+        return;
+      }
+
       if (upgrader.belowMinAppVersion()) {
-        // Force update required
-        log('Force update required - below minimum version');
+        log('Force update required — below minimum version');
         _showUpdateDialog(
-          currentVersion: currentVersion,
           latestVersion: storeVersion,
           isForceUpdate: true,
-          message: 'This version is no longer supported. Please update to continue using the app.',
-          releaseNotes: upgrader.releaseNotes,
-        );
-      } else if (upgrader.isUpdateAvailable()) {
-        // Optional update available
-        log('New version available: $storeVersion');
-        _showUpdateDialog(
-          currentVersion: currentVersion,
-          latestVersion: storeVersion,
-          isForceUpdate: false,
-          message: 'A new version of GoRider is available with improvements and bug fixes.',
           releaseNotes: upgrader.releaseNotes,
         );
       } else {
-        log('App is up to date');
+        log('New version available: $storeVersion');
+        _showUpdateDialog(
+          latestVersion: storeVersion,
+          isForceUpdate: false,
+          releaseNotes: upgrader.releaseNotes,
+        );
       }
     } catch (e) {
       log('Error checking for updates: $e');
     }
   }
 
-  /// Show the update dialog
+  bool _isStoreVersionNewer(String storeVersion, String installedVersion) {
+    try {
+      final store = storeVersion.trim().split('.').map(int.parse).toList();
+      final installed = installedVersion.trim().split('.').map(int.parse).toList();
+
+      while (store.length < installed.length) store.add(0);
+      while (installed.length < store.length) installed.add(0);
+
+      for (int i = 0; i < store.length; i++) {
+        if (store[i] > installed[i]) return true;
+        if (store[i] < installed[i]) return false;
+      }
+      return false;
+    } catch (e) {
+      log('Version parse error — skipping update check: $e');
+      return false;
+    }
+  }
+
   void _showUpdateDialog({
-    required String currentVersion,
     required String latestVersion,
     required bool isForceUpdate,
-    required String message,
     String? releaseNotes,
   }) {
     if (_isDialogShowing) return;
@@ -82,199 +102,105 @@ class AppUpdateService {
         canPop: !isForceUpdate,
         child: Dialog(
           shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(24.r),
+            borderRadius: BorderRadius.circular(20.r),
           ),
-          child: Container(
-            padding: EdgeInsets.all(24.sp),
-            decoration: BoxDecoration(
-              color: AppColors.whiteColor,
-              borderRadius: BorderRadius.circular(24.r),
-            ),
+          insetPadding: EdgeInsets.symmetric(horizontal: 28.w),
+          child: Padding(
+            padding: EdgeInsets.fromLTRB(24.w, 28.h, 24.w, 20.h),
             child: Column(
               mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.center,
               children: [
-                // Update icon with animation effect
-                Container(
-                  width: 100.sp,
-                  height: 100.sp,
-                  decoration: BoxDecoration(
-                    gradient: LinearGradient(
-                      begin: Alignment.topLeft,
-                      end: Alignment.bottomRight,
-                      colors: [
-                        AppColors.primaryColor,
-                        AppColors.primaryColor.withOpacity(0.7),
-                      ],
-                    ),
-                    shape: BoxShape.circle,
-                    boxShadow: [
-                      BoxShadow(
-                        color: AppColors.primaryColor.withOpacity(0.3),
-                        blurRadius: 20.r,
-                        offset: Offset(0, 10.h),
-                      ),
-                    ],
-                  ),
-                  child: Center(
-                    child: Icon(
-                      Icons.system_update_rounded,
-                      size: 50.sp,
-                      color: AppColors.whiteColor,
-                    ),
-                  ),
+                // App icon
+                CircleAvatar(
+                  radius: 32.sp,
+                  backgroundImage: const AssetImage(PngAssets.goSharpSharpIcon),
                 ),
-                SizedBox(height: 24.h),
+                SizedBox(height: 20.h),
 
                 // Title
                 customText(
-                  'Update Available',
-                  fontSize: 22.sp,
-                  fontWeight: FontWeight.bold,
+                  'New update available',
+                  fontSize: 18.sp,
+                  fontWeight: FontWeight.w700,
                   color: AppColors.blackColor,
+                  textAlign: TextAlign.center,
                 ),
-                SizedBox(height: 8.h),
+                SizedBox(height: 6.h),
 
-                // Version info
-                Container(
-                  padding: EdgeInsets.symmetric(
-                    horizontal: 16.w,
-                    vertical: 8.h,
-                  ),
-                  decoration: BoxDecoration(
-                    color: AppColors.primaryColor.withOpacity(0.1),
-                    borderRadius: BorderRadius.circular(20.r),
-                  ),
-                  child: customText(
-                    'v$currentVersion → v$latestVersion',
-                    fontSize: 14.sp,
-                    fontWeight: FontWeight.w600,
-                    color: AppColors.primaryColor,
-                  ),
-                ),
-                SizedBox(height: 16.h),
-
-                // Message
+                // Version line
                 customText(
-                  message,
+                  'Version $latestVersion is ready to install.',
                   fontSize: 14.sp,
                   fontWeight: FontWeight.w400,
                   color: AppColors.greyColor,
                   textAlign: TextAlign.center,
                 ),
 
-                // Release notes if available
+                // Release notes
                 if (releaseNotes != null && releaseNotes.isNotEmpty) ...[
                   SizedBox(height: 16.h),
-                  Container(
-                    width: double.infinity,
-                    padding: EdgeInsets.all(12.sp),
-                    decoration: BoxDecoration(
-                      color: AppColors.backgroundColor,
-                      borderRadius: BorderRadius.circular(12.r),
+                  Align(
+                    alignment: Alignment.centerLeft,
+                    child: customText(
+                      "What's new",
+                      fontSize: 13.sp,
+                      fontWeight: FontWeight.w600,
+                      color: AppColors.blackColor,
                     ),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        customText(
-                          "What's New:",
-                          fontSize: 12.sp,
-                          fontWeight: FontWeight.w600,
-                          color: AppColors.blackColor,
-                        ),
-                        SizedBox(height: 6.h),
-                        customText(
-                          releaseNotes,
-                          fontSize: 12.sp,
-                          fontWeight: FontWeight.w400,
-                          color: AppColors.greyColor,
-                          maxLines: 4,
-                          overflow: TextOverflow.ellipsis,
-                        ),
-                      ],
+                  ),
+                  SizedBox(height: 6.h),
+                  Align(
+                    alignment: Alignment.centerLeft,
+                    child: customText(
+                      releaseNotes,
+                      fontSize: 13.sp,
+                      fontWeight: FontWeight.w400,
+                      color: AppColors.greyColor,
+                      maxLines: 5,
+                      overflow: TextOverflow.ellipsis,
                     ),
                   ),
                 ],
 
                 SizedBox(height: 24.h),
 
-                // Force update notice
-                if (isForceUpdate)
-                  Container(
-                    width: double.infinity,
-                    padding: EdgeInsets.all(12.sp),
-                    margin: EdgeInsets.only(bottom: 16.h),
-                    decoration: BoxDecoration(
-                      color: Colors.orange.withOpacity(0.1),
-                      borderRadius: BorderRadius.circular(12.r),
-                      border: Border.all(
-                        color: Colors.orange.withOpacity(0.3),
-                      ),
-                    ),
-                    child: Row(
-                      children: [
-                        Icon(
-                          Icons.warning_amber_rounded,
-                          color: Colors.orange,
-                          size: 20.sp,
-                        ),
-                        SizedBox(width: 8.w),
-                        Expanded(
-                          child: customText(
-                            'This update is required to continue using the app',
-                            fontSize: 12.sp,
-                            fontWeight: FontWeight.w500,
-                            color: Colors.orange.shade800,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-
-                // Update button
+                // Primary action
                 SizedBox(
                   width: double.infinity,
                   child: ElevatedButton(
                     onPressed: _openStore,
                     style: ElevatedButton.styleFrom(
                       backgroundColor: AppColors.primaryColor,
-                      padding: EdgeInsets.symmetric(vertical: 16.h),
+                      padding: EdgeInsets.symmetric(vertical: 14.h),
                       shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(12.r),
+                        borderRadius: BorderRadius.circular(10.r),
                       ),
                       elevation: 0,
                     ),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Icon(
-                          Platform.isAndroid ? Icons.shop : Icons.apple,
-                          color: AppColors.whiteColor,
-                          size: 20.sp,
-                        ),
-                        SizedBox(width: 8.w),
-                        customText(
-                          'Update Now',
-                          fontSize: 16.sp,
-                          fontWeight: FontWeight.w600,
-                          color: AppColors.whiteColor,
-                        ),
-                      ],
+                    child: customText(
+                      'Update',
+                      fontSize: 15.sp,
+                      fontWeight: FontWeight.w600,
+                      color: AppColors.whiteColor,
                     ),
                   ),
                 ),
 
-                // Later button (only if not force update)
                 if (!isForceUpdate) ...[
-                  SizedBox(height: 12.h),
+                  SizedBox(height: 4.h),
                   TextButton(
                     onPressed: () {
                       _isDialogShowing = false;
                       Get.back();
                     },
+                    style: TextButton.styleFrom(
+                      foregroundColor: AppColors.greyColor,
+                    ),
                     child: customText(
-                      'Later',
+                      'Not now',
                       fontSize: 14.sp,
-                      fontWeight: FontWeight.w500,
+                      fontWeight: FontWeight.w400,
                       color: AppColors.greyColor,
                     ),
                   ),
@@ -285,7 +211,7 @@ class AppUpdateService {
         ),
       ),
       barrierDismissible: !isForceUpdate,
-      barrierColor: Colors.black.withOpacity(0.5),
+      barrierColor: Colors.black.withValues(alpha: 0.4),
     ).then((_) {
       if (!isForceUpdate) {
         _isDialogShowing = false;
@@ -293,7 +219,6 @@ class AppUpdateService {
     });
   }
 
-  /// Open the appropriate app store
   Future<void> _openStore() async {
     final Uri storeUrl;
 
@@ -307,10 +232,8 @@ class AppUpdateService {
       if (await canLaunchUrl(storeUrl)) {
         await launchUrl(storeUrl, mode: LaunchMode.externalApplication);
       } else {
-        // Fallback to web URL
         final webUrl = Platform.isAndroid
-            ? Uri.parse(
-                'https://play.google.com/store/apps/details?id=$_playStoreId')
+            ? Uri.parse('https://play.google.com/store/apps/details?id=$_playStoreId')
             : Uri.parse('https://apps.apple.com/app/id$_appStoreId');
         await launchUrl(webUrl, mode: LaunchMode.externalApplication);
       }
@@ -320,16 +243,11 @@ class AppUpdateService {
     }
   }
 
-  /// Manual trigger for testing (can be called from settings)
   void showUpdateDialogForTesting() {
     _showUpdateDialog(
-      currentVersion: '1.0.0',
       latestVersion: '2.0.0',
-      isForceUpdate: true,
-      message:
-          'A new version of GoRider is available with exciting new features and improvements!',
-      releaseNotes:
-          '• Improved delivery tracking\n• Bug fixes and performance improvements\n• Better navigation experience',
+      isForceUpdate: false,
+      releaseNotes: '• Improved delivery tracking\n• Bug fixes and performance improvements\n• Better navigation experience',
     );
   }
 }

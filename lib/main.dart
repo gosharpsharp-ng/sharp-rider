@@ -1,5 +1,6 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:gorider/core/services/analytics_service.dart';
 import 'package:gorider/core/services/app_update/app_update_service.dart';
 import 'package:gorider/core/services/push_notification_service.dart';
 import 'package:gorider/core/utils/exports.dart';
@@ -17,6 +18,9 @@ void main() async {
 
   // Initialize push notifications
   await PushNotificationService().initialize();
+
+  // Initialize Firebase Analytics
+  await AnalyticsService().initialize();
 
   SystemChrome.setPreferredOrientations([
     DeviceOrientation.portraitUp,

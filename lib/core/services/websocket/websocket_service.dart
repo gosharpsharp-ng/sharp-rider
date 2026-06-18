@@ -9,7 +9,6 @@ class SocketService extends GetxService {
   late IO.Socket socket;
   final isConnected = false.obs;
   late UserProfile _userProfile;
-  bool _hasJoinedRiderRoom = false;
 
   Future<SocketService> init(UserProfile profile) async {
     _userProfile = profile;
@@ -37,11 +36,9 @@ class SocketService extends GetxService {
         log('🟢 Socket Connected to https://socket.gosharpsharp.com');
 
         isConnected.value = true;
-        // Join rider room and start emitting location
-        if (isConnected.value == true) {
-          if (!_hasJoinedRiderRoom) joinRiderRoom();
-          startListeningAndEmitting();
-        }
+        // Always join rider room and start emitting location on connect
+        joinRiderRoom();
+        startListeningAndEmitting();
       })
       ..onDisconnect((_) {
         log('🔴 Socket Disconnected');
@@ -50,24 +47,30 @@ class SocketService extends GetxService {
       ..onReconnect((_) {
         log('🟡 Socket Reconnected');
         isConnected.value = true;
-        // Rejoin rider room on reconnection
-        if (!_hasJoinedRiderRoom) joinRiderRoom();
+        // Always rejoin rider room on reconnection
+        joinRiderRoom();
+        // Restart location emitting
+        startListeningAndEmitting();
       })
       ..onError((error) => log('❌ Socket Error: $error'))
       ..onConnectError((error) => log('❌ Socket Connect Error: $error'));
   }
 
   /// Join rider delivery room
-  /// Emits to: "delivery:join" with payload { "riderId": riderId, "courierTypeId": courierTypeId }
+  /// Emits to: "delivery:join" with payload { "riderId": riderId, "courierTypeId": courierTypeId, "courierTypeName": courierTypeName }
   void joinRiderRoom() {
     if (isConnected.value) {
       final courierTypeId = _userProfile.vehicle?.courierTypeId ?? 1;
+      final courierTypeName = _userProfile.vehicle?.courierType?.name ?? 'Express';
+      // Replace spaces with hyphens in courier type name
+      final normalizedCourierTypeName = courierTypeName.replaceAll(' ', '-');
+
       socket.emit('delivery:join', {
         'riderId': _userProfile.id,
         'courierTypeId': courierTypeId,
+        'courierTypeName': normalizedCourierTypeName,
       });
-      _hasJoinedRiderRoom = true;
-      log('🚴 Rider joined delivery room - Rider ID: ${_userProfile.id}, Courier Type ID: $courierTypeId');
+      log('🚴 Rider joined delivery room - Rider ID: ${_userProfile.id}, Courier Type ID: $courierTypeId, Courier Type Name: $normalizedCourierTypeName');
     }
   }
 
@@ -194,7 +197,6 @@ class SocketService extends GetxService {
   // ==================== CLEANUP ====================
 
   void disconnectAndLeaveRooms() {
-    _hasJoinedRiderRoom = false;
     socket.disconnect();
   }
 

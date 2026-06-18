@@ -233,7 +233,7 @@ class _DeliveryDetailsScreenState extends State<DeliveryDetailsScreen> {
             ),
           ),
           customText(
-            formatToCurrency(double.tryParse(delivery.cost ?? '0') ?? 0),
+            formatToCurrency(double.tryParse(delivery.deliveryFee ?? '0') ?? 0),
             fontWeight: FontWeight.w700,
             fontSize: 18.sp,
             color: AppColors.primaryColor,
@@ -344,8 +344,8 @@ class _DeliveryDetailsScreenState extends State<DeliveryDetailsScreen> {
           const Divider(height: 1, color: AppColors.backgroundColor),
           SizedBox(height: 12.h),
           _buildSummaryRow(
-            "Total Amount",
-            formatToCurrency(double.tryParse(delivery.cost ?? '0') ?? 0),
+            "Your Earning",
+            formatToCurrency(double.tryParse(delivery.deliveryFee ?? '0') ?? 0),
             isTotal: true,
           ),
         ],

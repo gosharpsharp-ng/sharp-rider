@@ -134,6 +134,9 @@ class _DeliveryOTPVerificationDialogState
                 onCompleted: (pin) => _verifyOTP(),
                 keyboardType: TextInputType.text,
                 enabled: !isVerifying,
+                inputFormatters: [
+                  UpperCaseTextFormatter(),
+                ],
               ),
               SizedBox(height: 32.h),
 
@@ -207,5 +210,19 @@ class _DeliveryOTPVerificationDialogState
   void dispose() {
     otpController.dispose();
     super.dispose();
+  }
+}
+
+/// Custom text formatter to convert input to uppercase
+class UpperCaseTextFormatter extends TextInputFormatter {
+  @override
+  TextEditingValue formatEditUpdate(
+    TextEditingValue oldValue,
+    TextEditingValue newValue,
+  ) {
+    return TextEditingValue(
+      text: newValue.text.toUpperCase(),
+      selection: newValue.selection,
+    );
   }
 }

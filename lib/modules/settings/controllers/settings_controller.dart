@@ -274,14 +274,20 @@ class SettingsController extends GetxController {
 
   LicenseModel? vehicleLicense;
   getMyVehicleLicense() async {
-    // setLoadingVehicleState(true);
-    APIResponse response = await profileService.getLicense();
-    // setLoadingVehicleState(false);
-    if (response.status == "success") {
-      if (response.data.isNotEmpty) {
-        vehicleLicense = LicenseModel.fromJson(response.data[0]);
-        update();
+    try {
+      // setLoadingVehicleState(true);
+      APIResponse response = await profileService.getLicense();
+      // setLoadingVehicleState(false);
+      if (response.status == "success") {
+        if (response.data != null &&
+            response.data.isNotEmpty &&
+            response.data[0] != null) {
+          vehicleLicense = LicenseModel.fromJson(response.data[0]);
+          update();
+        }
       }
+    } catch (e) {
+      debugPrint('Error getting vehicle license: $e');
     }
   }
 

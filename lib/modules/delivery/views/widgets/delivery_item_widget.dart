@@ -72,7 +72,7 @@ class DeliveryItemWidget extends StatelessWidget {
                 ),
                 const Spacer(),
                 customText(
-                  formatToCurrency(double.tryParse(shipment.cost ?? '0') ?? 0),
+                  formatToCurrency(double.tryParse(shipment.deliveryFee ?? '0') ?? 0),
                   fontWeight: FontWeight.w600,
                   fontSize: 15.sp,
                   color: AppColors.primaryColor,

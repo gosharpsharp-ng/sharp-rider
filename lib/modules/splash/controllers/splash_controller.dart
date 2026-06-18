@@ -1,5 +1,6 @@
 import 'package:geolocator/geolocator.dart';
 import 'package:gorider/core/utils/exports.dart';
+import 'package:gorider/core/services/analytics_service.dart';
 import 'package:gorider/core/services/push_notification_service.dart';
 
 class SplashController extends GetxController {
@@ -62,5 +63,14 @@ class SplashController extends GetxController {
   Future<void> _loadData() async {
     Get.put(SettingsController());
     Get.put(DeliveriesController());
+
+    // Set Analytics user ID for already logged-in users
+    final settingsController = Get.find<SettingsController>();
+    if (settingsController.reactiveUserProfile.value?.id != null) {
+      await AnalyticsService().setUserId(
+        settingsController.reactiveUserProfile.value!.id.toString(),
+      );
+      await AnalyticsService().setUserProperty('user_type', 'rider');
+    }
   }
 }

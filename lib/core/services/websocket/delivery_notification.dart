@@ -36,7 +36,7 @@ class DeliveryNotificationService extends GetxService {
   }
 
   /// Stops ringtone and vibration with error handling
-  void _stopRingtoneAndVibration() {
+  Future<void> _stopRingtoneAndVibration() async {
     try {
       // Cancel any active timeout timer
       _ringtoneTimeout?.cancel();
@@ -50,7 +50,7 @@ class DeliveryNotificationService extends GetxService {
       }
 
       // Stop vibration
-      _stopVibration();
+      await _stopVibration();
     } catch (e) {
       log('Error stopping ringtone/vibration: $e');
       // Even if there's an error, mark as not playing to prevent stuck state
@@ -102,10 +102,15 @@ class DeliveryNotificationService extends GetxService {
   }
 
   /// Stops vibration
-  void _stopVibration() {
+  Future<void> _stopVibration() async {
     try {
-      Vibration.cancel();
+      // Check if device has vibrator before trying to cancel
+      bool? hasVibrator = await Vibration.hasVibrator();
+      if (hasVibrator == true) {
+        await Vibration.cancel();
+      }
     } catch (e) {
+      // Silently catch vibration errors - non-critical
       log('Error stopping vibration: $e');
     }
   }
@@ -125,6 +130,23 @@ class DeliveryNotificationService extends GetxService {
       final parsedData = data is String ? jsonDecode(data) : data;
       final DeliveryNotificationModel delivery =
           DeliveryNotificationModel.fromJson(parsedData);
+
+      // Log parsed delivery model
+      log('======== PARSED DELIVERY NOTIFICATION MODEL ========');
+      log('Tracking ID: ${delivery.trackingId}');
+      log('Delivery ID: ${delivery.id}');
+      log('Order ID: ${delivery.orderId}');
+      log('Cost: ${delivery.cost}');
+      log('Delivery Fee: ${delivery.deliveryFee}');
+      log('Distance: ${delivery.distance}');
+      log('Status: ${delivery.status}');
+      log('Payment Status: ${delivery.paymentStatus}');
+      log('From: ${delivery.originLocation.name}');
+      log('To: ${delivery.destinationLocation.name}');
+      log('Sender: ${delivery.sender?.name ?? "N/A"}');
+      log('Receiver: ${delivery.receiver?.name ?? "N/A"}');
+      log('==================================================');
+
       var originLatLng = LatLng(
           double.parse(delivery.originLocation.latitude ?? '0.0'),
           double.parse(delivery.originLocation.longitude ?? '0.0'));
@@ -241,51 +263,35 @@ class DeliveryNotificationService extends GetxService {
                           ),
                           SizedBox(height: 16.h),
 
-                          // 💰 DELIVERY FEE - First thing rider sees!
+                          // 💰 DELIVERY FEE - Prominent at top
                           Center(
                             child: Column(
                               children: [
                                 customText(
                                   "You'll Earn",
-                                  fontSize: 13.sp,
+                                  fontSize: 12.sp,
                                   fontWeight: FontWeight.w500,
                                   color: AppColors.obscureTextColor,
-                                  letterSpacing: 0.5,
                                 ),
-                                SizedBox(height: 8.h),
+                                SizedBox(height: 6.h),
                                 Container(
                                   padding: EdgeInsets.symmetric(
-                                    horizontal: 24.w,
-                                    vertical: 14.h,
+                                    horizontal: 20.w,
+                                    vertical: 10.h,
                                   ),
                                   decoration: BoxDecoration(
-                                    gradient: LinearGradient(
-                                      colors: [
-                                        const Color(0xFF2E7D32).withOpacity(0.15),
-                                        const Color(0xFF2E7D32).withOpacity(0.08),
-                                      ],
-                                      begin: Alignment.topLeft,
-                                      end: Alignment.bottomRight,
-                                    ),
-                                    borderRadius: BorderRadius.circular(16.r),
+                                    color: const Color(0xFF2E7D32).withOpacity(0.1),
+                                    borderRadius: BorderRadius.circular(12.r),
                                     border: Border.all(
                                       color: const Color(0xFF2E7D32),
-                                      width: 2.5,
+                                      width: 2,
                                     ),
-                                    boxShadow: [
-                                      BoxShadow(
-                                        color:  AppColors.primaryColor.withOpacity(0.3),
-                                        blurRadius: 12,
-                                        offset: const Offset(0, 4),
-                                      ),
-                                    ],
                                   ),
                                   child: customText(
                                     formatToCurrency(double.parse(shipment.deliveryFee)),
-                                    fontSize: 35.sp,
-                                    fontWeight: FontWeight.w900,
+                                    fontSize: 24.sp,
+                                    fontWeight: FontWeight.w700,
                                     color: const Color(0xFF2E7D32),
-                                    letterSpacing: 1,
                                   ),
                                 ),
                               ],
@@ -309,21 +315,48 @@ class DeliveryNotificationService extends GetxService {
                             label: 'From',
                             value: shipment.originLocation.name ?? '',
                           ),
-                          SizedBox(height: 16.h),
+                          SizedBox(height: 12.h),
+
+                          // Distance indicator (between from and to)
+                          Center(
+                            child: Container(
+                              padding: EdgeInsets.symmetric(
+                                horizontal: 16.w,
+                                vertical: 8.h,
+                              ),
+                              decoration: BoxDecoration(
+                                color: AppColors.backgroundColor,
+                                borderRadius: BorderRadius.circular(20.r),
+                                border: Border.all(
+                                  color: AppColors.primaryColor.withOpacity(0.3),
+                                  width: 1,
+                                ),
+                              ),
+                              child: Row(
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  Icon(
+                                    Icons.route,
+                                    size: 16.sp,
+                                    color: AppColors.primaryColor,
+                                  ),
+                                  SizedBox(width: 6.w),
+                                  customText(
+                                    '${double.parse(shipment.distance).toStringAsFixed(2)} km',
+                                    fontSize: 13.sp,
+                                    fontWeight: FontWeight.w600,
+                                    color: AppColors.primaryColor,
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ),
+                          SizedBox(height: 12.h),
 
                           // To row
                           _buildAddressRow(
                             label: 'To',
                             value: shipment.destinationLocation.name ?? '',
-                          ),
-                          SizedBox(height: 16.h),
-
-                          // Distance row
-                          _buildInfoRow(
-                            label: 'Distance',
-                            value: senderToReceiverDirectionDetails
-                                    .distance_text ??
-                                '',
                           ),
                           SizedBox(height: 32.h),
 
@@ -345,7 +378,7 @@ class DeliveryNotificationService extends GetxService {
                                           _isDialogShowing = false;
                                           _currentNotificationTrackingId = null;
                                           _stopRingtoneAndVibration();
-                                          Get.back();
+                                          Navigator.of(context).pop();
                                         },
                                   child: Container(
                                     padding:
@@ -385,6 +418,9 @@ class DeliveryNotificationService extends GetxService {
                                       : () async {
                                           _stopRingtoneAndVibration();
 
+                                          // Capture navigator before async operation
+                                          final navigator = Navigator.of(context);
+
                                           await deliveriesController
                                               .acceptDelivery(
                                             context,
@@ -395,9 +431,9 @@ class DeliveryNotificationService extends GetxService {
                                           _isDialogShowing = false;
                                           _currentNotificationTrackingId = null;
 
-                                          // Close dialog safely
-                                          if (Get.isDialogOpen == true) {
-                                            Get.back();
+                                          // Close dialog safely using captured navigator
+                                          if (navigator.canPop()) {
+                                            navigator.pop();
                                           }
 
                                           // Navigate to result screen with success/failure info
@@ -493,30 +529,6 @@ class DeliveryNotificationService extends GetxService {
         },
       ),
       barrierDismissible: false,
-    );
-  }
-
-  Widget _buildInfoRow({required String label, required String value}) {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-      children: [
-        customText(
-          label,
-          fontSize: 14.sp,
-          fontWeight: FontWeight.w400,
-          color: AppColors.obscureTextColor,
-        ),
-        Flexible(
-          child: customText(
-            value,
-            fontSize: 14.sp,
-            fontWeight: FontWeight.w600,
-            color: AppColors.blackColor,
-            textAlign: TextAlign.right,
-            overflow: TextOverflow.ellipsis,
-          ),
-        ),
-      ],
     );
   }
 

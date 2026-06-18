@@ -213,9 +213,17 @@ class _DeliveryTrackingScreenState extends State<DeliveryTrackingScreen> {
             .contains(
                 deliveriesController.selectedDelivery?.status?.toLowerCase());
 
-        return Scaffold(
-          appBar: flatAppBar(),
-          backgroundColor: AppColors.backgroundColor,
+        return PopScope(
+          canPop: false,
+          onPopInvokedWithResult: (didPop, result) {
+            if (!didPop) {
+              // Navigate to home instead of closing app
+              Get.offAllNamed(Routes.APP_NAVIGATION);
+            }
+          },
+          child: Scaffold(
+            appBar: flatAppBar(),
+            backgroundColor: AppColors.backgroundColor,
           body: Stack(
             children: [
               // Google Map showing pickup and delivery locations
@@ -571,13 +579,13 @@ class _DeliveryTrackingScreenState extends State<DeliveryTrackingScreen> {
                                         .selectedDelivery?.receiver?.phone ??
                                     "",
                                 useCircleCallButton: true,
-                                onSenderCall: () {
-                                  showAnyBottomSheet(
-                                    isControlled: false,
-                                    child:
-                                        const DeliveryContactOptionBottomSheet(),
-                                  );
-                                },
+                                // Direct calling for both sender and receiver
+                                onSenderCall: () => makePhoneCall(_getSenderPhone()),
+                                onReceiverCall: () => makePhoneCall(
+                                  deliveriesController
+                                          .selectedDelivery?.receiver?.phone ??
+                                      "",
+                                ),
                               ),
                             ),
                             SizedBox(height: 16.h),
@@ -628,7 +636,8 @@ class _DeliveryTrackingScreenState extends State<DeliveryTrackingScreen> {
               ),
             ],
           ),
-        );
+        ), // Scaffold
+      ); // PopScope
       },
     );
   }

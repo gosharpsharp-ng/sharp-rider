@@ -33,11 +33,14 @@ class TransactionItem extends StatelessWidget {
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        customText(transaction.paymentReference,
-                            color: AppColors.blackColor,
-                            fontWeight: FontWeight.w500,
-                            fontSize: 15.sp,
-                            overflow: TextOverflow.visible),
+                        Expanded(
+                          child: customText(transaction.paymentReference,
+                              color: AppColors.blackColor,
+                              fontWeight: FontWeight.w500,
+                              fontSize: 15.sp,
+                              overflow: TextOverflow.ellipsis),
+                        ),
+                        SizedBox(width: 8.w),
                         customText(
                           formatTime(transaction.createdAt),
                           color: AppColors.obscureTextColor,
@@ -52,19 +55,22 @@ class TransactionItem extends StatelessWidget {
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        customText(
-                          formatDate(transaction.createdAt),
-                          color: AppColors.obscureTextColor,
-                          fontWeight: FontWeight.w500,
-                          fontSize: 12.sp,
+                        Expanded(
+                          child: customText(
+                            formatDate(transaction.createdAt),
+                            color: AppColors.obscureTextColor,
+                            fontWeight: FontWeight.w500,
+                            fontSize: 12.sp,
+                          ),
                         ),
+                        SizedBox(width: 8.w),
                         customText(
                             formatToCurrency(double.parse(transaction.amount)),
                             color: AppColors.blackColor,
                             fontWeight: FontWeight.w600,
                             fontFamily: "Satoshi",
                             fontSize: 15.sp,
-                            overflow: TextOverflow.visible),
+                            overflow: TextOverflow.ellipsis),
                       ],
                     ),
                   ],

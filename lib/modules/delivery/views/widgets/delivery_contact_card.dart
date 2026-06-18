@@ -113,6 +113,28 @@ class DeliveryContactCard extends StatelessWidget {
                 fontSize: 12.sp,
                 fontWeight: FontWeight.w400,
               ),
+              if (phone.isNotEmpty) ...[
+                SizedBox(height: 4.h),
+                InkWell(
+                  onTap: onCall,
+                  child: Row(
+                    children: [
+                      Icon(
+                        Icons.phone,
+                        size: 14.sp,
+                        color: AppColors.primaryColor,
+                      ),
+                      SizedBox(width: 4.w),
+                      customText(
+                        phone,
+                        color: AppColors.primaryColor,
+                        fontSize: 13.sp,
+                        fontWeight: FontWeight.w500,
+                      ),
+                    ],
+                  ),
+                ),
+              ],
             ],
           ),
         ),

@@ -26,12 +26,12 @@ class DeliveryNotificationServiceManager extends GetxService {
         await Get.delete<DeliveryNotificationService>();
       }
 
-      // Initialize services
-      await Get.putAsync(() => SocketService().init(profile));
-      await Get.putAsync(() => LocationService().init());
+      // Initialize services (permanent: true prevents disposal on route changes)
+      await Get.putAsync(() => SocketService().init(profile), permanent: true);
+      await Get.putAsync(() => LocationService().init(), permanent: true);
       // Initialize notification service
       final notificationService = DeliveryNotificationService();
-      Get.put(notificationService);
+      Get.put(notificationService, permanent: true);
       notificationService.initialize();
 
       _isServicesInitialized = true;
