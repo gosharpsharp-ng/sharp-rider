@@ -116,6 +116,7 @@ class _PayoutHistoryScreenState extends State<PayoutHistoryScreen> {
                         visible: !payoutController.fetchingPayouts &&
                             payoutController.payoutRequests.isEmpty,
                         replacement: SingleChildScrollView(
+                          physics: const AlwaysScrollableScrollPhysics(),
                           child: SkeletonLoaders.payoutItem(count: 5),
                         ),
                         child: Column(
@@ -165,6 +166,7 @@ class _PayoutHistoryScreenState extends State<PayoutHistoryScreen> {
                         ),
                       ),
                       child: SingleChildScrollView(
+                        physics: const AlwaysScrollableScrollPhysics(),
                         controller:
                             payoutController.payoutHistoryScrollController,
                         child: Column(

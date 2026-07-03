@@ -20,16 +20,25 @@ class SignUpController extends GetxController {
   }
 
   void nextStep() {
-    if (currentStep < 3) {
+    // Only 3 steps (0, 1, 2), so max is 2
+    if (currentStep < 2) {
+      log('📍 Next step called - Current: $currentStep');
       currentStep++;
+      log('✅ Moving to step: $currentStep');
       update();
+    } else {
+      log('⚠️ Already at last step, cannot go forward');
     }
   }
 
   void previousStep() {
+    log('📍 Previous step called - Current: $currentStep');
     if (currentStep > 0) {
       currentStep--;
+      log('✅ Moving to step: $currentStep');
       update();
+    } else {
+      log('⚠️ Already at first step, cannot go back');
     }
   }
 
@@ -470,23 +479,55 @@ class SignUpController extends GetxController {
           "******************************************************************************************************************************");
 
       // Submit to API
+      log('🌐 Sending registration request to API...');
       APIResponse response = await authService.riderOnboard(data);
+      log('✅ API call completed, processing response...');
 
-      showToast(
-        message: response.message,
-        isError: response.status != "success",
-      );
+      // ==================== REGISTRATION RESPONSE LOGGING ====================
+      log('========================================');
+      log('📋 REGISTRATION RESPONSE');
+      log('========================================');
+      log('Status: ${response.status}');
+      log('Message: ${response.message}');
+      log('Data Type: ${response.data.runtimeType}');
+      log('Data: ${response.data}');
+      log('========================================');
+      // ======================================================================
 
       if (response.status == "success") {
-        // Send OTP for email verification
+        log('✅ Registration successful - navigating to OTP screen');
+        // Send OTP for email verification (silently)
         await sendOtp();
         // Navigate to OTP screen - Use Get.toNamed instead of Get.offAndToNamed to keep controller alive
         Get.toNamed(Routes.SIGNUP_OTP_SCREEN);
+      } else {
+        log('❌ Registration failed - showing error to user');
+        // Use error sheet instead of toast to avoid overlay errors
+        showErrorSheet(
+          title: "Registration Failed",
+          message: response.message,
+          buttonText: "Try Again",
+          onButtonPressed: () {
+            Get.back(); // Close the error sheet
+          },
+        );
       }
-    } catch (e) {
-      showToast(
-        message: "Registration failed: $e",
-        isError: true,
+    } catch (e, stackTrace) {
+      log('========================================');
+      log('❌ REGISTRATION EXCEPTION');
+      log('========================================');
+      log('Error: $e');
+      log('Stack trace: $stackTrace');
+      log('========================================');
+
+      // Use error sheet instead of toast to avoid overlay errors
+      showErrorSheet(
+        title: "Registration Error",
+        message: "An unexpected error occurred. Please try again.\n\nError: $e",
+        buttonText: "Close",
+        onButtonPressed: () {
+          Get.back(); // Close the error sheet
+        },
       );
     } finally {
       setLoadingState(false);
@@ -494,13 +535,18 @@ class SignUpController extends GetxController {
   }
 
   // ==================== OTP Functions ====================
-  Future<void> sendOtp() async {
+  Future<void> sendOtp({bool showMessage = false}) async {
     setIsResendingOTPState(true);
     dynamic data = {
       'identifier': emailController.text,
     };
     APIResponse response = await authService.sendOtp(data);
-    showToast(message: response.message, isError: response.status != "success");
+
+    // Only show toast if explicitly requested (e.g., manual resend)
+    if (showMessage) {
+      showToast(message: response.message, isError: response.status != "success");
+    }
+
     setIsResendingOTPState(false);
     if (response.status == "success") {
       _startOtpResendTimer();
@@ -517,12 +563,16 @@ class SignUpController extends GetxController {
         };
         APIResponse response = await authService.verifyEmailOtp(data);
         final alreadyVerified = response.message.toLowerCase().contains("already verified");
-        showToast(
-          message: response.message,
-          isError: response.status != "success" && !alreadyVerified,
-        );
+
         if (response.status == "success" || alreadyVerified) {
+          // Navigate to success screen (no toast needed - success screen will show message)
           Get.offAllNamed(Routes.SIGNUP_SUCCESS_SCREEN);
+        } else {
+          // Only show toast for errors
+          showToast(
+            message: response.message,
+            isError: true,
+          );
         }
       } catch (e) {
         showToast(message: "OTP verification failed: $e", isError: true);
@@ -536,6 +586,45 @@ class SignUpController extends GetxController {
   void onInit() {
     super.onInit();
     fetchCourierTypes();
+  }
+
+  /// Reset the entire signup form to initial state
+  void resetForm() {
+    // Reset step
+    currentStep = 0;
+
+    // Clear all text controllers
+    firstNameController.clear();
+    lastNameController.clear();
+    emailController.clear();
+    phoneNumberController.clear();
+    passwordController.clear();
+    cPasswordController.clear();
+    vehicleBrandController.clear();
+    vehicleModelController.clear();
+    vehicleYearController.clear();
+    vehicleRegNumController.clear();
+    licenseNumberController.clear();
+    licenseExpiryController.clear();
+    licenseIssuedController.clear();
+    otpController.clear();
+
+    // Reset selections
+    selectedCourierType = null;
+    filledPhoneNumber = null;
+
+    // Clear images
+    vehicleInteriorPhotoBase64 = null;
+    vehicleExteriorPhotoBase64 = null;
+    licenseFrontImageBase64 = null;
+    licenseBackImageBase64 = null;
+
+    // Reset states
+    isLoading = false;
+    signUpPasswordVisibility = false;
+    signUpConfirmPasswordVisibility = false;
+
+    update();
   }
 
   @override

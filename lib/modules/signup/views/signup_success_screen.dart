@@ -47,7 +47,13 @@ class SignupSuccessScreen extends StatelessWidget {
                 const Spacer(),
 
                 CustomButton(
-                  onPressed: () => Get.offAllNamed(Routes.SIGN_IN),
+                  onPressed: () {
+                    // Reset signup form before navigating to login
+                    if (Get.isRegistered<SignUpController>()) {
+                      Get.find<SignUpController>().resetForm();
+                    }
+                    Get.offAllNamed(Routes.SIGN_IN);
+                  },
                   title: 'Proceed to Login',
                   width: double.infinity,
                   backgroundColor: AppColors.primaryColor,

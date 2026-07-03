@@ -1003,12 +1003,18 @@ String formatRideDuration(int durationInSeconds) {
 }
 
 void openGoogleMaps(String destination) async {
-  final Uri url = Uri.parse(
-      'https://www.google.com/maps/dir/?api=1&destination=$destination');
-  if (await canLaunchUrl(url)) {
-    await launchUrl(url);
-  } else {
-    throw 'Could not launch $url';
+  try {
+    final Uri url = Uri.parse(
+        'https://www.google.com/maps/dir/?api=1&destination=$destination');
+    if (await canLaunchUrl(url)) {
+      await launchUrl(url, mode: LaunchMode.externalApplication);
+    } else {
+      debugPrint('🗺️ Cannot launch maps URL: $url');
+      throw 'Could not launch Google Maps';
+    }
+  } catch (e) {
+    debugPrint('Error opening Google Maps: $e');
+    rethrow;
   }
 }
 

@@ -9,6 +9,7 @@ class DeliveryAcceptanceResultScreen extends StatelessWidget {
     final bool isSuccess = args?['isSuccess'] ?? false;
     final String message = args?['message'] ?? '';
     final String trackingId = args?['trackingId'] ?? '';
+    final DeliveryModel? delivery = args?['delivery'] as DeliveryModel?;
 
     return Scaffold(
       backgroundColor: AppColors.backgroundColor,
@@ -103,7 +104,13 @@ class DeliveryAcceptanceResultScreen extends StatelessWidget {
               if (isSuccess)
                 CustomButton(
                   onPressed: () {
-                    Get.offNamed(Routes.DELIVERY_TRACKING_SCREEN);
+                    Get.offNamed(
+                      Routes.DELIVERY_TRACKING_SCREEN,
+                      arguments: {
+                        'trackingId': trackingId,
+                        'delivery': delivery,
+                      },
+                    );
                   },
                   title: 'View Delivery',
                   backgroundColor: const Color(0xFF2E7D32),

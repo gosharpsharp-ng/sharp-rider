@@ -193,9 +193,12 @@ class DeliveryNotificationService extends GetxService {
               .contains(delivery.trackingId) &&
           !deliveriesController.pickedDeliveries
               .contains(delivery.trackingId)) {
-        // Mark as processed to prevent duplicates
+        // Mark as processed and mark dialog as showing BEFORE playing the
+        // ringtone or showing the dialog, so any re-entrant WebSocket event
+        // that arrives during the async gap is blocked immediately.
         _processedNotifications.add(delivery.trackingId);
         _currentNotificationTrackingId = delivery.trackingId;
+        _isDialogShowing = true;
 
         // Play ringtone and vibrate with timeout protection
         _startRingtoneWithTimeout();
@@ -214,7 +217,8 @@ class DeliveryNotificationService extends GetxService {
       {required DeliveryNotificationModel shipment,
       required DirectionDetailsInfo senderToReceiverDirectionDetails,
       required DirectionDetailsInfo riderToSenderDirectionDetails}) {
-    _isDialogShowing = true;
+    // _isDialogShowing is already set to true by handleDeliveryNotification
+    // before this method is called, to prevent re-entrant ringing.
 
     Get.dialog(
       Builder(
@@ -436,7 +440,9 @@ class DeliveryNotificationService extends GetxService {
                                             navigator.pop();
                                           }
 
-                                          // Navigate to result screen with success/failure info
+                                          // Navigate to result screen — pass the
+                                          // full DeliveryModel so the tracking
+                                          // screen never needs another API call.
                                           Get.offNamed(
                                             Routes
                                                 .DELIVERY_ACCEPTANCE_RESULT_SCREEN,
@@ -446,6 +452,8 @@ class DeliveryNotificationService extends GetxService {
                                               'message': deliveriesController
                                                   .lastAcceptanceMessage,
                                               'trackingId': shipment.trackingId,
+                                              'delivery': deliveriesController
+                                                  .selectedDelivery,
                                             },
                                           );
                                         },

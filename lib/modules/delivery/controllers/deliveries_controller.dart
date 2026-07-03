@@ -79,7 +79,7 @@ class DeliveriesController extends GetxController with WidgetsBindingObserver {
     update();
   }
 
-  fetchDeliveries({bool isLoadMore = false}) async {
+  fetchDeliveries({bool isLoadMore = false, bool silent = false}) async {
     if (fetchingDeliveries ||
         (isLoadMore && allDeliveries.length >= totalDeliveries)) {
       return;
@@ -122,7 +122,8 @@ class DeliveriesController extends GetxController with WidgetsBindingObserver {
       currentDeliveriesPage++; // Increment for next load more
       update();
     } else {
-      if (getStorage.read("token") != null) {
+      // Suppress toast for silent background refreshes (e.g. post-acceptance)
+      if (!silent && getStorage.read("token") != null) {
         showToast(
           message: response.message,
           isError: response.status != "success",
@@ -146,6 +147,24 @@ class DeliveriesController extends GetxController with WidgetsBindingObserver {
       selectedDelivery = DeliveryModel.fromJson(deliveryData);
       update();
     }
+  }
+
+  /// Fetches a delivery directly by [trackingId] and sets [selectedDelivery].
+  /// Used by the tracking screen to self-heal when the controller was
+  /// recreated by GetX (fenix: true) and selectedDelivery is null.
+  Future<void> fetchDeliveryByTrackingId(String trackingId) async {
+    fetchingDeliveries = true;
+    update();
+
+    APIResponse response = await deliveryService.getDelivery({
+      'tracking_id': trackingId,
+    });
+    fetchingDeliveries = false;
+    if (response.status == "success") {
+      final deliveryData = response.data['delivery'] ?? response.data;
+      selectedDelivery = DeliveryModel.fromJson(deliveryData);
+    }
+    update();
   }
 
   DeliveryModel? selectedDelivery;
@@ -598,10 +617,16 @@ class DeliveriesController extends GetxController with WidgetsBindingObserver {
       selectedDelivery = DeliveryModel.fromJson(deliveryData);
       update(); // Update UI immediately with accepted delivery
       await getDelivery(); // Fetch latest delivery state
-      if (Get.isRegistered<LocationService>()) {
-        await Get.find<LocationService>().joinParcelTrackingRoom(
-          trackingId: selectedDelivery?.trackingId ?? "",
+
+      // Leave delivery room and join tracking room
+      if (Get.isRegistered<SocketService>()) {
+        Get.find<SocketService>().leaveDeliveryRoom();
+        Get.find<SocketService>().joinTrackingRoom(
+          selectedDelivery?.trackingId ?? "",
         );
+      }
+
+      if (Get.isRegistered<LocationService>()) {
         Get.find<LocationService>()
             .notifyUserOfDeliveryStatusWithLocationLocation(
           deliveryModel: selectedDelivery!,
@@ -612,9 +637,6 @@ class DeliveriesController extends GetxController with WidgetsBindingObserver {
       } else {
         await serviceManager.initializeServices(
           settingsController.userProfile!,
-        );
-        await Get.find<LocationService>().joinParcelTrackingRoom(
-          trackingId: selectedDelivery?.trackingId ?? "",
         );
         await Get.find<SocketService>().updateRiderAvailabilityStatus("busy");
         Get.find<LocationService>()
@@ -628,8 +650,10 @@ class DeliveriesController extends GetxController with WidgetsBindingObserver {
       acceptedDelivery = true;
       acceptingDelivery = false;
       update();
-      // Refresh deliveries list after accepting
-      fetchDeliveries();
+      // Refresh deliveries list after a short delay so the server has time to
+      // process the acceptance. Use silent=true to suppress any transient
+      // error toasts that would confuse the user on the tracking screen.
+      Future.delayed(const Duration(seconds: 3), () => fetchDeliveries(silent: true));
     } else {
       acceptedDelivery = false;
       update();
@@ -804,10 +828,27 @@ class DeliveriesController extends GetxController with WidgetsBindingObserver {
       }
       if (status.toLowerCase() == 'deliver') {
         pickedDeliveries.clear();
-        update();
+
+        // Leave tracking room and rejoin delivery room (only if online)
+        final trackingId = selectedDelivery?.trackingId ?? "";
+        if (Get.isRegistered<SocketService>() && trackingId.isNotEmpty) {
+          Get.find<SocketService>().leaveTrackingRoom(trackingId);
+
+          // Only rejoin delivery room if rider is online
+          if (isOnline) {
+            Get.find<SocketService>().joinRiderRoom();
+          }
+        }
+
+        // Also leave via location service (for backward compatibility)
         await Get.find<LocationService>().leaveParcelTrackingRoom(
-          trackingId: selectedDelivery?.trackingId ?? "",
+          trackingId: trackingId,
         );
+
+        // Clear selected delivery to prevent old deliveries from being restored
+        selectedDelivery = null;
+        update();
+
         // Reload rider profile to get updated wallet balance
         if (Get.isRegistered<SettingsController>()) {
           await Get.find<SettingsController>().getProfile();
@@ -825,37 +866,33 @@ class DeliveriesController extends GetxController with WidgetsBindingObserver {
           Navigator.pop(Get.context!);
         }
         // Get.offAndToNamed(Routes.RIDER_PERFORMANCE_SCREEN);
+
+        // Don't restore selectedDelivery or refresh deliveries after completion
+        // to prevent old cached deliveries from being shown
+      } else {
+        // For accept/pick statuses: Update selectedDelivery and refresh
+        // API returns {delivery: {...}} so extract the delivery object
+        final deliveryData = response.data['delivery'] ?? response.data;
+        selectedDelivery = DeliveryModel.fromJson(deliveryData);
+
+        if (['picked'].contains(selectedDelivery!.status)) {
+          drawPolylineFromRiderToDestination(
+            context,
+            destinationPosition: LatLng(
+              double.parse(
+                  selectedDelivery!.destinationLocation.latitude ?? '0.0'),
+              double.parse(
+                  selectedDelivery!.destinationLocation.longitude ?? '0.0'),
+            ),
+          );
+        }
+
+        await getDelivery();
+        fetchDeliveries();
       }
-      // API returns {delivery: {...}} so extract the delivery object
-      final deliveryData = response.data['delivery'] ?? response.data;
-      selectedDelivery = DeliveryModel.fromJson(deliveryData);
-      if (['picked'].contains(selectedDelivery!.status)) {
-        drawPolylineFromRiderToDestination(
-          context,
-          destinationPosition: LatLng(
-            double.parse(
-                selectedDelivery!.destinationLocation.latitude ?? '0.0'),
-            double.parse(
-                selectedDelivery!.destinationLocation.longitude ?? '0.0'),
-          ),
-        );
-      } else if (['delivered'].contains(selectedDelivery!.status)) {
-        drawPolyLineFromOriginToDestination(
-          context,
-          originLatitude: selectedDelivery!.originLocation.latitude ?? '0.0',
-          originLongitude: selectedDelivery!.originLocation.longitude ?? '0.0',
-          originAddress: selectedDelivery!.originLocation.name ?? '',
-          destinationLatitude:
-              selectedDelivery!.destinationLocation.latitude ?? '0.0',
-          destinationLongitude:
-              selectedDelivery!.destinationLocation.longitude ?? '0.0',
-          destinationAddress: selectedDelivery!.destinationLocation.name ?? '',
-        );
-      }
-      await getDelivery();
+
       updatingDeliveryStatus = false;
       update();
-      fetchDeliveries();
     } else {
       updatingDeliveryStatus = false;
       update();

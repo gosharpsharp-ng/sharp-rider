@@ -32,28 +32,73 @@ class SocketService extends GetxService {
 
   void _setupSocketListeners() {
     socket
-      ..onConnect((_) {
+      ..onConnect((_) async {
         log('🟢 Socket Connected to https://socket.gosharpsharp.com');
 
         isConnected.value = true;
-        // Always join rider room and start emitting location on connect
-        joinRiderRoom();
+        // Join appropriate room based on delivery status
+        await _joinAppropriateRoom();
         startListeningAndEmitting();
       })
       ..onDisconnect((_) {
         log('🔴 Socket Disconnected');
         isConnected.value = false;
       })
-      ..onReconnect((_) {
+      ..onReconnect((_) async {
         log('🟡 Socket Reconnected');
         isConnected.value = true;
-        // Always rejoin rider room on reconnection
-        joinRiderRoom();
+        // Rejoin appropriate room based on active delivery status
+        await _joinAppropriateRoom();
         // Restart location emitting
         startListeningAndEmitting();
       })
       ..onError((error) => log('❌ Socket Error: $error'))
       ..onConnectError((error) => log('❌ Socket Connect Error: $error'));
+  }
+
+  /// Join appropriate room based on active delivery status
+  /// - If rider has active delivery (accepted/picked), join tracking room
+  /// - Otherwise, join delivery room to receive new delivery requests
+  Future<void> _joinAppropriateRoom() async {
+    if (!Get.isRegistered<DeliveriesController>()) {
+      // No deliveries controller, join delivery room by default
+      joinRiderRoom();
+      return;
+    }
+
+    final deliveriesController = Get.find<DeliveriesController>();
+
+    // Give time for active delivery restoration from API
+    // This ensures we check server state before joining rooms
+    if (deliveriesController.selectedDelivery == null) {
+      log('⏳ Waiting for active delivery check...');
+      await Future.delayed(const Duration(milliseconds: 1500));
+    }
+
+    final selectedDelivery = deliveriesController.selectedDelivery;
+
+    // Check if rider has active delivery
+    if (selectedDelivery != null) {
+      final status = selectedDelivery.status?.toLowerCase();
+      final trackingId = selectedDelivery.trackingId;
+
+      if (status != null &&
+          ['accepted', 'picked'].contains(status) &&
+          trackingId != null) {
+        // Has active delivery, join tracking room
+        log('📦 Active delivery found (status: $status), joining tracking room');
+        joinTrackingRoom(trackingId);
+        return;
+      }
+    }
+
+    // No active delivery, join delivery room only if rider is online
+    if (deliveriesController.isOnline) {
+      log('📭 No active delivery & rider is online, joining delivery room');
+      joinRiderRoom();
+    } else {
+      log('📴 Rider is offline, not joining any room');
+    }
   }
 
   /// Join rider delivery room
@@ -71,6 +116,41 @@ class SocketService extends GetxService {
         'courierTypeName': normalizedCourierTypeName,
       });
       log('🚴 Rider joined delivery room - Rider ID: ${_userProfile.id}, Courier Type ID: $courierTypeId, Courier Type Name: $normalizedCourierTypeName');
+    }
+  }
+
+  /// Leave delivery room when accepting a delivery
+  /// Emits to: "leave-room" with payload { "roomName": "courier-type:bike" }
+  void leaveDeliveryRoom() {
+    if (isConnected.value) {
+      final courierTypeName = _userProfile.vehicle?.courierType?.name ?? 'Express';
+      final normalizedCourierTypeName = courierTypeName.replaceAll(' ', '-');
+      final roomName = 'courier-type:$normalizedCourierTypeName';
+
+      socket.emit('leave-room', {
+        'roomName': roomName,
+      });
+      log('🚪 Rider left delivery room - Room: $roomName');
+    }
+  }
+
+  /// Join tracking room for active delivery
+  /// Emits to: "join_room" with trackingId
+  void joinTrackingRoom(String trackingId) {
+    if (isConnected.value) {
+      socket.emit('join_room', trackingId);
+      log('📍 Rider joined tracking room - Tracking ID: $trackingId');
+    }
+  }
+
+  /// Leave tracking room after delivery completion
+  /// Emits to: "leave-room" with payload { "roomName": trackingId }
+  void leaveTrackingRoom(String trackingId) {
+    if (isConnected.value) {
+      socket.emit('leave-room', {
+        'roomName': trackingId,
+      });
+      log('🚪 Rider left tracking room - Tracking ID: $trackingId');
     }
   }
 

@@ -791,8 +791,30 @@ class SettingsController extends GetxController {
     GetStorage getStorage = GetStorage();
     DeliveryNotificationServiceManager serviceManager =
         DeliveryNotificationServiceManager();
+
+    // Dispose all services first
     serviceManager.disposeServices();
+
+    // Clear all cached data
     getStorage.remove('token');
+    getStorage.remove('id');
+    getStorage.remove('password');
+    // Note: Keep walletBalanceVisibility as it's a user preference
+
+    // Clear user profile
+    userProfile = null;
+
+    // Clear delivery controller state if registered
+    if (Get.isRegistered<DeliveriesController>()) {
+      final deliveriesController = Get.find<DeliveriesController>();
+      deliveriesController.selectedDelivery = null;
+      deliveriesController.pickedDeliveries.clear();
+      deliveriesController.rejectedDeliveries.clear();
+      deliveriesController.allDeliveries.clear();
+      deliveriesController.deliverySearchResults.clear();
+    }
+
+    // Navigate to sign-in and clear all routes
     Get.offAllNamed(Routes.SIGN_IN);
   }
 

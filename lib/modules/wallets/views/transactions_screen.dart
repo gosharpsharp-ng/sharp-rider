@@ -37,9 +37,11 @@ class _TransactionsScreenState extends State<TransactionsScreen> {
           child: walletController.fetchingTransactions &&
                   walletController.transactions.isEmpty
               ? SingleChildScrollView(
+                  physics: const AlwaysScrollableScrollPhysics(),
                   child: SkeletonLoaders.transactionItem(count: 5),
                 )
               : ListView(
+                  physics: const AlwaysScrollableScrollPhysics(),
                   controller: walletController.transactionsScrollController,
                   padding:
                       EdgeInsets.symmetric(horizontal: 8.sp, vertical: 12.sp),

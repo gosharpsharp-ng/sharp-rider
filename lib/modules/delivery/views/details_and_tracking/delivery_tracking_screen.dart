@@ -20,6 +20,24 @@ class _DeliveryTrackingScreenState extends State<DeliveryTrackingScreen> {
     deliveriesController.polyLineSet.clear();
     deliveriesController.markerSet.clear();
     deliveriesController.pLineCoordinatedList.clear();
+
+    final args = Get.arguments as Map<String, dynamic>?;
+    final DeliveryModel? argDelivery = args?['delivery'] as DeliveryModel?;
+    final String? argTrackingId = args?['trackingId'] as String?;
+
+    if (argDelivery != null) {
+      // Best case: full DeliveryModel was passed — set it immediately, no API call needed.
+      deliveriesController.selectedDelivery = argDelivery;
+      deliveriesController.update();
+    } else if (argTrackingId != null && argTrackingId.isNotEmpty) {
+      // Fallback: only a trackingId was passed — fetch from API if needed.
+      final currentId = deliveriesController.selectedDelivery?.trackingId;
+      if (currentId == null || currentId != argTrackingId) {
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+          deliveriesController.fetchDeliveryByTrackingId(argTrackingId);
+        });
+      }
+    }
   }
 
   void _initializeMap() {

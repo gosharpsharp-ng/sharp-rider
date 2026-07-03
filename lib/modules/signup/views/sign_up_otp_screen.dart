@@ -66,7 +66,7 @@ class SignUpOtpScreen extends StatelessWidget {
                       (signUpController.isResendingOtp ||
                               signUpController.resendOTPAfter > 1)
                           ? null
-                          : signUpController.sendOtp();
+                          : signUpController.sendOtp(showMessage: true);
                     },
                     child: customText(
                       signUpController.isResendingOtp

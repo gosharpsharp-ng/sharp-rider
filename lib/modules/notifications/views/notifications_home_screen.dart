@@ -45,10 +45,12 @@ class NotificationsHomeScreen extends StatelessWidget {
                     ],
                   ),
                 child: SingleChildScrollView(
+                  physics: const AlwaysScrollableScrollPhysics(),
                   child: SkeletonLoaders.notificationsPage(),
                 ),
               ),
               child: SingleChildScrollView(
+                physics: const AlwaysScrollableScrollPhysics(),
                 controller:
                     notificationsController.notificationsScrollController,
                 child: Column(

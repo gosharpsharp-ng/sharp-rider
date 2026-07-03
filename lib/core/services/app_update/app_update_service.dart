@@ -13,7 +13,7 @@ class AppUpdateService {
   bool _isDialogShowing = false;
 
   static const String _playStoreId = 'com.gosharpsharp.rider';
-  static const String _appStoreId = 'com.gosharpsharp.rider';
+  static const String _appStoreId = '6744299798';
 
   Future<void> initialize() async {
     await checkForUpdate();

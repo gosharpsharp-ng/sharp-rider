@@ -14,6 +14,7 @@ class SignInScreen extends StatelessWidget {
           appBar: defaultAppBar(
             bgColor: AppColors.backgroundColor,
             title: "",
+            implyLeading: false,
           ),
           backgroundColor: AppColors.backgroundColor,
           body: Container(
@@ -273,6 +274,10 @@ class SignInScreen extends StatelessWidget {
                             ),
                             InkWell(
                               onTap: () {
+                                // Reset signup form before navigating (in case of previous incomplete registration)
+                                if (Get.isRegistered<SignUpController>()) {
+                                  Get.find<SignUpController>().resetForm();
+                                }
                                 Get.offAndToNamed(Routes.SIGNUP_SCREEN);
                               },
                               child: customText("Create an account",

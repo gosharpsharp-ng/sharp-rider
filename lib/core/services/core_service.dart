@@ -152,26 +152,40 @@ class CoreService extends GetConnect {
 
   // general post
   Future<APIResponse> send(String url, payload) async {
+    log("🌐 API Request: POST ${_dio.options.baseUrl}$url");
+    log("📤 Request Payload: $payload");
+
     try {
       final res = await _dio.post(url, data: payload);
+      log("✅ HTTP Response Status: ${res.statusCode}");
+      log("*************************************************************");
+      log("📥 RAW BACKEND RESPONSE:");
+      log(res.data.toString());
+      log("*************************************************************");
+
       if (res.statusCode == 200 || res.statusCode == 201) {
-        print("*************************************************************");
-        print(res.data.toString());
-        print("*************************************************************");
         return _parseResponse(res.data);
       }
     } on DioException catch (e) {
+      log("❌ DioException occurred");
+      log("HTTP Status: ${e.response?.statusCode}");
+      log("*************************************************************");
+      log("📥 ERROR RESPONSE FROM BACKEND:");
+      log(e.response?.data.toString() ?? "No response data");
+      log("*************************************************************");
+
       if (e.response != null) {
         return _parseResponse(e.response?.data);
       } else {
+        log("⚠️ No response from server - Connection error");
         return APIResponse(
           status: "error",
           data: "Error",
-          message: "Something went wrong ",
+          message: "Connection error. Please check your internet.",
         );
       }
     } catch (e) {
-      log("Unexpected error in send: $e");
+      log("❌ Unexpected error in send: $e");
       return APIResponse(
           status: "error", data: "Error", message: "An unexpected error occurred");
     }

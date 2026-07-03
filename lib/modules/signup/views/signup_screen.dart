@@ -16,14 +16,11 @@ class SignUpScreen extends GetView<SignUpController> {
             bgColor: AppColors.backgroundColor,
             title: _getStepTitle(controller.currentStep),
             implyLeading: controller.currentStep > 0,
-            // leadingWidget: controller.currentStep > 0
-            //     ? IconButton(
-            //         icon: Icon(Icons.arrow_back, color: AppColors.blackColor),
-            //         onPressed: () {
-            //           controller.previousStep();
-            //         },
-            //       )
-            //     : null,
+            onPop: controller.currentStep > 0
+                ? () {
+                    controller.previousStep();
+                  }
+                : null,
           ),
           body: IndexedStack(
             index: controller.currentStep,

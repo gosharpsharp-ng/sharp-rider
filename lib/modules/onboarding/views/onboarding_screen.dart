@@ -125,7 +125,7 @@ class OnboardingScreen extends StatelessWidget {
                           ),
                           child: CustomButton(
                             onPressed: () {
-                              Get.toNamed(Routes.SIGNUP_SCREEN);
+                              Get.offNamed(Routes.SIGNUP_SCREEN);
                             },
                             backgroundColor: AppColors.primaryColor,
                             title: "Get Started",
@@ -138,7 +138,7 @@ class OnboardingScreen extends StatelessWidget {
                         // Login Button (Secondary)
                         CustomButton(
                           onPressed: () {
-                            Get.toNamed(Routes.SIGN_IN);
+                            Get.offNamed(Routes.SIGN_IN);
                           },
                           backgroundColor: AppColors.transparent,
                           borderColor: AppColors.primaryColor,
