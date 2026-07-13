@@ -206,6 +206,23 @@ class DeliveriesController extends GetxController with WidgetsBindingObserver {
 
   bool isOnline = false;
 
+  /// Load online status from persistent storage
+  void _loadOnlineStatus() {
+    final getStorage = GetStorage();
+    final savedStatus = getStorage.read('rider_online_status');
+    if (savedStatus != null) {
+      isOnline = savedStatus as bool;
+      debugPrint('📱 Loaded online status from storage: $isOnline');
+    }
+  }
+
+  /// Save online status to persistent storage
+  void _saveOnlineStatus() {
+    final getStorage = GetStorage();
+    getStorage.write('rider_online_status', isOnline);
+    debugPrint('💾 Saved online status to storage: $isOnline');
+  }
+
   Future<void> toggleOnlineStatus() async {
     if (settingsController.reactiveUserProfile.value != null) {
       if (settingsController.reactiveUserProfile.value?.vehicle != null) {
@@ -242,6 +259,8 @@ class DeliveriesController extends GetxController with WidgetsBindingObserver {
         } else {
           await serviceManager.disposeServices();
         }
+        // Save online status to persistent storage
+        _saveOnlineStatus();
         update();
         // } else {
         //   showAdminApprovalDialog();
@@ -944,27 +963,48 @@ class DeliveriesController extends GetxController with WidgetsBindingObserver {
   @override
   void onInit() {
     WidgetsBinding.instance.addObserver(this); // Register observer
+    // Restore online status from persistent storage
+    _loadOnlineStatus();
     super.onInit();
   }
 
   @override
   void didChangeAppLifecycleState(AppLifecycleState state) async {
+    debugPrint('📱 App lifecycle state changed: $state');
+
     if (state == AppLifecycleState.resumed) {
       final userProfile = settingsController.reactiveUserProfile.value;
 
       if (userProfile != null) {
-        // Check if SocketService is registered
-        if (!Get.isRegistered<SocketService>()) {
-          await serviceManager.initializeServices(userProfile);
-        }
+        // Restore online status from storage
+        _loadOnlineStatus();
+        debugPrint('🔄 App resumed - Online status: $isOnline');
 
-        // Socket service available for future use if needed
-        // final websocketService = Get.find<SocketService>();
+        // If rider was online before, reinitialize services
+        if (isOnline) {
+          // Check if SocketService is registered
+          if (!Get.isRegistered<SocketService>()) {
+            debugPrint('🔌 Reinitializing services after resume...');
+            await serviceManager.initializeServices(userProfile);
+          } else {
+            // Services already exist, just ensure socket is connected
+            final socketService = Get.find<SocketService>();
+            if (!socketService.isConnected.value) {
+              debugPrint('🔌 Socket disconnected, reconnecting...');
+              // Socket will auto-reconnect due to enableReconnection()
+            }
+          }
+        }
+        update();
       } else {
         debugPrint(
           'User profile is null on app resume — skipping socket initialization.',
         );
       }
+    } else if (state == AppLifecycleState.paused ||
+               state == AppLifecycleState.inactive) {
+      // App going to background - status will be preserved via storage
+      debugPrint('⏸️ App paused/inactive - Online status preserved: $isOnline');
     }
   }
 }

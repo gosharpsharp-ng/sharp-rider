@@ -799,6 +799,7 @@ class SettingsController extends GetxController {
     getStorage.remove('token');
     getStorage.remove('id');
     getStorage.remove('password');
+    getStorage.remove('rider_online_status'); // Clear online status
     // Note: Keep walletBalanceVisibility as it's a user preference
 
     // Clear user profile
