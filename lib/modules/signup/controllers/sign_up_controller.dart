@@ -14,6 +14,9 @@ class SignUpController extends GetxController {
   // Current step in the registration process (0-based)
   int currentStep = 0;
 
+  // Flag to indicate if OTP verification is from login flow
+  bool isFromLoginFlow = false;
+
   void setStep(int step) {
     currentStep = step;
     update();
@@ -339,7 +342,7 @@ class SignUpController extends GetxController {
   int resendOTPAfter = 120;
   String remainingTime = "";
 
-  void _startOtpResendTimer() {
+  void startOtpResendTimer() {
     resendOTPAfter = 120;
     remainingTime = getFormattedResendOTPTime(resendOTPAfter);
     const oneSec = Duration(seconds: 1);
@@ -536,11 +539,21 @@ class SignUpController extends GetxController {
 
   // ==================== OTP Functions ====================
   Future<void> sendOtp({bool showMessage = false}) async {
+    debugPrint('\n🟢 ===== SEND OTP CALLED =====');
+    debugPrint('📧 Email: ${emailController.text}');
+    debugPrint('🔔 Show message: $showMessage');
+    debugPrint('🟢 ====================================\n');
+
     setIsResendingOTPState(true);
     dynamic data = {
       'identifier': emailController.text,
     };
     APIResponse response = await authService.sendOtp(data);
+
+    debugPrint('\n📩 ===== SEND OTP RESPONSE =====');
+    debugPrint('✅ Status: ${response.status}');
+    debugPrint('💬 Message: ${response.message}');
+    debugPrint('📩 ====================================\n');
 
     // Only show toast if explicitly requested (e.g., manual resend)
     if (showMessage) {
@@ -549,7 +562,7 @@ class SignUpController extends GetxController {
 
     setIsResendingOTPState(false);
     if (response.status == "success") {
-      _startOtpResendTimer();
+      startOtpResendTimer();
     }
   }
 
@@ -562,20 +575,52 @@ class SignUpController extends GetxController {
           'identifier': emailController.text,
         };
         APIResponse response = await authService.verifyEmailOtp(data);
-        final alreadyVerified = response.message.toLowerCase().contains("already verified");
 
-        if (response.status == "success" || alreadyVerified) {
-          // Navigate to success screen (no toast needed - success screen will show message)
-          Get.offAllNamed(Routes.SIGNUP_SUCCESS_SCREEN);
+        debugPrint('\n🎯 ===== VERIFY OTP RESPONSE =====');
+        debugPrint('✅ Status: ${response.status}');
+        debugPrint('💬 Message: ${response.message}');
+        debugPrint('🎯 ====================================\n');
+
+        if (response.status == "success") {
+          debugPrint('✅ Email verification successful!');
+
+          if (isFromLoginFlow) {
+            // LOGIN FLOW: Don't show toast (would interfere with Get.back)
+            // Success dialog will be shown in SignInController
+            debugPrint('🔙 LOGIN FLOW: Returning to login screen with result: true');
+            debugPrint('⚠️ Skipping toast to avoid navigation conflict');
+
+            // Navigate back with result immediately
+            Get.back(result: true);
+
+            debugPrint('✅ Get.back() executed with result: true');
+          } else {
+            // SIGNUP FLOW: Navigate to success screen
+            debugPrint('📱 SIGNUP FLOW: Going to success screen via offAllNamed');
+            Get.offAllNamed(Routes.SIGNUP_SUCCESS_SCREEN);
+          }
         } else {
-          // Only show toast for errors
-          showToast(
+          // Show error sheet for verification failures (more visible than toast)
+          debugPrint('❌ Verification failed: ${response.message}');
+          showErrorSheet(
+            title: "Verification Failed",
             message: response.message,
-            isError: true,
+            buttonText: "Try Again",
+            onButtonPressed: () {
+              Get.back(); // Close error sheet
+            },
           );
         }
       } catch (e) {
-        showToast(message: "OTP verification failed: $e", isError: true);
+        debugPrint('❌ Exception during OTP verification: $e');
+        showErrorSheet(
+          title: "Verification Error",
+          message: "An unexpected error occurred. Please try again.\n\nError: $e",
+          buttonText: "Close",
+          onButtonPressed: () {
+            Get.back(); // Close error sheet
+          },
+        );
       } finally {
         setLoadingState(false);
       }
