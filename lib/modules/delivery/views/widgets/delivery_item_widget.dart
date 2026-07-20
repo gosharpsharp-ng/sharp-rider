@@ -75,7 +75,7 @@ class DeliveryItemWidget extends StatelessWidget {
                   formatToCurrency(double.tryParse(shipment.deliveryFee ?? '0') ?? 0),
                   fontWeight: FontWeight.w600,
                   fontSize: 15.sp,
-                  color: AppColors.primaryColor,
+                  color: AppColors.blackColor,
                 ),
                 SizedBox(width: 8.w),
                 Icon(
@@ -153,12 +153,12 @@ class DeliveryItemWidget extends StatelessWidget {
                         width: 24.sp,
                         height: 24.sp,
                         decoration: BoxDecoration(
-                          color: AppColors.greenColor.withOpacity(0.1),
+                          color: AppColors.primaryColor.withOpacity(0.1),
                           shape: BoxShape.circle,
                         ),
                         child: Icon(
                           Icons.location_on,
-                          color: AppColors.greenColor,
+                          color: AppColors.primaryColor,
                           size: 14.sp,
                         ),
                       ),

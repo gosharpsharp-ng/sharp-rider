@@ -86,12 +86,12 @@ class DeliveryLocationsCard extends StatelessWidget {
                 padding: EdgeInsets.all(8.sp),
                 decoration: BoxDecoration(
                   shape: BoxShape.circle,
-                  color: AppColors.secondaryColor.withOpacity(0.1),
+                  color: AppColors.primaryColor.withOpacity(0.1),
                 ),
                 child: SvgPicture.asset(
                   SvgAssets.locationIcon,
                   colorFilter: const ColorFilter.mode(
-                    AppColors.secondaryColor,
+                    AppColors.primaryColor,
                     BlendMode.srcIn,
                   ),
                   width: 18.sp,

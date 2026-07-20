@@ -1,4 +1,6 @@
 
+import 'dart:convert';
+
 import 'package:flutter_polyline_points/flutter_polyline_points.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:gorider/core/utils/exports.dart';
@@ -102,7 +104,13 @@ class DeliveriesController extends GetxController with WidgetsBindingObserver {
     fetchingDeliveries = false;
 
     if (response.status == "success") {
-      List<DeliveryModel> newDeliveries = (response.data['data'] as List)
+      final rawList = response.data['data'] as List;
+      for (var i = 0; i < rawList.length && i < 10; i++) {
+        debugPrint("=== ORDER ${i + 1} RAW DATA ===");
+        debugPrint(const JsonEncoder.withIndent('  ').convert(rawList[i]));
+        debugPrint("=== END ORDER ${i + 1} RAW DATA ===");
+      }
+      List<DeliveryModel> newDeliveries = rawList
           .map((sh) => DeliveryModel.fromJson(sh))
           .toList();
 

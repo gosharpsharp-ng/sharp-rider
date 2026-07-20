@@ -28,7 +28,7 @@ class DeliveryTrackingIdWidget extends StatelessWidget {
               if (showIcon) ...[
                 Icon(
                   Icons.electric_moped,
-                  color: AppColors.primaryColor,
+                  color: AppColors.blackColor,
                   size: 20.sp,
                 ),
                 SizedBox(width: 8.w),
@@ -45,7 +45,7 @@ class DeliveryTrackingIdWidget extends StatelessWidget {
             children: [
               customText(
                 trackingId,
-                color: AppColors.primaryColor,
+                color: AppColors.blackColor,
                 fontSize: 14.sp,
                 fontWeight: FontWeight.w600,
               ),

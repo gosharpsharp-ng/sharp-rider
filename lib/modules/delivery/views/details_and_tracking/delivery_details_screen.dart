@@ -213,32 +213,24 @@ class _DeliveryDetailsScreenState extends State<DeliveryDetailsScreen> {
         color: AppColors.whiteColor,
         borderRadius: BorderRadius.circular(12.r),
       ),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          Container(
-            padding: EdgeInsets.symmetric(
-              horizontal: 12.sp,
-              vertical: 6.sp,
-            ),
-            decoration: BoxDecoration(
-              color: getStatusColor(delivery.status),
-              borderRadius: BorderRadius.circular(6.r),
-            ),
-            child: customText(
-              delivery.status?.capitalizeFirst ?? "",
-              fontWeight: FontWeight.w600,
-              color: getStatusTextColor(delivery.status),
-              fontSize: 13.sp,
-            ),
+      child: Align(
+        alignment: Alignment.centerLeft,
+        child: Container(
+          padding: EdgeInsets.symmetric(
+            horizontal: 12.sp,
+            vertical: 6.sp,
           ),
-          customText(
-            formatToCurrency(double.tryParse(delivery.deliveryFee ?? '0') ?? 0),
-            fontWeight: FontWeight.w700,
-            fontSize: 18.sp,
-            color: AppColors.primaryColor,
+          decoration: BoxDecoration(
+            color: getStatusColor(delivery.status),
+            borderRadius: BorderRadius.circular(6.r),
           ),
-        ],
+          child: customText(
+            delivery.status?.capitalizeFirst ?? "",
+            fontWeight: FontWeight.w600,
+            color: getStatusTextColor(delivery.status),
+            fontSize: 13.sp,
+          ),
+        ),
       ),
     );
   }
