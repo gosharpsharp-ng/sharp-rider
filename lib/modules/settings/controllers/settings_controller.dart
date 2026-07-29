@@ -104,7 +104,7 @@ class SettingsController extends GetxController {
     if (changePasswordFormKey.currentState!.validate()) {
       setLoadingState(true);
       dynamic data = {
-        "old_password": oldPasswordController.text,
+        "current_password": oldPasswordController.text,
         "new_password": newPasswordController.text
       };
 

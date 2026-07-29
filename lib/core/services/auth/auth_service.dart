@@ -16,7 +16,7 @@ class AuthenticationService extends CoreService {
   }
 
   Future<APIResponse> resetPassword(dynamic data) async {
-    return await send("/auth/rider/reset/password", data);
+    return await send("/auth/reset-password", data);
   }
 
   Future<APIResponse> verifyPhoneOtp(dynamic data) async {

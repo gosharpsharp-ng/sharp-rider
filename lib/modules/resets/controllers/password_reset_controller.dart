@@ -1,5 +1,4 @@
 import 'package:gorider/core/utils/exports.dart';
-import 'package:intl_phone_field/phone_number.dart';
 
 class PasswordResetController extends GetxController {
   late Timer _otpResendTimer;
@@ -87,46 +86,48 @@ class PasswordResetController extends GetxController {
     }
   }
 
-  validateOtpField() {
+  Future<void> validateOtpField() async {
     if (restPasswordOtpFormKey.currentState!.validate()) {
+      // Navigate directly to password screen - OTP will be verified during password reset
       Get.toNamed(Routes.RESET_PASSWORD_NEW_PASSWORD_SCREEN);
     }
   }
 
-  bool useEmail = true;
-
-  toggleSignInWithEmail() {
-    useEmail = !useEmail;
-    loginController.clear();
-    update();
-  }
-
   TextEditingController loginController = TextEditingController();
-  PhoneNumber? filledPhoneNumber;
-  setPhoneNumber(PhoneNumber num) {
-    loginController.text = filledPhoneNumber!.completeNumber;
-    update();
-  }
 
   resetPassword() async {
     if (resetPasswordFormKey.currentState!.validate()) {
       setLoadingState(true);
       dynamic data = {
-        'otp': otpController.text,
         'identifier': loginController.text,
+        'otp': otpController.text,
         'password': newPasswordController.text,
+        'password_confirmation': confirmPasswordController.text,
       };
       APIResponse response = await authService.resetPassword(data);
-
-      showToast(
-          message: response.message, isError: response.status != "success");
       setLoadingState(false);
+
       if (response.status == "success") {
+        showToast(message: response.message, isError: false);
         otpController.clear();
         newPasswordController.clear();
         confirmPasswordController.clear();
         loginController.clear();
         Get.offAllNamed(Routes.SIGN_IN);
+      } else {
+        // Check if error is OTP-related
+        String errorMessage = response.message.toLowerCase();
+        if (errorMessage.contains('otp') ||
+            errorMessage.contains('code') ||
+            errorMessage.contains('expired') ||
+            errorMessage.contains('invalid code')) {
+          // OTP error - navigate back to OTP screen
+          showToast(message: response.message, isError: true);
+          Get.back(); // Go back to OTP entry screen
+        } else {
+          // Password validation error - show on current screen
+          showToast(message: response.message, isError: true);
+        }
       }
     }
   }

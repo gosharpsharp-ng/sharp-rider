@@ -18,7 +18,7 @@ class ResetPasswordOtpScreen extends StatelessWidget {
               padding: EdgeInsets.symmetric(horizontal: 14.sp, vertical: 20.sp),
               child: TitleSectionBox(
                 title:
-                    "Enter the 4 digit OTP code sent to your ${passwordResetController.useEmail ? ' Email' : 'Phone'}",
+                    "Enter the 4 digit OTP code sent to your email",
                 backgroundColor: AppColors.whiteColor,
                 children: [
                   SizedBox(

@@ -1,5 +1,4 @@
 import 'package:gorider/core/utils/exports.dart';
-import 'package:intl_phone_field/phone_number.dart';
 
 class ResetPasswordEmailEntry extends StatelessWidget {
   const ResetPasswordEmailEntry({super.key});
@@ -37,76 +36,25 @@ class ResetPasswordEmailEntry extends StatelessWidget {
                         SizedBox(
                           height: 5.sp,
                         ),
-                        InkWell(
-                          onTap: () {
-                            passwordResetController.toggleSignInWithEmail();
+                        CustomRoundedInputField(
+                          title: "Email",
+                          label: "meterme@gmail.com",
+                          showLabel: true,
+                          isRequired: true,
+                          isPhone: false,
+                          useCustomValidator: true,
+                          hasTitle: true,
+                          keyboardType: TextInputType.emailAddress,
+                          controller: passwordResetController.loginController,
+                          validator: (value) {
+                            if (value == null || value.isEmpty) {
+                              return 'Please enter an email';
+                            } else if (!validateEmail(value)) {
+                              return 'Please enter a valid email';
+                            }
+                            return null;
                           },
-                          child: customText(
-                            "Use ${passwordResetController.useEmail ? 'Phone' : 'Email'} instead",
-                            fontSize: 14.sp,
-                            color: Colors.blue,
-                            fontWeight: FontWeight.w600,
-                          ),
                         ),
-                        SizedBox(
-                          height: 15.sp,
-                        ),
-                        passwordResetController.useEmail
-                            ? CustomRoundedInputField(
-                                title: "Email",
-                                label: "meterme@gmail.com",
-                                showLabel: true,
-                                isRequired: true,
-                                isPhone: passwordResetController.useEmail
-                                    ? false
-                                    : true,
-                                useCustomValidator: true,
-                                hasTitle: true,
-                                keyboardType: TextInputType.emailAddress,
-                                controller:
-                                    passwordResetController.loginController,
-                                validator: (value) {
-                                  if (value == null || value.isEmpty) {
-                                    return 'Please enter an email';
-                                  } else if (!validateEmail(value)) {
-                                    return 'Please enter a valid email';
-                                  }
-                                  return null;
-                                },
-                              )
-                            : CustomRoundedPhoneInputField(
-                                title: "Phone number",
-                                label: "7061032122",
-                                onChanged: (PhoneNumber phone) {
-                                  if (phone.number.startsWith('0')) {
-                                    final updatedNumber =
-                                        phone.number.replaceFirst('0', '');
-                                    PhoneNumber num = PhoneNumber(
-                                        countryISOCode: phone.countryISOCode,
-                                        countryCode: phone.countryCode,
-                                        number: updatedNumber);
-                                    passwordResetController.setPhoneNumber(num);
-                                  }
-                                },
-                                keyboardType: TextInputType.phone,
-                                validator: (phone) {
-                                  if (phone == null ||
-                                      phone.completeNumber.isEmpty) {
-                                    return "Phone number is required";
-                                  }
-                                  // Regex: `+` followed by 1 to 3 digits (country code), then 10 digits (phone number)
-                                  final regex = RegExp(r'^\+234[1-9]\d{9}$');
-                                  if (!regex.hasMatch(phone.completeNumber)) {
-                                    return "Phone number must start with +234 and be 10 digits long";
-                                  }
-
-                                  return null; // Valid phone number
-                                },
-                                isPhone: true,
-                                hasTitle: true,
-                                controller:
-                                    passwordResetController.loginController,
-                              ),
                         SizedBox(
                           height: 15.h,
                         ),
